@@ -1,32 +1,22 @@
 const express = require('express');
 const authenticate = require('../middleware/authenticate');
-const User = require('../models/User');
+const userController = require('../controllers/userController');  // Import the controller
 
 const router = express.Router();
 
-// Route to Get User Profile
-router.get('/profile', authenticate, async (req, res) => {
-  try {
-    const user = await User.findById(req.user).select('-password');
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
-  }
-});
+// Route for getting the user profile
+router.get('/profile', authenticate(), userController.getUserProfile);
 
-// Route to Update User Profile
-router.put('/profile', authenticate, async (req, res) => {
-  const { name, email } = req.body;
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user, // User's ID from JWT
-      { name, email },
-      { new: true } // Return the updated user
-    );
-    res.json(updatedUser);
-  } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
-  }
-});
+// Route for updating the user profile
+router.patch('/updateprofile', authenticate(), userController.updateUserProfile);
+
+// Route for Deleting Profile
+router.delete('/remove/:userId', authenticate('admin'), userController.deleteUserProfile);
+
+// Route for Deleting Self
+router.delete('/removeself', authenticate(), userController.deleteOwnProfile);
+
+// Route to Change Role
+router.put('/changerole', authenticate('admin'), userController.changeUserRole);
 
 module.exports = router;
