@@ -1,4 +1,4 @@
-const userService = require('../services/userService');  // Import the user service
+const userService = require('../services/userService'); 
 
 // Route to Get User Profile
 const getUserProfile = async (req, res) => {

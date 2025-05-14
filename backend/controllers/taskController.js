@@ -2,12 +2,14 @@ const taskService = require('../services/taskService');
 
 // Post Task
 const postTask = async (req, res) => {
-  const { title, description, difficulty } = req.body;
+  const { title, description, difficulty, category, location, deadline } = req.body;
+
   try {
-    const task = await taskService.createTask(title, description, difficulty, req.user);
+    const task = await taskService.createTask(title, description, difficulty, category, location, deadline, req.user.id);
     res.status(201).json(task);
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    console.error('Error in postTask:', err.message); // Debugging log
+    res.status(400).json({ msg: err.message }); // Return a 400 status for client errors
   }
 };
 
@@ -65,9 +67,18 @@ const completeTask = async (req, res) => {
 
 // Edit Task
 const editTask = async (req, res) => {
-  const { title, description, difficulty } = req.body;
+  const { title, description, difficulty, category, location, deadline } = req.body;
   try {
-    const task = await taskService.editTask(req.params.taskId, title, description, difficulty, req.user);
+    const task = await taskService.editTask(
+      req.params.taskId,
+      title, 
+      description, 
+      difficulty, 
+      category, 
+      location, 
+      deadline,
+      req.user
+    );
     res.json(task);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
@@ -94,6 +105,26 @@ const deleteTask = async (req, res) => {
   }
 };
 
+const createTask = async (title, description, difficulty, category, location, deadline, createdBy) => {
+  try {
+    const task = new Task({
+      title,
+      description,
+      difficulty,
+      category,
+      location,
+      deadline,
+      createdBy,
+    });
+    console.log('Task to Save:', task); // Debugging log
+    await task.save();
+    return task;
+  } catch (err) {
+    console.error('Error in createTask:', err.message); // Debugging log
+    throw new Error('Error creating task');
+  }
+};
+
 module.exports = {
   postTask,
   acceptTask,
@@ -103,5 +134,6 @@ module.exports = {
   completeTask,
   editTask,
   cancelTask,
-  deleteTask
+  deleteTask,
+  createTask
 };

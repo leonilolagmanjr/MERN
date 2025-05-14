@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1b2838; /* Steam's dark background */
+  color: #c7d5e0; /* Light text color */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+a {
+  color: #66c0f4; /* Steam's blue accent color */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3 {
+  color: #ffffff; /* White text for headings */
+}
+
+button {
+  background-color: #2a475e; /* Steam's button background */
+  color: #c7d5e0;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #66c0f4; /* Blue hover effect */
+  color: #ffffff;
+}

@@ -1,6 +1,6 @@
 const express = require('express');
 const authenticate = require('../middleware/authenticate');
-const taskController = require('../controllers/taskController');  // Import the controller
+const taskController = require('../controllers/taskController');
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ router.post('/post', authenticate(), taskController.postTask);
 router.put('/accept/:taskId', authenticate(), taskController.acceptTask);
 
 // Route to Get All Tasks
-router.get('/list', authenticate(), taskController.getAllTasks);
+router.get('/list', taskController.getAllTasks);
 
 // Route to Get Tasks Posted by Current User
 router.get('/my-post', authenticate(), taskController.getMyPostedTasks);
