@@ -1,22 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import Auth from './components/Auth';
+import MainHome from './pages/MainHome';
 import TaskList from './components/TaskList';
+import Auth from './pages/Auth'; // Updated import
+import { useAuth } from './context/AuthContext';
 
 const App = () => {
-  const [userName, setUserName] = useState('JohnDoe'); // Replace with dynamic user data
+  const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
 
   return (
     <Router>
       <div>
-        <Navbar userName={userName} />
+        <Navbar /> {/* Removed unused userName prop */}
         <div style={{ padding: '20px' }}>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
+            {/* Conditionally render MainHome or Home based on login status */}
+            <Route path="/" element={isLoggedIn ? <MainHome /> : <Home />} />
             <Route path="/tasks" element={<TaskList />} />
+            <Route path="/auth" element={<Auth />} /> {/* Updated component */}
           </Routes>
         </div>
       </div>

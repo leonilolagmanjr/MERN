@@ -1,11 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Import useAuth for authentication context
 
-const Navbar = ({ userName }) => {
+const Navbar = () => {
+  const { isLoggedIn, user, logout } = useAuth(); // Get authentication state and logout function
+
+  const handleLogout = () => {
+    logout(); // Clear user session
+  };
+
   return (
     <nav style={styles.navbar}>
       <div style={styles.leftSection}>
-        <h1 style={styles.logo}>Steam Clone</h1>
+        <h1 style={styles.logo}>PBuild</h1>
         <ul style={styles.navLinks}>
           <li>
             <Link to="/" style={styles.link}>Home</Link>
@@ -16,10 +23,15 @@ const Navbar = ({ userName }) => {
         </ul>
       </div>
       <div style={styles.rightSection}>
-        {userName ? (
-          <Link to="/profile" style={styles.link}>
-            {userName}'s Profile
-          </Link>
+        {isLoggedIn ? (
+          <>
+            <Link to="/profile" style={styles.link}>
+              {user?.name}'s Profile
+            </Link>
+            <button onClick={handleLogout} style={styles.logoutButton}>
+              Logout
+            </button>
+          </>
         ) : (
           <Link to="/auth" style={styles.link}>Login</Link>
         )}
@@ -34,7 +46,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '10px 20px',
-    backgroundColor: '#171a21', // Steam's navbar background
+    backgroundColor: '#171a21',
     color: '#c7d5e0',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
   },
@@ -46,6 +58,7 @@ const styles = {
   rightSection: {
     display: 'flex',
     alignItems: 'center',
+    gap: '15px',
   },
   logo: {
     fontSize: '24px',
@@ -62,6 +75,14 @@ const styles = {
     color: '#c7d5e0',
     textDecoration: 'none',
     fontSize: '18px',
+  },
+  logoutButton: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: '#ff4c4c',
+    cursor: 'pointer',
+    fontSize: '18px',
+    textDecoration: 'underline',
   },
 };
 
