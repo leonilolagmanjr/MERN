@@ -26,9 +26,37 @@ export const postTask = async (taskData, token) => {
   return response.data;
 };
 
+export const fetchPostedJobs = async (token) => {
+  const response = await axios.get(`${API_URL}/task/my-posted`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const fetchCompletedJobs = async (token) => {
+  const response = await axios.get(`${API_URL}/task/my-completed`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const fetchAcceptedJobs = async (token) => {
+  const response = await axios.get(`${API_URL}/task/my-accepted`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 // User APIs
 export const getUserProfile = async (token) => {
   const response = await axios.get(`${API_URL}/user/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateUserProfile = async (profileData, token) => {
+  const response = await axios.patch(`${API_URL}/user/updateprofile`, profileData, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;

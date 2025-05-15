@@ -38,7 +38,7 @@ const getAllTasks = async (req, res) => {
 // Get Tasks Posted by Current User
 const getMyPostedTasks = async (req, res) => {
   try {
-    const tasks = await taskService.getMyPostedTasks(req.user);
+    const tasks = await taskService.getMyPostedTasks(req.user.id);
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
@@ -48,7 +48,17 @@ const getMyPostedTasks = async (req, res) => {
 // Get Tasks Accepted by Current User
 const getMyAcceptedTasks = async (req, res) => {
   try {
-    const tasks = await taskService.getMyAcceptedTasks(req.user);
+    const tasks = await taskService.getMyAcceptedTasks(req.user.id);
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// Get Tasks Completed by Current User
+const getMyCompletedTasks = async (req, res) => {
+  try {
+    const tasks = await taskService.getMyCompletedTasks(req.user.id);
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
@@ -131,6 +141,7 @@ module.exports = {
   getAllTasks,
   getMyPostedTasks,
   getMyAcceptedTasks,
+  getMyCompletedTasks,
   completeTask,
   editTask,
   cancelTask,

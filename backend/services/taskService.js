@@ -56,20 +56,27 @@ const getAllTasks = async (difficulty) => {
 // Get Tasks Posted by Current User
 const getMyPostedTasks = async (userId) => {
   try {
-    const tasks = await Task.find({ createdBy: userId });  
-    return tasks;
+    return await Task.find({ createdBy: userId });
   } catch (err) {
-    throw new Error('Error fetching tasks');
+    throw new Error('Error fetching posted tasks');
   }
 };
 
 // Get Tasks Accepted by Current User
 const getMyAcceptedTasks = async (userId) => {
   try {
-    const tasks = await Task.find({ assignedTo: userId }); 
-    return tasks;
+    return await Task.find({ assignedTo: userId, status: 'in-progress' });
   } catch (err) {
-    throw new Error('Error fetching tasks');
+    throw new Error('Error fetching accepted tasks');
+  }
+};
+
+// Get Tasks Completed by Current User
+const getMyCompletedTasks = async (userId) => {
+  try {
+    return await Task.find({ assignedTo: userId, status: 'completed' });
+  } catch (err) {
+    throw new Error('Error fetching completed tasks');
   }
 };
 
@@ -139,6 +146,7 @@ module.exports = {
   getAllTasks,
   getMyPostedTasks,
   getMyAcceptedTasks,
+  getMyCompletedTasks,
   completeTask,
   editTask,
   cancelTask,
