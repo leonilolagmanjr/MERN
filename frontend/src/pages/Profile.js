@@ -51,63 +51,63 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Steam Replay Section */}
-      <div style={styles.steamReplay}>
-        <h2 style={styles.sectionHeading}>Steam Replay 2023</h2>
-        <div style={styles.replayStats}>
-          <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>53</h3>
-            <p style={styles.statLabel}>Games Played</p>
-          </div>
-          <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>1,441</h3>
-            <p style={styles.statLabel}>Sessions</p>
-          </div>
-          <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>290</h3>
-            <p style={styles.statLabel}>Achievements</p>
-          </div>
-          <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>11</h3>
-            <p style={styles.statLabel}>New Games</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Activity Section */}
-      <div style={styles.recentActivity}>
-        <h2 style={styles.sectionHeading}>Recent Activity</h2>
-        <p style={styles.activitySummary}>79.8 hours past 2 weeks</p>
-        <div style={styles.activityList}>
-          {completedJobs.map((job) => (
-            <div key={job._id} style={styles.activityItem}>
-              <h3 style={styles.activityTitle}>{job.title}</h3>
-              <p style={styles.activityDetails}>{job.description}</p>
-              <p style={styles.activityMeta}>Completed on: {new Date(job.updatedAt).toLocaleDateString()}</p>
+      {/* Main Content Section */}
+      <div style={styles.mainContent}>
+        {/* Left Column */}
+        <div style={styles.leftColumn}>
+          <div style={styles.accomplishments}>
+            <h2 style={styles.sectionHeading}>Accomplishments</h2>
+            <div style={styles.replayStats}>
+              <div style={styles.statBox}>
+                <h3 style={styles.statNumber}>{completedJobs.length}</h3>
+                <p style={styles.statLabel}>Jobs Completed</p>
+              </div>
+              <div style={styles.statBox}>
+                <h3 style={styles.statNumber}>{postedJobs.length}</h3>
+                <p style={styles.statLabel}>Jobs Posted</p>
+              </div>
+              <div style={styles.statBox}>
+                <h3 style={styles.statNumber}>{profile.experience || 0}</h3>
+                <p style={styles.statLabel}>Earned Experience</p>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Sidebar Section */}
-      <div style={styles.sidebar}>
-        <div style={styles.levelBox}>
-          <h3 style={styles.levelTitle}>Level {profile.level || 1}</h3>
-          <p style={styles.xp}>500 XP</p>
+          <div style={styles.recentActivity}>
+            <h2 style={styles.sectionHeading}>Recent Activity</h2>
+            <p style={styles.activitySummary}>79.8 hours past 2 weeks</p>
+            <div style={styles.activityList}>
+              {completedJobs.map((job) => (
+                <div key={job._id} style={styles.activityItem}>
+                  <h3 style={styles.activityTitle}>{job.title}</h3>
+                  <p style={styles.activityDetails}>{job.description}</p>
+                  <p style={styles.activityMeta}>Completed on: {new Date(job.updatedAt).toLocaleDateString()}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div style={styles.badges}>
-          <h3 style={styles.badgesTitle}>Badges</h3>
-          <p>9 Badges</p>
-        </div>
-        <div style={styles.sidebarLinks}>
-          <p>Games: 118</p>
-          <p>Inventory</p>
-          <p>Screenshots</p>
-          <p>Videos</p>
-          <p>Workshop Items</p>
-          <p>Reviews</p>
-          <p>Guides</p>
-          <p>Artwork</p>
+
+        {/* Right Column */}
+        <div style={styles.rightColumn}>
+          <div style={styles.levelBox}>
+            <h3 style={styles.levelTitle}>Level {profile.level || 1}</h3>
+            <p style={styles.xp}>{profile.experience || 0} XP</p>
+          </div>
+          <div style={styles.badges}>
+            <h3 style={styles.badgesTitle}>Badges</h3>
+            <p>{profile.badges?.length || 0} Badges</p>
+          </div>
+          <div style={styles.sidebarLinks}>
+            <p>Inventory</p>
+            <p>Media</p>
+            <p>Past Jobs</p>
+            <p>Proposals</p>
+            <p>Earnings</p>
+            <p>Reviews</p>
+            <p>Guides</p>
+            <p>Achievements</p>
+          </div>
         </div>
       </div>
     </div>
@@ -157,7 +157,21 @@ const styles = {
     cursor: 'pointer',
     fontSize: '16px',
   },
-  steamReplay: {
+  mainContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  leftColumn: {
+    flex: 3,
+    marginRight: '20px',
+  },
+  rightColumn: {
+    flex: 1,
+    backgroundColor: '#171a21',
+    padding: '20px',
+    borderRadius: '10px',
+  },
+  accomplishments: {
     marginBottom: '30px',
   },
   sectionHeading: {
@@ -215,12 +229,6 @@ const styles = {
   activityMeta: {
     fontSize: '12px',
     color: '#a9b7c6',
-  },
-  sidebar: {
-    marginTop: '30px',
-    backgroundColor: '#171a21',
-    padding: '20px',
-    borderRadius: '10px',
   },
   levelBox: {
     textAlign: 'center',
