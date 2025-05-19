@@ -86,6 +86,17 @@ const Profile = () => {
               ))}
             </div>
           </div>
+
+          {/* Post Box Section */}
+          <div style={styles.postBox}>
+            <textarea
+              style={styles.postInput}
+              placeholder="Share your thoughts, updates, or job details..."
+            ></textarea>
+            <div style={styles.postActions}>
+              <button style={styles.postButton}>Post</button>
+            </div>
+          </div>
         </div>
 
         {/* Right Column */}
@@ -291,6 +302,38 @@ const styles = {
     fontSize: '14px',
     color: '#c7d5e0',
     lineHeight: '1.8',
+  },
+  postBox: {
+    backgroundColor: '#171a21',
+    padding: '20px',
+    borderRadius: '10px',
+    marginTop: '30px',
+    color: '#c7d5e0',
+  },
+  postInput: {
+    width: '99%',
+    height: '100px',
+    backgroundColor: '#2a475e',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '10px',
+    color: '#c7d5e0',
+    fontSize: '14px',
+    resize: 'none',
+    marginBottom: '10px',
+  },
+  postActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  postButton: {
+    backgroundColor: '#66c0f4',
+    color: '#ffffff',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
   },
 };
 
