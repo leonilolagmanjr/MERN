@@ -64,7 +64,7 @@ export const updateUserProfile = async (profileData, token) => {
 
 // Edit and Delete Task APIs
 export const editTask = async (taskId, data, token) => {
-  return await axios.put(`${API_URL}/task/edit/${taskId}`, data, {
+  return await axios.patch(`${API_URL}/task/edit/${taskId}`, data, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };

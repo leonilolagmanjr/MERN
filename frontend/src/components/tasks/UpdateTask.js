@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { editTask } from '../../services/api';
+import React, { useState, useEffect } from 'react';
+import { editTask, fetchPostedJobs } from '../../services/api';
 
 const UpdateTask = ({ onTaskUpdated }) => {
-  const [taskId, setTaskId] = useState('');
+  const [tasks, setTasks] = useState([]);
+  const [selectedTaskId, setSelectedTaskId] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -13,13 +14,42 @@ const UpdateTask = ({ onTaskUpdated }) => {
   });
   const [message, setMessage] = useState('');
 
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const postedTasks = await fetchPostedJobs(token);
+        setTasks(postedTasks);
+      } catch (err) {
+        console.error('Error fetching tasks:', err);
+      }
+    };
+    fetchTasks();
+  }, []);
+
+  const handleTaskChange = (e) => {
+    const taskId = e.target.value;
+    setSelectedTaskId(taskId);
+    const selectedTask = tasks.find((task) => task._id === taskId);
+    if (selectedTask) {
+      setFormData({
+        title: selectedTask.title,
+        description: selectedTask.description,
+        difficulty: selectedTask.difficulty,
+        category: selectedTask.category,
+        location: selectedTask.location,
+        deadline: selectedTask.deadline.split('T')[0], // Format date
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await editTask(taskId, formData, token);
+      await editTask(selectedTaskId, formData, token);
       setMessage('Task updated successfully!');
-      setTaskId('');
+      setSelectedTaskId('');
       setFormData({
         title: '',
         description: '',
@@ -39,14 +69,19 @@ const UpdateTask = ({ onTaskUpdated }) => {
       <h3 style={styles.heading}>Update Task</h3>
       {message && <p style={styles.message}>{message}</p>}
       <form style={styles.form} onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Task ID"
-          value={taskId}
-          onChange={(e) => setTaskId(e.target.value)}
+        <select
+          value={selectedTaskId}
+          onChange={handleTaskChange}
           style={styles.input}
           required
-        />
+        >
+          <option value="">Select a task</option>
+          {tasks.map((task) => (
+            <option key={task._id} value={task._id}>
+              {task.title}
+            </option>
+          ))}
+        </select>
         <input
           type="text"
           placeholder="Title"
@@ -57,34 +92,44 @@ const UpdateTask = ({ onTaskUpdated }) => {
         <textarea
           placeholder="Description"
           value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
           style={styles.textarea}
         />
         <input
           type="text"
           placeholder="Difficulty"
           value={formData.difficulty}
-          onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, difficulty: e.target.value })
+          }
           style={styles.input}
         />
         <input
           type="text"
           placeholder="Category"
           value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, category: e.target.value })
+          }
           style={styles.input}
         />
         <input
           type="text"
           placeholder="Location"
           value={formData.location}
-          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, location: e.target.value })
+          }
           style={styles.input}
         />
         <input
           type="date"
           value={formData.deadline}
-          onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, deadline: e.target.value })
+          }
           style={styles.input}
         />
         <button type="submit" style={styles.button}>

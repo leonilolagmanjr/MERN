@@ -78,20 +78,26 @@ const completeTask = async (req, res) => {
 // Edit Task
 const editTask = async (req, res) => {
   const { title, description, difficulty, category, location, deadline } = req.body;
+  console.log('Edit Task Request:', {
+    taskId: req.params.taskId,
+    userId: req.user.id,
+    body: req.body,
+  }); // Debugging log
   try {
     const task = await taskService.editTask(
       req.params.taskId,
-      title, 
-      description, 
-      difficulty, 
-      category, 
-      location, 
+      title,
+      description,
+      difficulty,
+      category,
+      location,
       deadline,
-      req.user
+      req.user.id
     );
     res.json(task);
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    console.error('Error in editTask Controller:', err.message); // Debugging log
+    res.status(500).json({ msg: err.message });
   }
 };
 

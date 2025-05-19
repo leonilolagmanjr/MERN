@@ -1,17 +1,31 @@
-import React, { useState } from 'react';
-import { deleteTask } from '../../services/api';
+import React, { useState, useEffect } from 'react';
+import { deleteTask, fetchPostedJobs } from '../../services/api';
 
 const DeleteTask = ({ onTaskDeleted }) => {
-  const [taskId, setTaskId] = useState('');
+  const [tasks, setTasks] = useState([]);
+  const [selectedTaskId, setSelectedTaskId] = useState('');
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const postedTasks = await fetchPostedJobs(token);
+        setTasks(postedTasks);
+      } catch (err) {
+        console.error('Error fetching tasks:', err);
+      }
+    };
+    fetchTasks();
+  }, []);
 
   const handleDelete = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await deleteTask(taskId, token);
+      await deleteTask(selectedTaskId, token);
       setMessage('Task deleted successfully!');
-      setTaskId('');
+      setSelectedTaskId('');
       onTaskDeleted();
     } catch (err) {
       setMessage('Failed to delete task. Please try again.');
@@ -23,14 +37,19 @@ const DeleteTask = ({ onTaskDeleted }) => {
       <h3 style={styles.heading}>Delete Task</h3>
       {message && <p style={styles.message}>{message}</p>}
       <form style={styles.form} onSubmit={handleDelete}>
-        <input
-          type="text"
-          placeholder="Task ID"
-          value={taskId}
-          onChange={(e) => setTaskId(e.target.value)}
+        <select
+          value={selectedTaskId}
+          onChange={(e) => setSelectedTaskId(e.target.value)}
           style={styles.input}
           required
-        />
+        >
+          <option value="">Select a task</option>
+          {tasks.map((task) => (
+            <option key={task._id} value={task._id}>
+              {task.title}
+            </option>
+          ))}
+        </select>
         <button type="submit" style={styles.button}>
           Delete Task
         </button>

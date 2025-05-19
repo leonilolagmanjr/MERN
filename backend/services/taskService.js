@@ -95,21 +95,24 @@ const completeTask = async (taskId, assignedTo) => {
 };
 
 // Edit Task
-const editTask = async (taskId, title, description, difficulty, category, location, deadline, createdBy) => {
+const editTask = async (taskId, title, description, difficulty, category, location, deadline, userId) => {
   try {
+    console.log('Edit Task Service Input:', { taskId, userId }); // Debugging log
     const task = await Task.findById(taskId);
+    console.log('Task Found:', task); // Debugging log
     if (!task) throw new Error('Task not found');
-    if (String(task.createdBy) !== createdBy) throw new Error('Not authorized to edit this task');
+    if (String(task.createdBy) !== String(userId)) throw new Error('Not authorized to edit this task'); // Fix comparison
     task.title = title || task.title;
     task.description = description || task.description;
     task.difficulty = difficulty || task.difficulty;
-    task.category = category || task.category; 
-    task.location = location || task.location; 
-    task.deadline = deadline || task.deadline; 
+    task.category = category || task.category;
+    task.location = location || task.location;
+    task.deadline = deadline || task.deadline;
     await task.save();
     return task;
   } catch (err) {
-    throw new Error('Error editing task');
+    console.error('Error in editTask Service:', err.message); // Debugging log
+    throw new Error(err.message || 'Error editing task');
   }
 };
 
