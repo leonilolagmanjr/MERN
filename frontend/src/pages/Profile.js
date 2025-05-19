@@ -98,15 +98,42 @@ const Profile = () => {
             <h3 style={styles.badgesTitle}>Badges</h3>
             <p>{profile.badges?.length || 0} Badges</p>
           </div>
-          <div style={styles.sidebarLinks}>
-            <p>Inventory</p>
-            <p>Media</p>
-            <p>Past Jobs</p>
-            <p>Proposals</p>
-            <p>Earnings</p>
-            <p>Reviews</p>
-            <p>Guides</p>
-            <p>Achievements</p>
+          <div style={styles.sidebarSection}>
+            <h3 style={styles.sidebarHeading}>Basic Information</h3>
+            <p>Full Name: {profile.name || 'N/A'}</p>
+            <p>Email Address: {profile.email || 'N/A'}</p>
+            <p>Phone Number: {profile.phone || 'N/A'}</p>
+            <p>Location: {profile.location || 'N/A'}</p>
+            <p>Remote Availability: {profile.remoteAvailability ? 'Yes' : 'No'}</p>
+          </div>
+          <div style={styles.sidebarSection}>
+            <h3 style={styles.sidebarHeading}>Professional Details</h3>
+            <p>Job Title: {profile.jobTitle || 'N/A'}</p>
+            <p>Industry: {profile.industry || 'N/A'}</p>
+            <p>Years of Experience: {profile.experienceYears || 'N/A'}</p>
+            <p>Employment Type: {profile.employmentType || 'N/A'}</p>
+          </div>
+          <div style={styles.sidebarSection}>
+            <h3 style={styles.sidebarHeading}>Skills and Certifications</h3>
+            <p>Skills: {profile.skills?.join(', ') || 'N/A'}</p>
+            <p>Languages: {profile.languages?.join(', ') || 'N/A'}</p>
+            <p>Certifications: {profile.certifications?.join(', ') || 'N/A'}</p>
+          </div>
+          <div style={styles.sidebarSection}>
+            <h3 style={styles.sidebarHeading}>Work Portfolio</h3>
+            <p>Resume: <a href={profile.resumeLink || '#'} target="_blank" rel="noopener noreferrer">View</a></p>
+            <p>Portfolio: <a href={profile.portfolioLink || '#'} target="_blank" rel="noopener noreferrer">View</a></p>
+          </div>
+          <div style={styles.sidebarSection}>
+            <h3 style={styles.sidebarHeading}>Ratings and Performance</h3>
+            <p>Average Rating: {profile.rating || 'N/A'}</p>
+            <p>Job Success Rate: {profile.successRate || 'N/A'}%</p>
+            <p>Completed Jobs: {completedJobs.length}</p>
+          </div>
+          <div style={styles.sidebarSection}>
+            <h3 style={styles.sidebarHeading}>Rates and Payment</h3>
+            <p>Hourly Rate: ${profile.hourlyRate || 'N/A'}</p>
+            <p>Preferred Payment Method: {profile.paymentMethod || 'N/A'}</p>
           </div>
         </div>
       </div>
@@ -160,6 +187,7 @@ const styles = {
   mainContent: {
     display: 'flex',
     justifyContent: 'space-between',
+    alignItems: 'flex-start', // Aligns the columns at the top
   },
   leftColumn: {
     flex: 3,
@@ -170,6 +198,7 @@ const styles = {
     backgroundColor: '#171a21',
     padding: '20px',
     borderRadius: '10px',
+    marginTop: '-250px', // Adjust this value to align with the avatar
   },
   accomplishments: {
     marginBottom: '30px',
@@ -246,6 +275,14 @@ const styles = {
     marginBottom: '20px',
   },
   badgesTitle: {
+    fontSize: '16px',
+    color: '#66c0f4',
+    marginBottom: '10px',
+  },
+  sidebarSection: {
+    marginBottom: '20px',
+  },
+  sidebarHeading: {
     fontSize: '16px',
     color: '#66c0f4',
     marginBottom: '10px',
