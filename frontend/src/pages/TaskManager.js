@@ -33,7 +33,7 @@ const styles = {
   pageContainer: {
     display: 'flex',
     flexDirection: 'row',
-    height: '100vh',
+    height: '105vh',
     backgroundColor: '#1b2838',
     color: '#c7d5e0',
   },
