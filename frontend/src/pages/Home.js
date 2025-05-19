@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import TaskManager from '../components/TaskManager';
+import TaskManager from './TaskManager';
 
 const Home = () => {
   const { isLoggedIn } = useAuth();

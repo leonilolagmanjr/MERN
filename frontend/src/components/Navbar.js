@@ -20,6 +20,9 @@ const Navbar = () => {
           <li>
             <Link to="/tasks" style={styles.link}>Task List</Link>
           </li>
+          <li>
+            <Link to="/taskmanager" style={styles.link}>Task Manager</Link>
+          </li>
         </ul>
       </div>
       <div style={styles.rightSection}>

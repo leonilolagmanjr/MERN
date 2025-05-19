@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { fetchTasks } from '../services/api';
+import { fetchTasks } from '../../services/api';
 
-const TaskList = () => {
+const ReadTask = () => {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState(null);
 
@@ -98,4 +98,4 @@ const styles = {
   },
 };
 
-export default TaskList;
+export default ReadTask;
