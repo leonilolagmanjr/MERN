@@ -37,7 +37,7 @@ const Profile = () => {
       <div style={styles.header}>
         <div style={styles.profileImageContainer}>
           <img
-            src={profile.profileImage || 'https://via.placeholder.com/150'}
+            src={profile.profileImage || 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.kindpng.com%2Fpicc%2Fm%2F722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png&f=1&nofb=1&ipt=13d4c6fb7215466f2b101d2e250b152a1f29f1fcd31d3822007d4d56e0982eb1'}
             alt="User"
             style={styles.profileImage}
           />

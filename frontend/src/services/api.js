@@ -61,3 +61,16 @@ export const updateUserProfile = async (profileData, token) => {
   });
   return response.data;
 };
+
+// Edit and Delete Task APIs
+export const editTask = async (taskId, data, token) => {
+  return await axios.put(`${API_URL}/task/edit/${taskId}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const deleteTask = async (taskId, token) => {
+  return await axios.delete(`${API_URL}/task/remove/${taskId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
