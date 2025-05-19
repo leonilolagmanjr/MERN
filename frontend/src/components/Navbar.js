@@ -18,7 +18,7 @@ const Navbar = () => {
             <Link to="/" style={styles.link}>Home</Link>
           </li>
           <li>
-            <Link to="/tasks" style={styles.link}>Task List</Link>
+            <Link to="/browse" style={styles.link}>Browse</Link>
           </li>
           <li>
             <Link to="/taskmanager" style={styles.link}>Task Manager</Link>

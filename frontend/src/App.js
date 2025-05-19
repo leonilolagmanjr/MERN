@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
 import ReadTask from './components/tasks/ReadTask';
 import TaskManager from './pages/TaskManager'; // Import TaskManager component
+import BrowseJobs from './pages/BrowseJobs'; // Import the new page
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
@@ -23,6 +24,7 @@ const App = () => {
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile" element={isLoggedIn ? <Profile /> : <Auth />} />
             <Route path="/taskmanager" element={<TaskManager />} /> {/* Add TaskManager route */}
+            <Route path="/browse" element={<BrowseJobs />} /> {/* Add BrowseJobs route */}
           </Routes>
         </div>
       </div>

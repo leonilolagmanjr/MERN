@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { fetchTasks } from '../../services/api';
+import { fetchPostedJobs } from '../../services/api';
 
-const ReadTask = () => {
+const ReadTask = ({ refresh }) => {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const getTasks = async () => {
       try {
-        const data = await fetchTasks();
+        const token = localStorage.getItem('token');
+        const data = await fetchPostedJobs(token); // Fetch tasks posted by the logged-in user
         setTasks(data);
       } catch (err) {
         console.error('Error fetching tasks:', err);
@@ -16,11 +17,11 @@ const ReadTask = () => {
       }
     };
     getTasks();
-  }, []);
+  }, [refresh]);
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.heading}>Task List</h2>
+      <h2 style={styles.heading}>My Posted Tasks</h2>
       {error && <p style={styles.error}>{error}</p>}
       <div style={styles.grid}>
         {tasks.length > 0 ? (

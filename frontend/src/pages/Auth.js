@@ -23,6 +23,10 @@ const Auth = () => {
         login(response.user, response.token); // Update context and localStorage
         setMessage(`Registration successful! Welcome, ${response.user.name}`);
       }
+      // Add a delay before redirecting to the home page
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 2000); // 2-second delay
     } catch (err) {
       setMessage(err.response?.data?.msg || 'An error occurred. Please try again.');
     }
