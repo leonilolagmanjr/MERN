@@ -305,13 +305,13 @@ const styles = {
   },
   postBox: {
     backgroundColor: '#171a21',
-    padding: '20px',
+    padding: '20px', // Ensures spacing inside the postBox
     borderRadius: '10px',
     marginTop: '30px',
     color: '#c7d5e0',
   },
   postInput: {
-    width: '99%',
+    width: '100%', // Takes full width of the postBox minus padding
     height: '100px',
     backgroundColor: '#2a475e',
     border: 'none',
@@ -319,7 +319,8 @@ const styles = {
     padding: '10px',
     color: '#c7d5e0',
     fontSize: '14px',
-    resize: 'none',
+    resize: 'none', // Prevents resizing
+    boxSizing: 'border-box', // Includes padding in width calculation
     marginBottom: '10px',
   },
   postActions: {
