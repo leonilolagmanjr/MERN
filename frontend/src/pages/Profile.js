@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom'; // Import useParams
 import { fetchPostedJobs, fetchCompletedJobs, fetchAcceptedJobs, getUserProfile } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { userId } = useParams(); // Get userId from URL
   const [profile, setProfile] = useState({});
   const [postedJobs, setPostedJobs] = useState([]);
   const [completedJobs, setCompletedJobs] = useState([]);
@@ -13,12 +14,13 @@ const Profile = () => {
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const profileData = await getUserProfile(token);
+        const profileData = await getUserProfile(userId, token); // Pass userId to fetch profile
         setProfile(profileData);
 
-        const posted = await fetchPostedJobs(token);
-        const completed = await fetchCompletedJobs(token);
-        const accepted = await fetchAcceptedJobs(token);
+        // Pass userId to fetch jobs specific to the user
+        const posted = await fetchPostedJobs(userId, token);
+        const completed = await fetchCompletedJobs(userId, token);
+        const accepted = await fetchAcceptedJobs(userId, token);
 
         setPostedJobs(posted);
         setCompletedJobs(completed);
@@ -29,7 +31,7 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, []);
+  }, [userId]); // Re-fetch data when userId changes
 
   return (
     <div style={styles.container}>
@@ -44,9 +46,10 @@ const Profile = () => {
         </div>
         <div style={styles.userInfo}>
           <h1 style={styles.userName}>{profile.name || 'User Name'}</h1>
-          <p style={styles.userDetails}>Country: {profile.country || 'Unknown'}</p>
+          <p style={styles.userDetails}>Email: {profile.email || 'Unknown'}</p>
           <p style={styles.userDetails}>ID: {profile.id || 'N/A'}</p>
           <p style={styles.userDetails}>Level: {profile.level || 1}</p>
+          <p>  </p>
           <button style={styles.editButton}>Edit Profile</button>
         </div>
       </div>

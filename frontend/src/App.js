@@ -24,7 +24,7 @@ const App = () => {
             <Route path="/" element={<Home />} />
             <Route path="/tasks" element={<ReadTask />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={isLoggedIn ? <Profile /> : <Auth />} />
+            <Route path="/profile/:userId" element={isLoggedIn ? <Profile /> : <Auth />} /> {/* Add dynamic Profile route */}
             <Route path="/taskmanager" element={<TaskManager />} /> {/* Add TaskManager route */}
             <Route path="/browse" element={<BrowseJobs />} /> {/* Add BrowseJobs route */}
             <Route path="/job/:jobId" element={<Job />} /> {/* Add Job route */}

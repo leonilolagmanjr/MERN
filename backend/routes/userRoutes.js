@@ -5,7 +5,7 @@ const userController = require('../controllers/userController');
 const router = express.Router();
 
 // Route for getting the user profile
-router.get('/profile', authenticate(), userController.getUserProfile);
+router.get('/profile/:userId', authenticate(), userController.getUserProfile);
 
 // Route for updating the user profile
 router.patch('/updateprofile', authenticate(), userController.updateUserProfile);

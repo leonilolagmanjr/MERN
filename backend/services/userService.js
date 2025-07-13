@@ -3,7 +3,7 @@ const User = require('../models/User');
 // Function to Get User Profile
 const getUserProfile = async (userId) => {
   try {
-    const user = await User.findById(userId).select('-password');
+    const user = await User.findById(userId).select('-password'); // Exclude password
     if (!user) {
       throw new Error('User not found');
     }

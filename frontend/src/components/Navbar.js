@@ -28,7 +28,7 @@ const Navbar = () => {
       <div style={styles.rightSection}>
         {isLoggedIn ? (
           <>
-            <Link to="/profile" style={styles.link}>
+            <Link to={`/profile/${user.id}`} style={styles.link}>
               {user?.name}'s Profile
             </Link>
             <button onClick={handleLogout} style={styles.logoutButton}>

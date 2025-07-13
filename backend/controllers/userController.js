@@ -3,7 +3,7 @@ const userService = require('../services/userService');
 // Route to Get User Profile
 const getUserProfile = async (req, res) => {
   try {
-    const user = await userService.getUserProfile(req.user);
+    const user = await userService.getUserProfile(req.params.userId); // Fetch user profile by userId
     res.json(user);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });

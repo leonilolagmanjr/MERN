@@ -48,8 +48,8 @@ export const fetchAcceptedJobs = async (token) => {
 };
 
 // User APIs
-export const getUserProfile = async (token) => {
-  const response = await axios.get(`${API_URL}/user/profile`, {
+export const getUserProfile = async (userId, token) => {
+  const response = await axios.get(`${API_URL}/user/profile/${userId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;

@@ -30,20 +30,6 @@ app.use('/api/info', infoRoutes); // Use info routes
 const chatRoutes = require('./routes/chatRoutes');
 app.use('/api/chat', chatRoutes);
 
-// Function to ensure the global chat room exists
-const ensureGlobalChatRoom = async () => {
-  try {
-    const globalChat = await Chat.findOne({ participants: [] }); // Global chat has no specific participants
-    if (!globalChat) {
-      await Chat.create({ participants: [], lastMessage: 'Welcome to the global chat!' });
-      console.log('Global chat room created.');
-    } else {
-      console.log('Global chat room already exists.');
-    }
-  } catch (err) {
-    console.error('Error ensuring global chat room:', err.message);
-  }
-};
 
 // DB Connect
 mongoose.connect(process.env.MONGO_URI)

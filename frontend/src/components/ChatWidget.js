@@ -6,10 +6,13 @@ import {
   sendMessage as apiSendMessage,
   getGlobalChat,
 } from '../services/chatApi';
+import { useAuth } from '../context/AuthContext'; // Import AuthContext to get the current user
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const socket = io('http://localhost:5000'); // Connect to backend socket.io server
 
 const ChatWidget = () => {
+  const { user } = useAuth(); // Get the current logged-in user
   const [isOpen, setIsOpen] = useState(false);
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -23,9 +26,8 @@ const ChatWidget = () => {
 
   useEffect(() => {
     if (selectedChat) {
-      socket.emit('joinChat', selectedChat._id); // Join the selected chat room
+      socket.emit('joinChat', selectedChat._id);
 
-      // Listen for incoming messages
       socket.on('receiveMessage', (message) => {
         if (message.chatId === selectedChat._id) {
           setMessages((prev) => [...prev, message]);
@@ -34,7 +36,7 @@ const ChatWidget = () => {
     }
 
     return () => {
-      socket.off('receiveMessage'); // Clean up listener
+      socket.off('receiveMessage');
     };
   }, [selectedChat]);
 
@@ -66,28 +68,34 @@ const ChatWidget = () => {
   };
 
   const handleGlobalChat = async () => {
-    const res = await getGlobalChat();
-    setSelectedChat(res.data);
-    await fetchMessages(res.data._id);
+    try {
+      const res = await getGlobalChat();
+      setSelectedChat(res.data);
+      await fetchMessages(res.data._id);
+    } catch (err) {
+      console.error('Failed to fetch global chat', err);
+    }
   };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedChat) return;
 
     try {
-      const res = await apiSendMessage({
+      // Send the message to the server
+      await apiSendMessage({
         chatId: selectedChat._id,
-        receiverId: selectedChat.participants?.[1]?._id, // For private chat
+        receiverId: selectedChat.participants?.[1]?._id,
         content: newMessage,
       });
 
-      // Emit the message to the server
+      // Emit the message to the server via socket
       socket.emit('sendMessage', {
         chatId: selectedChat._id,
         content: newMessage,
+        sender: user || { name: 'Guest', _id: 'guest' }, // Use placeholder for non-logged-in users
       });
 
-      setMessages((prev) => [...prev, res.data]);
+      // Clear the input field
       setNewMessage('');
     } catch (err) {
       console.error('Failed to send message', err);
@@ -100,25 +108,84 @@ const ChatWidget = () => {
 
   return (
     <div className="chat-widget">
-      <button onClick={() => setIsOpen((prev) => !prev)}>
-        {isOpen ? 'Close Chat' : 'Open Chat'}
+      {/* Floating Toggle Button */}
+      <button
+        onClick={() => setIsOpen((prev) => !prev)}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          backgroundColor: '#1b2838',
+          color: '#66c0f4',
+          border: 'none',
+          padding: '12px 16px',
+          borderRadius: '50%',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+          cursor: 'pointer',
+          zIndex: 1000,
+        }}
+      >
+        💬
       </button>
 
+      {/* Chat Window */}
       {isOpen && (
-        <div style={{ display: 'flex', height: 400, border: '1px solid gray', marginTop: 10 }}>
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '80px',
+            right: '20px',
+            width: '400px',
+            height: '500px',
+            backgroundColor: '#171a21',
+            border: '2px solid #3a3f4b',
+            borderRadius: '10px',
+            display: 'flex',
+            flexDirection: 'row',
+            boxShadow: '0 0 15px rgba(0,0,0,0.6)',
+            zIndex: 999,
+          }}
+        >
           {/* Chat List */}
-          <div style={{ flex: 1, borderRight: '1px solid gray', padding: 10 }}>
-            <button onClick={handleGlobalChat}>🌐 Global Chat</button>
-            <h4>Chats</h4>
+          <div
+            style={{
+              flex: 1,
+              borderRight: '1px solid #3a3f4b',
+              padding: 10,
+              backgroundColor: '#1b2838',
+              color: '#c7d5e0',
+              overflowY: 'auto',
+            }}
+          >
+            <button
+              onClick={handleGlobalChat}
+              style={{
+                background: '#66c0f4',
+                color: '#1b2838',
+                padding: '6px 12px',
+                marginBottom: 10,
+                border: 'none',
+                borderRadius: 5,
+                fontWeight: 'bold',
+              }}
+            >
+              🌐 Global Chat
+            </button>
+            <h4 style={{ color: '#66c0f4', marginBottom: 10 }}>Chats</h4>
             {chats.map((chat) => (
               <div
                 key={chat._id}
                 onClick={() => handleSelectChat(chat)}
                 style={{
-                  padding: '5px',
-                  margin: '5px 0',
+                  padding: '8px',
+                  marginBottom: 6,
                   cursor: 'pointer',
-                  background: selectedChat?._id === chat._id ? '#eee' : 'transparent',
+                  borderRadius: 5,
+                  backgroundColor:
+                    selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
+                  transition: '0.2s',
                 }}
               >
                 {chat.participants?.map((p) => p?.name).join(', ') || 'Global Chat'}
@@ -127,11 +194,48 @@ const ChatWidget = () => {
           </div>
 
           {/* Messages */}
-          <div style={{ flex: 2, padding: 10, display: 'flex', flexDirection: 'column' }}>
-            <div style={{ flex: 1, overflowY: 'auto', borderBottom: '1px solid gray' }}>
+          <div
+            style={{
+              flex: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              backgroundColor: '#2a2a2a',
+              color: '#fff',
+              padding: 10,
+            }}
+          >
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                paddingRight: 8,
+              }}
+            >
               {messages.map((msg, index) => (
-                <div key={index}>
-                  <b>{msg.sender?.name || 'You'}:</b> {msg.content}
+                <div
+                  key={index}
+                  style={{
+                    margin: '6px 0',
+                    backgroundColor: msg.sender?._id === user?.id ? '#1b2838' : '#4b4b4b',
+                    padding: '6px 12px',
+                    borderRadius: 10,
+                    alignSelf: msg.sender?._id === user?.id ? 'flex-end' : 'flex-start',
+                    maxWidth: '70%',
+                  }}
+                >
+                  <b style={{ color: '#66c0f4' }}>
+                    {msg.sender?._id === user?.id ? (
+                      'You'
+                    ) : (
+                      <Link
+                        to={msg.sender?._id !== 'guest' ? `/profile/${msg.sender?._id}` : '#'}
+                        style={{ color: '#66c0f4', textDecoration: 'none' }}
+                      >
+                        {msg.sender?.name || 'Unknown'}
+                      </Link>
+                    )}
+                  </b>
+                  : {msg.content}
                 </div>
               ))}
               <div ref={bottomRef} />
@@ -142,10 +246,30 @@ const ChatWidget = () => {
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message"
-                style={{ flex: 1, marginRight: 5 }}
+                placeholder="Type a message..."
+                style={{
+                  flex: 1,
+                  padding: 10,
+                  backgroundColor: '#1b2838',
+                  border: '1px solid #3a3f4b',
+                  borderRadius: 5,
+                  color: '#fff',
+                  marginRight: 5,
+                }}
               />
-              <button onClick={handleSendMessage}>Send</button>
+              <button
+                onClick={handleSendMessage}
+                style={{
+                  padding: '10px 16px',
+                  backgroundColor: '#66c0f4',
+                  color: '#1b2838',
+                  fontWeight: 'bold',
+                  border: 'none',
+                  borderRadius: 5,
+                }}
+              >
+                Send
+              </button>
             </div>
           </div>
         </div>

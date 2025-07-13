@@ -34,7 +34,9 @@ const sendMessage = async (chatId, senderId, receiverId, content) => {
 
 // Fetch Chat Messages
 const getChatMessages = async (chatId) => {
-  return await Message.find({ chat: chatId }).sort({ timestamp: 1 }); // Ensure chatId is used
+  return await Message.find({ chat: chatId })
+    .sort({ timestamp: 1 })
+    .populate('sender', 'name _id'); // Populate sender's name and ID
 };
 
 // Add this function to fetch all chats for a user
