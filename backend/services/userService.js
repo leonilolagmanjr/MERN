@@ -66,9 +66,20 @@ const deleteUserProfile = async (userId) => {
   }
 };  
 
+// Function to Add Connection
+const addConnection = async (userId, email) => {
+  const userToAdd = await User.findOne({ email });
+  if (!userToAdd) throw new Error('User not found');
+  const user = await User.findById(userId);
+  user.connections.push(userToAdd._id);
+  await user.save();
+  return user.connections;
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
-  changeUserRole
+  changeUserRole,
+  addConnection
 };

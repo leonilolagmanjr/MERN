@@ -19,4 +19,7 @@ router.delete('/removeself', authenticate(), userController.deleteOwnProfile);
 // Route to Change Role
 router.put('/changerole', authenticate('admin'), userController.changeUserRole);
 
+// Route for adding a connection
+router.post('/add-connection', authenticate(), userController.addConnection);
+
 module.exports = router;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { fetchTasks } from '../services/api';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 const BrowseJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -44,10 +45,16 @@ const BrowseJobs = () => {
       <div style={styles.jobsGrid}>
         {filteredJobs.map((job) => (
           <div key={job._id} style={styles.jobCard}>
-            <h3 style={styles.jobTitle}>{job.title}</h3>
+            <h3 style={styles.jobTitle}>
+              <Link to={`/job/${job._id}`} style={styles.link}>
+                {job.title}
+              </Link>
+            </h3>
             <p style={styles.jobDescription}>{job.description}</p>
             <p style={styles.jobMeta}>Difficulty: {job.difficulty}</p>
             <p style={styles.jobMeta}>Category: {job.category}</p>
+            <p style={styles.jobMeta}>Location: {job.location}</p>
+            <p style={styles.jobMeta}>Deadline: {new Date(job.deadline).toLocaleDateString()}</p>
           </div>
         ))}
       </div>
@@ -109,6 +116,10 @@ const styles = {
   jobMeta: {
     color: '#a9b7c6',
     fontSize: '14px',
+  },
+  link: {
+    color: '#66c0f4',
+    textDecoration: 'none',
   },
 };
 

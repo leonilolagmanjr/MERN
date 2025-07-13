@@ -29,7 +29,7 @@ router.patch('/edit/:taskId', authenticate(), taskController.editTask);
 router.put('/cancel/:taskId', taskController.cancelTask);
 
 // Route to Delete Task
-router.delete('/remove/:taskId', authenticate('admin'), taskController.deleteTask);
+router.delete('/remove/:taskId', taskController.deleteTask);
 
 // Route to Get Tasks Accepted by Current User
 router.get('/my-accepted', authenticate(), taskController.getMyAcceptedTasks);

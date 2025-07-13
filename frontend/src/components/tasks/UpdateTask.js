@@ -14,18 +14,20 @@ const UpdateTask = ({ onTaskUpdated }) => {
   });
   const [message, setMessage] = useState('');
 
+  const fetchTasks = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const postedTasks = await fetchPostedJobs(token);
+      setTasks(postedTasks); // <- this is what updates the dropdown options
+    } catch (err) {
+      console.error('Error fetching tasks:', err);
+    }
+  };
+  
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const postedTasks = await fetchPostedJobs(token);
-        setTasks(postedTasks);
-      } catch (err) {
-        console.error('Error fetching tasks:', err);
-      }
-    };
     fetchTasks();
   }, []);
+  
 
   const handleTaskChange = (e) => {
     const taskId = e.target.value;
@@ -58,6 +60,7 @@ const UpdateTask = ({ onTaskUpdated }) => {
         location: '',
         deadline: '',
       });
+      await fetchTasks();
       onTaskUpdated();
     } catch (err) {
       setMessage('Failed to update task. Please try again.');

@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema({
     type: String, 
     enum: ['user', 'admin'], 
     default: 'user' 
+  },
+  info: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Info',
+    default: null
   }
 }, { timestamps: true });
 

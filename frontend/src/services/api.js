@@ -74,3 +74,37 @@ export const deleteTask = async (taskId, token) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+// Fetch Info
+export const fetchInfo = async (token) => {
+  const response = await axios.get(`${API_URL}/info`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+// Update Info
+export const updateInfo = async (token, updatedInfo) => {
+  const response = await axios.patch(`${API_URL}/info/update`, updatedInfo, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const addUserConnection = async (email, token) => {
+  try {
+    const response = await axios.post(
+      '/api/users/add-connection',
+      { email },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.connections; // Assuming the backend returns the updated connections list
+  } catch (error) {
+    console.error('Error adding user connection:', error);
+    throw error;
+  }
+};

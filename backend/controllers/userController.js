@@ -54,11 +54,23 @@ const deleteOwnProfile = async (req, res) => {
   }
 };
 
+// Add Connection
+const addConnection = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const updatedConnections = await userService.addConnection(req.user.id, email);
+    res.json(updatedConnections);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
 
 module.exports = {
   getUserProfile,
   updateUserProfile,
   deleteUserProfile,
   deleteOwnProfile,
-  changeUserRole
+  changeUserRole,
+  addConnection
 };

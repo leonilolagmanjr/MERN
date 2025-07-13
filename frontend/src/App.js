@@ -8,6 +8,8 @@ import { useAuth } from './context/AuthContext';
 import ReadTask from './components/tasks/ReadTask';
 import TaskManager from './pages/TaskManager'; // Import TaskManager component
 import BrowseJobs from './pages/BrowseJobs'; // Import the new page
+import Job from './pages/Job';
+import ChatWidget from './components/ChatWidget';
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
@@ -25,8 +27,10 @@ const App = () => {
             <Route path="/profile" element={isLoggedIn ? <Profile /> : <Auth />} />
             <Route path="/taskmanager" element={<TaskManager />} /> {/* Add TaskManager route */}
             <Route path="/browse" element={<BrowseJobs />} /> {/* Add BrowseJobs route */}
+            <Route path="/job/:jobId" element={<Job />} /> {/* Add Job route */}
           </Routes>
         </div>
+        <ChatWidget /> {/* Include ChatWidget for chat functionality */}
       </div>
     </Router>
   );

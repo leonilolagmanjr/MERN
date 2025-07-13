@@ -1,0 +1,19 @@
+// src/services/chatAPI.js
+import axios from 'axios';
+
+const API = axios.create({
+  baseURL: 'http://localhost:5000/api/chat', // adjust if needed
+});
+
+// Add token to requests
+API.interceptors.request.use((req) => {
+  const token = localStorage.getItem('token');
+  if (token) req.headers.Authorization = `Bearer ${token}`;
+  return req;
+});
+
+export const getChats = () => API.get('/');
+export const createChat = (otherUserId) => API.post('/create', { otherUserId });
+export const getMessages = (chatId) => API.get(`/${chatId}/messages`);
+export const sendMessage = (data) => API.post('/send', data);
+export const getGlobalChat = () => API.get('/global');

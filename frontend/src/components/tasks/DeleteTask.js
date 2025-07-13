@@ -6,18 +6,20 @@ const DeleteTask = ({ onTaskDeleted }) => {
   const [selectedTaskId, setSelectedTaskId] = useState('');
   const [message, setMessage] = useState('');
 
+  const fetchTasks = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const postedTasks = await fetchPostedJobs(token);
+      setTasks(postedTasks); // <- this is what updates the dropdown options
+    } catch (err) {
+      console.error('Error fetching tasks:', err);
+    }
+  };
+  
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const postedTasks = await fetchPostedJobs(token);
-        setTasks(postedTasks);
-      } catch (err) {
-        console.error('Error fetching tasks:', err);
-      }
-    };
     fetchTasks();
   }, []);
+  
 
   const handleDelete = async (e) => {
     e.preventDefault();
@@ -26,6 +28,7 @@ const DeleteTask = ({ onTaskDeleted }) => {
       await deleteTask(selectedTaskId, token);
       setMessage('Task deleted successfully!');
       setSelectedTaskId('');
+      await fetchTasks();
       onTaskDeleted();
     } catch (err) {
       setMessage('Failed to delete task. Please try again.');

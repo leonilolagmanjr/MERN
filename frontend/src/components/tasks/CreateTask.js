@@ -27,6 +27,7 @@ const CreateTask = ({ onTaskCreated }) => {
         deadline: '',
       });
       onTaskCreated();
+      window.location.href = '/taskmanager'; // Redirect to Task Manager after creation
     } catch (err) {
       setMessage('Failed to create task. Please try again.');
     }
