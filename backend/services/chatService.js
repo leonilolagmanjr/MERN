@@ -1,5 +1,6 @@
 const Chat = require('../models/Chat');
 const Message = require('../models/Message');
+const User = require('../models/User');
 
 // Create or Get Chat
 const getOrCreateChat = async (userId, otherUserId = null) => {
@@ -12,6 +13,12 @@ const getOrCreateChat = async (userId, otherUserId = null) => {
     return globalChat;
   }
 
+  // Validate friendship before creating or fetching chat
+  const user = await User.findById(userId);
+  if (!user.connections.includes(otherUserId)) {
+    throw new Error('Cannot create chat: users are not friends');
+  }
+
   // Handle private chats
   let chat = await Chat.findOne({ participants: { $all: [userId, otherUserId] } });
   if (!chat) {
@@ -22,6 +29,14 @@ const getOrCreateChat = async (userId, otherUserId = null) => {
 
 // Send Message
 const sendMessage = async (chatId, senderId, receiverId, content) => {
+  // Allow messages in global chat (receiverId null)
+  if (receiverId) {
+    const sender = await User.findById(senderId);
+    if (!sender.connections.includes(receiverId)) {
+      throw new Error('Cannot send message: users are not friends');
+    }
+  }
+
   const message = await Message.create({
     sender: senderId,
     receiver: receiverId, // This will be null for global chat

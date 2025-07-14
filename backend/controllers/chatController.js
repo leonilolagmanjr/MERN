@@ -7,7 +7,7 @@ const createChat = async (req, res) => {
     res.json(chat);
   } catch (err) {
     console.error('Error creating chat:', err.message); // Add detailed logging
-    res.status(500).json({ msg: 'Failed to create or fetch chat. Please try again.' });
+    res.status(400).json({ msg: err.message || 'Failed to create or fetch chat. Please try again.' });
   }
 };
 
@@ -19,7 +19,7 @@ const sendMessage = async (req, res) => {
     res.json(message);
   } catch (err) {
     console.error('Error sending message:', err.message); // Add detailed logging
-    res.status(500).json({ msg: 'Failed to send message. Please try again.' });
+    res.status(400).json({ msg: err.message || 'Failed to send message. Please try again.' });
   }
 };
 

@@ -1,45 +1,146 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // Import useParams
-import { fetchPostedJobs, fetchCompletedJobs, fetchAcceptedJobs, getUserProfile } from '../services/api';
+import { useParams } from 'react-router-dom';
+import {
+  fetchPostedJobs,
+  fetchCompletedJobs,
+  fetchAcceptedJobs,
+  getUserProfile,
+  sendFriendRequest,
+  getFriendRequests,
+  acceptFriendRequest,
+  denyFriendRequest,
+  cancelFriendRequest
+} from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useFriend } from '../context/FriendContext';
 
 const Profile = () => {
-  const { userId } = useParams(); // Get userId from URL
+  const { userId } = useParams();
+  const { user } = useAuth();
+  const { getFriendStatus, notifyFriendListUpdated, openChatWithUser, friendRequests } = useFriend();
+
   const [profile, setProfile] = useState({});
   const [postedJobs, setPostedJobs] = useState([]);
   const [completedJobs, setCompletedJobs] = useState([]);
   const [acceptedJobs, setAcceptedJobs] = useState([]);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const [requestSent, setRequestSent] = useState(null);
+  const [isFriend, setIsFriend] = useState(null);
+  const [hasPendingRequest, setHasPendingRequest] = useState(null);
+  const [loadingFriendStatus, setLoadingFriendStatus] = useState(true);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const profileData = await getUserProfile(userId, token); // Pass userId to fetch profile
-        setProfile(profileData);
+        const viewedProfile = await getUserProfile(userId, token);
 
-        // Pass userId to fetch jobs specific to the user
-        const posted = await fetchPostedJobs(userId, token);
-        const completed = await fetchCompletedJobs(userId, token);
-        const accepted = await fetchAcceptedJobs(userId, token);
+        setProfile(viewedProfile);
+        setIsCurrentUser(userId === user?.id);
+
+        const [posted, completed, accepted] = await Promise.all([
+          fetchPostedJobs(userId, token),
+          fetchCompletedJobs(userId, token),
+          fetchAcceptedJobs(userId, token),
+        ]);
 
         setPostedJobs(posted);
         setCompletedJobs(completed);
         setAcceptedJobs(accepted);
+
+        // Always check friend status when profile is visited
+        await updateFriendStatus();
       } catch (err) {
         console.error('Error fetching profile data:', err);
+      } finally {
+        setLoadingFriendStatus(false);
       }
     };
 
-    fetchProfileData();
-  }, [userId]); // Re-fetch data when userId changes
+    if (user?.id) {
+      fetchProfileData();
+    }
+  }, [userId, user, getFriendStatus]);
+
+  // New function to update friend status
+  const updateFriendStatus = async () => {
+    try {
+      const status = await getFriendStatus(userId);
+      setIsFriend(status === 'friends');
+      setRequestSent(status === 'requestSent');
+      setHasPendingRequest(status === 'requestReceived');
+
+      if (userId === user?.id) {
+        const token = localStorage.getItem('token');
+        const requests = await getFriendRequests(token);
+        setHasPendingRequest(false);
+        setRequestSent(false);
+        setIsFriend(false);
+      }
+    } catch (err) {
+      console.error('Error updating friend status:', err);
+    }
+  };
+
+  // Listen for friendRequests or friend list updates to refresh friend status in real time
+  useEffect(() => {
+    updateFriendStatus();
+  }, [friendRequests, userId, user]);
+
+  const handleSendFriendRequest = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await sendFriendRequest(userId, token);
+      notifyFriendListUpdated();
+      // Update friend status after sending request
+      await updateFriendStatus();
+    } catch (err) {
+      console.error('Error sending friend request:', err);
+    }
+  };
+
+  const handleAcceptRequest = async (requesterId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await acceptFriendRequest(requesterId, token);
+      notifyFriendListUpdated();
+      // Update friend status after accepting request
+      await updateFriendStatus();
+    } catch (err) {
+      console.error('Error accepting friend request:', err);
+    }
+  };
+
+  const handleDenyRequest = async (requesterId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await denyFriendRequest(requesterId, token);
+      notifyFriendListUpdated();
+      // Update friend status after denying request
+      await updateFriendStatus();
+    } catch (err) {
+      console.error('Error denying friend request:', err);
+    }
+  };
+
+  const handleCancelFriendRequest = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await cancelFriendRequest(userId, token);
+      notifyFriendListUpdated();
+      // Update friend status after canceling request
+      await updateFriendStatus();
+    } catch (err) {
+      console.error('Error canceling friend request:', err);
+    }
+  };
 
   return (
     <div style={styles.container}>
-      {/* Header Section */}
       <div style={styles.header}>
         <div style={styles.profileImageContainer}>
           <img
-            src={profile.profileImage || 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.kindpng.com%2Fpicc%2Fm%2F722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png&f=1&nofb=1&ipt=13d4c6fb7215466f2b101d2e250b152a1f29f1fcd31d3822007d4d56e0982eb1'}
+            src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'}
             alt="User"
             style={styles.profileImage}
           />
@@ -50,14 +151,91 @@ const Profile = () => {
           <p style={styles.userDetails}>ID: {profile.id || 'N/A'}</p>
           <p style={styles.userDetails}>Level: {profile.level || 1}</p>
           <p>  </p>
-          <button style={styles.editButton}>Edit Profile</button>
+          {isCurrentUser ? (
+            <button style={styles.editButton}>Edit Profile</button>
+          ) : loadingFriendStatus ? (
+            <button style={styles.addFriendButton} disabled>Loading...</button>
+          ) : (
+            <>
+              {isFriend ? (
+                <button
+                  style={styles.addFriendButton}
+                  onClick={() => openChatWithUser(userId)}
+                >
+                  Message
+                </button>
+              ) : requestSent ? (
+                <>
+                  <button
+                    style={styles.addFriendButton}
+                    disabled
+                  >
+                    Request Sent
+                  </button>
+                  <button
+                    style={{ ...styles.addFriendButton, marginLeft: '10px', backgroundColor: '#f44336' }}
+                    onClick={handleCancelFriendRequest}
+                  >
+                    Cancel Request
+                  </button>
+                </>
+              ) : hasPendingRequest ? (
+                <button style={styles.addFriendButton} disabled>
+                  Request Pending
+                </button>
+              ) : (
+                <button
+                  style={styles.addFriendButton}
+                  onClick={handleSendFriendRequest}
+                >
+                  Add Friend
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
 
-      {/* Main Content Section */}
       <div style={styles.mainContent}>
-        {/* Left Column */}
         <div style={styles.leftColumn}>
+          {isCurrentUser && friendRequests.length > 0 && (
+            <div style={styles.friendRequestsSection}>
+              <h2 style={styles.sectionHeading}>Friend Requests</h2>
+              {friendRequests.map((req) => (
+                <div key={req._id} style={styles.friendRequestItem}>
+                  <p>{req.name} ({req.email})</p>
+                  <button
+                    style={styles.acceptButton}
+                    onClick={() => handleAcceptRequest(req._id)}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    style={styles.denyButton}
+                    onClick={() => handleDenyRequest(req._id)}
+                  >
+                    Deny
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {isCurrentUser && profile.connections && profile.connections.length > 0 && (
+            <div style={styles.friendListSection}>
+              <h2 style={styles.sectionHeading}>Friend List</h2>
+              <details>
+                <summary style={styles.summary}>Show Friends ({profile.connections.length})</summary>
+                <ul style={styles.friendList}>
+                  {profile.connections.map((friend) => (
+                    <li key={friend._id} style={styles.friendListItem}>
+                      {friend.name} ({friend.email})
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </div>
+          )}
+
           <div style={styles.accomplishments}>
             <h2 style={styles.sectionHeading}>Accomplishments</h2>
             <div style={styles.replayStats}>
@@ -90,7 +268,6 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Post Box Section */}
           <div style={styles.postBox}>
             <textarea
               style={styles.postInput}
@@ -102,7 +279,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Right Column */}
         <div style={styles.rightColumn}>
           <div style={styles.levelBox}>
             <h3 style={styles.levelTitle}>Level {profile.level || 1}</h3>
@@ -198,10 +374,19 @@ const styles = {
     cursor: 'pointer',
     fontSize: '16px',
   },
+  addFriendButton: {
+    backgroundColor: '#4CAF50',
+    color: '#ffffff',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+  },
   mainContent: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'flex-start', // Aligns the columns at the top
+    alignItems: 'flex-start',
   },
   leftColumn: {
     flex: 3,
@@ -212,7 +397,7 @@ const styles = {
     backgroundColor: '#171a21',
     padding: '20px',
     borderRadius: '10px',
-    marginTop: '-250px', // Adjust this value to align with the avatar
+    marginTop: '-250px',
   },
   accomplishments: {
     marginBottom: '30px',
@@ -301,20 +486,15 @@ const styles = {
     color: '#66c0f4',
     marginBottom: '10px',
   },
-  sidebarLinks: {
-    fontSize: '14px',
-    color: '#c7d5e0',
-    lineHeight: '1.8',
-  },
   postBox: {
     backgroundColor: '#171a21',
-    padding: '20px', // Ensures spacing inside the postBox
+    padding: '20px',
     borderRadius: '10px',
     marginTop: '30px',
     color: '#c7d5e0',
   },
   postInput: {
-    width: '100%', // Takes full width of the postBox minus padding
+    width: '100%',
     height: '100px',
     backgroundColor: '#2a475e',
     border: 'none',
@@ -322,8 +502,8 @@ const styles = {
     padding: '10px',
     color: '#c7d5e0',
     fontSize: '14px',
-    resize: 'none', // Prevents resizing
-    boxSizing: 'border-box', // Includes padding in width calculation
+    resize: 'none',
+    boxSizing: 'border-box',
     marginBottom: '10px',
   },
   postActions: {

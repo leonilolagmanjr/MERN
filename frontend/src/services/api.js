@@ -108,3 +108,108 @@ export const addUserConnection = async (email, token) => {
     throw error;
   }
 };
+
+export const sendFriendRequest = async (userIdToAdd, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/user/friend-request/send`,
+      { userIdToAdd },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error sending friend request:', error);
+    throw error;
+  }
+};
+
+export const getFriendRequests = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/user/friend-request`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching friend requests:', error);
+    throw error;
+  }
+};
+
+export const acceptFriendRequest = async (requesterId, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/user/friend-request/accept`,
+      { requesterId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error accepting friend request:', error);
+    throw error;
+  }
+};
+
+export const denyFriendRequest = async (requesterId, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/user/friend-request/deny`,
+      { requesterId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error denying friend request:', error);
+    throw error;
+  }
+};
+
+export const cancelFriendRequest = async (targetUserId, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/user/friend-request/cancel`,
+      { targetUserId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error canceling friend request:', error);
+    throw error;
+  }
+};
+
+// New API call to check friend relationship status
+export const checkFriendRelationshipStatus = async (userId1, userId2, token) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/user/friend-relationship-status`,
+      {
+        params: { userId1, userId2 },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.status;
+  } catch (error) {
+    console.error('Error checking friend relationship status:', error);
+    throw error;
+  }
+};

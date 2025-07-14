@@ -22,4 +22,22 @@ router.put('/changerole', authenticate('admin'), userController.changeUserRole);
 // Route for adding a connection
 router.post('/add-connection', authenticate(), userController.addConnection);
 
+// Route to send friend request
+router.post('/friend-request/send', authenticate(), userController.sendFriendRequest);
+
+// Route to get friend requests
+router.get('/friend-request', authenticate(), userController.getFriendRequests);
+
+// Route to accept friend request
+router.post('/friend-request/accept', authenticate(), userController.acceptFriendRequest);
+
+// Route to deny friend request
+router.post('/friend-request/deny', authenticate(), userController.denyFriendRequest);
+
+// Route to cancel friend request
+router.post('/friend-request/cancel', authenticate(), userController.cancelFriendRequest);
+
+// New route to check friend relationship status
+router.get('/friend-relationship-status', authenticate(), userController.checkFriendRelationshipStatus);
+
 module.exports = router;

@@ -65,6 +65,70 @@ const addConnection = async (req, res) => {
   }
 };
 
+// Send Friend Request
+const sendFriendRequest = async (req, res) => {
+  const { userIdToAdd } = req.body;
+  try {
+    const result = await userService.sendFriendRequest(req.user.id, userIdToAdd);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+// Get Friend Requests
+const getFriendRequests = async (req, res) => {
+  try {
+    const requests = await userService.getFriendRequests(req.user.id);
+    res.json(requests);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+// Accept Friend Request
+const acceptFriendRequest = async (req, res) => {
+  const { requesterId } = req.body;
+  try {
+    const result = await userService.acceptFriendRequest(req.user.id, requesterId);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+// Deny Friend Request
+const denyFriendRequest = async (req, res) => {
+  const { requesterId } = req.body;
+  try {
+    const result = await userService.denyFriendRequest(req.user.id, requesterId);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+// Cancel Sent Friend Request
+const cancelFriendRequest = async (req, res) => {
+  const { targetUserId } = req.body;
+  try {
+    const result = await userService.cancelFriendRequest(req.user.id, targetUserId);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
+// New controller function to check friend relationship status
+const checkFriendRelationshipStatus = async (req, res) => {
+  const { userId1, userId2 } = req.query;
+  try {
+    const status = await userService.checkRelationshipStatus(userId1, userId2);
+    res.json({ status });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
 
 module.exports = {
   getUserProfile,
@@ -72,5 +136,11 @@ module.exports = {
   deleteUserProfile,
   deleteOwnProfile,
   changeUserRole,
-  addConnection
+  addConnection,
+  sendFriendRequest,
+  getFriendRequests,
+  acceptFriendRequest,
+  denyFriendRequest,
+  cancelFriendRequest,
+  checkFriendRelationshipStatus
 };

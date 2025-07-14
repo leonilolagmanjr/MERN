@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import io from 'socket.io-client';
 import {
   getChats,
@@ -8,11 +8,13 @@ import {
 } from '../services/chatApi';
 import { useAuth } from '../context/AuthContext'; // Import AuthContext to get the current user
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { FriendContext } from '../context/FriendContext'; // Import FriendContext
 
 const socket = io('http://localhost:5000'); // Connect to backend socket.io server
 
 const ChatWidget = () => {
   const { user } = useAuth(); // Get the current logged-in user
+  const { friendListUpdated, openChatUserId, clearOpenChatUser } = useContext(FriendContext); // Get friendListUpdated and openChatUserId from context
   const [isOpen, setIsOpen] = useState(false);
   const [chats, setChats] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -105,6 +107,51 @@ const ChatWidget = () => {
   useEffect(() => {
     if (isOpen) fetchChats();
   }, [isOpen]);
+
+  // New effect to refetch chats when friend list updates
+  useEffect(() => {
+    if (friendListUpdated && isOpen) {
+      fetchChats();
+    }
+  }, [friendListUpdated, isOpen]);
+
+  // New effect to open chat when openChatUserId changes
+  useEffect(() => {
+    const openChat = async () => {
+      if (!openChatUserId) return;
+
+      try {
+        // Check if chat with user exists
+        const existingChat = chats.find(chat =>
+          chat.participants.some(p => p._id === openChatUserId)
+        );
+
+        if (existingChat) {
+          setSelectedChat(existingChat);
+        } else {
+          // Create new chat with user
+          const res = await fetch('/api/chat/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+            body: JSON.stringify({ participantId: openChatUserId }),
+          });
+          const newChat = await res.json();
+          setChats(prev => [...prev, newChat]);
+          setSelectedChat(newChat);
+        }
+        setIsOpen(true);
+      } catch (err) {
+        console.error('Failed to open chat with user', err);
+      } finally {
+        clearOpenChatUser();
+      }
+    };
+
+    openChat();
+  }, [openChatUserId, chats, clearOpenChatUser]);
 
   return (
     <div className="chat-widget">

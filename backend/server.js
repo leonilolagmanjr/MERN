@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const Chat = require('./models/Chat'); // Import Chat model
 const http = require('http'); // Import HTTP module
-const { Server } = require('socket.io'); // Import socket.io
+const { initSocket } = require('./socket'); // Import initSocket from socket.js
 
 
 dotenv.config();
@@ -35,7 +35,6 @@ app.use('/api/chat', chatRoutes);
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('MongoDB connected');
-    await ensureGlobalChatRoom(); // Ensure global chat room exists
   })
   .catch(err => console.error('MongoDB Connection Error:', err.message));
 
@@ -47,35 +46,9 @@ app.get('/', (req, res) => {
 
 // Create HTTP server
 const server = http.createServer(app); 
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3000', // Allow frontend origin
-    methods: ['GET', 'POST'],
-  },
-});
 
-// Socket.io connection
-io.on('connection', (socket) => {
-  console.log('A user connected:', socket.id);
-
-  // Join a chat room
-  socket.on('joinChat', (chatId) => {
-    socket.join(chatId);
-    console.log(`User joined chat: ${chatId}`);
-  });
-
-  // Handle sending messages
-  socket.on('sendMessage', (message) => {
-    const { chatId, content } = message;
-    io.to(chatId).emit('receiveMessage', message); // Broadcast to the chat room
-    console.log(`Message sent to chat ${chatId}:`, content);
-  });
-
-  // Handle disconnection
-  socket.on('disconnect', () => {
-    console.log('A user disconnected:', socket.id);
-  });
-});
+// Initialize socket.io
+initSocket(server);
 
 // Start Server
 const PORT = process.env.PORT || 5000;

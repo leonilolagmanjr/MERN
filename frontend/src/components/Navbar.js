@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Import useAuth for authentication context
+import Notification from './Notification'; // Import Notification component
 
 const Navbar = () => {
   const { isLoggedIn, user, logout } = useAuth(); // Get authentication state and logout function
@@ -28,6 +29,7 @@ const Navbar = () => {
       <div style={styles.rightSection}>
         {isLoggedIn ? (
           <>
+            <Notification /> {/* Add Notification component */}
             <Link to={`/profile/${user.id}`} style={styles.link}>
               {user?.name}'s Profile
             </Link>

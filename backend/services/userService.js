@@ -3,7 +3,10 @@ const User = require('../models/User');
 // Function to Get User Profile
 const getUserProfile = async (userId) => {
   try {
-    const user = await User.findById(userId).select('-password'); // Exclude password
+    const user = await User.findById(userId)
+      .select('-password')
+      .populate('connections', 'name email')
+      .populate('friendRequests', 'name email'); // Populate friendRequests with name and email
     if (!user) {
       throw new Error('User not found');
     }
@@ -11,6 +14,33 @@ const getUserProfile = async (userId) => {
   } catch (err) {
     throw new Error('Server error');
   }
+};
+
+// Function to check relationship status between two users
+const checkRelationshipStatus = async (userId1, userId2) => {
+  const user1 = await User.findById(userId1);
+  const user2 = await User.findById(userId2);
+
+  if (!user1 || !user2) {
+    throw new Error('User not found');
+  }
+
+  // Check if they are connected (friends)
+  if (user1.connections.includes(userId2)) {
+    return 'friends';
+  }
+
+  // Check if user1 sent a friend request to user2
+  if (user2.friendRequests.includes(userId1)) {
+    return 'requestSent';
+  }
+
+  // Check if user1 has a pending friend request from user2
+  if (user1.friendRequests.includes(userId2)) {
+    return 'requestReceived';
+  }
+
+  return 'none';
 };
 
 // Function to Update User Profile
@@ -54,7 +84,6 @@ const changeUserRole = async (userId, role) => {
   }
 };
 
-
 // Function to Delete User
 const deleteUserProfile = async (userId) => {
   try {
@@ -66,14 +95,110 @@ const deleteUserProfile = async (userId) => {
   }
 };  
 
-// Function to Add Connection
+// Function to Add Connection (Friend)
 const addConnection = async (userId, email) => {
   const userToAdd = await User.findOne({ email });
   if (!userToAdd) throw new Error('User not found');
   const user = await User.findById(userId);
+
+  // Avoid duplicate connections
+  if (user.connections.includes(userToAdd._id)) {
+    throw new Error('Already connected');
+  }
+
   user.connections.push(userToAdd._id);
   await user.save();
+
+  // Create chat between users if not exists
+  const Chat = require('../models/Chat');
+  let chat = await Chat.findOne({ participants: { $all: [userId, userToAdd._id] } });
+  if (!chat) {
+    chat = await Chat.create({ participants: [userId, userToAdd._id] });
+  }
+
   return user.connections;
+};
+
+// Send Friend Request
+const sendFriendRequest = async (userId, userIdToAdd) => {
+  const userToAdd = await User.findById(userIdToAdd);
+  if (!userToAdd) throw new Error('User to add not found');
+
+  // Check if already connected
+  if (userToAdd.connections.includes(userId)) {
+    throw new Error('Already connected');
+  }
+
+  // Check if request already sent
+  if (userToAdd.friendRequests.includes(userId)) {
+    throw new Error('Friend request already sent');
+  }
+
+  userToAdd.friendRequests.push(userId);
+  await userToAdd.save();
+  return { message: 'Friend request sent' };
+};
+
+// Get Friend Requests
+const getFriendRequests = async (userId) => {
+  const user = await User.findById(userId).populate('friendRequests', 'name email');
+  if (!user) throw new Error('User not found');
+  return user.friendRequests;
+};
+
+// Accept Friend Request
+const acceptFriendRequest = async (userId, requesterId) => {
+  const user = await User.findById(userId);
+  const requester = await User.findById(requesterId);
+  if (!user || !requester) throw new Error('User not found');
+
+  // Remove from friendRequests
+  user.friendRequests = user.friendRequests.filter(
+    (id) => id.toString() !== requesterId.toString()
+  );
+
+  // Add to connections if not already connected
+  if (!user.connections.includes(requesterId)) {
+    user.connections.push(requesterId);
+  }
+  if (!requester.connections.includes(userId)) {
+    requester.connections.push(userId);
+  }
+
+  await user.save();
+  await requester.save();
+
+  return { message: 'Friend request accepted' };
+};
+
+// Deny Friend Request
+const denyFriendRequest = async (userId, requesterId) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+
+  // Remove from friendRequests
+  user.friendRequests = user.friendRequests.filter(
+    (id) => id.toString() !== requesterId.toString()
+  );
+
+  await user.save();
+
+  return { message: 'Friend request denied' };
+};
+
+// Cancel Sent Friend Request
+const cancelFriendRequest = async (userId, targetUserId) => {
+  const targetUser = await User.findById(targetUserId);
+  if (!targetUser) throw new Error('User not found');
+
+  // Remove userId from targetUser's friendRequests
+  targetUser.friendRequests = targetUser.friendRequests.filter(
+    (id) => id.toString() !== userId.toString()
+  );
+
+  await targetUser.save();
+
+  return { message: 'Friend request canceled' };
 };
 
 module.exports = {
@@ -81,5 +206,11 @@ module.exports = {
   updateUserProfile,
   deleteUserProfile,
   changeUserRole,
-  addConnection
+  addConnection,
+  sendFriendRequest,
+  getFriendRequests,
+  acceptFriendRequest,
+  denyFriendRequest,
+  cancelFriendRequest,
+  checkRelationshipStatus
 };
