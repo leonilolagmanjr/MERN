@@ -11,6 +11,7 @@ import BrowseJobs from './pages/BrowseJobs'; // Import the new page
 import Job from './pages/Job';
 import ChatWidget from './components/ChatWidget';
 import EditProfile from './pages/EditProfile'; // Import EditProfile
+import About from './pages/About';
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/browse" element={<BrowseJobs />} /> {/* Add BrowseJobs route */}
             <Route path="/job/:jobId" element={<Job />} /> {/* Add Job route */}
             <Route path="/editprofile" element={<EditProfile />} /> {/* Add EditProfile route */}
+            <Route path="/about" element={<About />} /> {/* Add About route */}
           </Routes>
         </div>
         <ChatWidget /> {/* Include ChatWidget for chat functionality */}

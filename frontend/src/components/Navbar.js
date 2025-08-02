@@ -26,6 +26,9 @@ const Navbar = () => {
             <Button component={Link} to="/browse" sx={{ color: '#c7d5e0' }}>
               Browse
             </Button>
+            <Button component={Link} to="/about" sx={{ color: '#c7d5e0' }}>
+              About
+            </Button>
             <Button component={Link} to="/taskmanager" sx={{ color: '#c7d5e0' }}>
               Task Manager
             </Button>
