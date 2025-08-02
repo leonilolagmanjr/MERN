@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchTasks } from '../services/api';
+import { Box, Typography, Container, CircularProgress, Alert } from '@mui/material';
 
 const Job = () => {
   const { jobId } = useParams(); // Get job ID from the URL
@@ -26,57 +27,54 @@ const Job = () => {
   }, [jobId]);
 
   if (error) {
-    return <div style={styles.error}>{error}</div>;
+    return (
+      <Container sx={{ mt: 5 }}>
+        <Alert severity="error" sx={{ textAlign: 'center' }}>
+          {error}
+        </Alert>
+      </Container>
+    );
   }
 
   if (!job) {
-    return <div style={styles.loading}>Loading...</div>;
+    return (
+      <Container sx={{ mt: 5, textAlign: 'center' }}>
+        <CircularProgress color="primary" />
+        <Typography sx={{ mt: 2, color: '#c7d5e0' }}>Loading...</Typography>
+      </Container>
+    );
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>{job.title}</h1>
-      <p style={styles.description}>{job.description}</p>
-      <p style={styles.meta}>Difficulty: {job.difficulty}</p>
-      <p style={styles.meta}>Category: {job.category}</p>
-      <p style={styles.meta}>Location: {job.location}</p>
-      <p style={styles.meta}>Deadline: {new Date(job.deadline).toLocaleDateString()}</p>
-      <p style={styles.meta}>Status: {job.status}</p>
-      <p style={styles.meta}>Posted by: {job.createdBy}</p>
-    </div>
+    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', py: 5 }}>
+      <Container>
+        <Typography variant="h3" sx={{ color: '#ffffff', mb: 3 }}>
+          {job.title}
+        </Typography>
+        <Typography variant="body1" sx={{ color: '#c7d5e0', mb: 2 }}>
+          {job.description}
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
+          <strong>Difficulty:</strong> {job.difficulty}
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
+          <strong>Category:</strong> {job.category}
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
+          <strong>Location:</strong> {job.location}
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
+          <strong>Deadline:</strong> {new Date(job.deadline).toLocaleDateString()}
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
+          <strong>Status:</strong> {job.status}
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
+          <strong>Posted by:</strong> {job.createdBy}
+        </Typography>
+      </Container>
+    </Box>
   );
-};
-
-const styles = {
-  container: {
-    padding: '20px',
-    backgroundColor: '#1b2838',
-    color: '#c7d5e0',
-    minHeight: '100vh',
-  },
-  heading: {
-    color: '#ffffff',
-    marginBottom: '20px',
-  },
-  description: {
-    color: '#c7d5e0',
-    marginBottom: '10px',
-  },
-  meta: {
-    color: '#a9b7c6',
-    fontSize: '14px',
-    marginBottom: '5px',
-  },
-  error: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: '20px',
-  },
-  loading: {
-    color: '#c7d5e0',
-    textAlign: 'center',
-    marginTop: '20px',
-  },
 };
 
 export default Job;

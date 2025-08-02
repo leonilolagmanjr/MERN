@@ -1,102 +1,83 @@
 import React, { useEffect, useState } from 'react';
-import { fetchPostedJobs } from '../../services/api';
+import { fetchPostedJobs, deleteTask } from '../../services/api';
+import { Box, Typography, Grid, Card, CardContent, Button } from '@mui/material';
 
 const ReadTask = ({ refresh }) => {
   const [tasks, setTasks] = useState([]);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getTasks = async () => {
       try {
         const token = localStorage.getItem('token');
-        const data = await fetchPostedJobs(token); // Fetch tasks posted by the logged-in user
+        const data = await fetchPostedJobs(token);
         setTasks(data);
       } catch (err) {
         console.error('Error fetching tasks:', err);
-        setError('Failed to fetch tasks. Please try again later.');
       }
     };
     getTasks();
   }, [refresh]);
 
+  const handleDelete = async (taskId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await deleteTask(taskId, token);
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId)); // Remove the task from the list
+    } catch (err) {
+      console.error('Error deleting task:', err);
+    }
+  };
+
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>My Posted Tasks</h2>
-      {error && <p style={styles.error}>{error}</p>}
-      <div style={styles.grid}>
+    <Box sx={{ mb: 4 }}>
+      <Typography variant="h5" sx={{ mb: 2, color: '#ffffff' }}>
+        My Posted Tasks
+      </Typography>
+      <Grid container spacing={3}>
         {tasks.length > 0 ? (
           tasks.map((task) => (
-            <div key={task._id} style={styles.card}>
-              <div style={styles.thumbnail}>
-                <h3 style={styles.taskTitle}>{task.title}</h3>
-              </div>
-              <div style={styles.details}>
-                <p style={styles.description}>{task.description}</p>
-                <p style={styles.meta}>Difficulty: {task.difficulty}</p>
-                <p style={styles.meta}>Status: {task.status}</p>
-              </div>
-            </div>
+            <Grid item xs={12} sm={6} md={4} key={task._id}>
+              <Card
+                sx={{
+                  bgcolor: '#2a475e',
+                  color: '#c7d5e0',
+                  borderRadius: 2,
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
+                  position: 'relative',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" sx={{ color: '#ffffff', mb: 1 }}>
+                    {task.title}
+                  </Typography>
+                  <Typography sx={{ mb: 1 }}>{task.description}</Typography>
+                  <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                    Difficulty: {task.difficulty}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                    Status: {task.status}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    size="small"
+                    sx={{ position: 'absolute', top: 10, right: 10 }}
+                    onClick={() => handleDelete(task._id)}
+                  >
+                    Remove
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
           ))
         ) : (
-          <p>No tasks available.</p>
+          <Typography variant="body1" sx={{ color: '#c7d5e0' }}>
+            No tasks available.
+          </Typography>
         )}
-      </div>
-    </div>
+      </Grid>
+    </Box>
   );
-};
-
-const styles = {
-  container: {
-    padding: '20px',
-    backgroundColor: '#1b2838',
-    color: '#c7d5e0',
-    minHeight: '100vh',
-  },
-  heading: {
-    color: '#ffffff',
-    marginBottom: '20px',
-  },
-  error: {
-    color: 'red',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '20px',
-  },
-  card: {
-    backgroundColor: '#2a475e',
-    borderRadius: '10px',
-    overflow: 'hidden',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  thumbnail: {
-    backgroundColor: '#66c0f4',
-    padding: '10px',
-    textAlign: 'center',
-  },
-  taskTitle: {
-    color: '#ffffff',
-    fontSize: '18px',
-    fontWeight: 'bold',
-  },
-  details: {
-    padding: '15px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-  },
-  description: {
-    color: '#c7d5e0',
-    fontSize: '14px',
-    lineHeight: '1.5',
-  },
-  meta: {
-    color: '#a9b7c6',
-    fontSize: '12px',
-  },
 };
 
 export default ReadTask;

@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { fetchTasks } from '../services/api';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+} from '@mui/material';
 
 const BrowseJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -28,99 +37,93 @@ const BrowseJobs = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>Browse Jobs</h1>
-      <div style={styles.searchContainer}>
-        <input
-          type="text"
+    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', p: 3 }}>
+      {/* Heading */}
+      <Typography variant="h4" sx={{ color: '#ffffff', mb: 3, textAlign: 'center' }}>
+        Browse Jobs
+      </Typography>
+
+      {/* Search Bar */}
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          mb: 4,
+          justifyContent: 'center',
+        }}
+      >
+        <TextField
+          variant="outlined"
           placeholder="Search jobs by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={styles.searchInput}
+          fullWidth
+          sx={{
+            bgcolor: '#2a475e',
+            input: { color: '#c7d5e0' },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: '#66c0f4' },
+              '&:hover fieldset': { borderColor: '#66c0f4' },
+            },
+          }}
         />
-        <button onClick={handleSearch} style={styles.searchButton}>
+        <Button
+          variant="contained"
+          onClick={handleSearch}
+          sx={{
+            bgcolor: '#66c0f4',
+            color: '#ffffff',
+            '&:hover': { bgcolor: '#5aafde' },
+          }}
+        >
           Search
-        </button>
-      </div>
-      <div style={styles.jobsGrid}>
-        {filteredJobs.map((job) => (
-          <div key={job._id} style={styles.jobCard}>
-            <h3 style={styles.jobTitle}>
-              <Link to={`/job/${job._id}`} style={styles.link}>
-                {job.title}
-              </Link>
-            </h3>
-            <p style={styles.jobDescription}>{job.description}</p>
-            <p style={styles.jobMeta}>Difficulty: {job.difficulty}</p>
-            <p style={styles.jobMeta}>Category: {job.category}</p>
-            <p style={styles.jobMeta}>Location: {job.location}</p>
-            <p style={styles.jobMeta}>Deadline: {new Date(job.deadline).toLocaleDateString()}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+        </Button>
+      </Box>
 
-const styles = {
-  container: {
-    padding: '20px',
-    backgroundColor: '#1b2838',
-    color: '#c7d5e0',
-    minHeight: '100vh',
-  },
-  heading: {
-    color: '#ffffff',
-    marginBottom: '20px',
-  },
-  searchContainer: {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '20px',
-  },
-  searchInput: {
-    flex: 1,
-    padding: '10px',
-    borderRadius: '5px',
-    border: '1px solid #66c0f4',
-    backgroundColor: '#2a475e',
-    color: '#c7d5e0',
-  },
-  searchButton: {
-    padding: '10px 20px',
-    borderRadius: '5px',
-    backgroundColor: '#66c0f4',
-    color: '#ffffff',
-    border: 'none',
-    cursor: 'pointer',
-  },
-  jobsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '20px',
-  },
-  jobCard: {
-    backgroundColor: '#2a475e',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-  },
-  jobTitle: {
-    color: '#ffffff',
-    marginBottom: '10px',
-  },
-  jobDescription: {
-    color: '#c7d5e0',
-    marginBottom: '10px',
-  },
-  jobMeta: {
-    color: '#a9b7c6',
-    fontSize: '14px',
-  },
-  link: {
-    color: '#66c0f4',
-    textDecoration: 'none',
-  },
+      {/* Jobs Grid */}
+      <Grid container spacing={3}>
+        {filteredJobs.map((job) => (
+          <Grid item xs={12} sm={6} md={4} key={job._id}>
+            <Card
+              sx={{
+                bgcolor: '#2a475e',
+                color: '#c7d5e0',
+                borderRadius: 2,
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
+              }}
+            >
+              <CardContent>
+                <Typography
+                  variant="h6"
+                  sx={{ color: '#ffffff', mb: 1 }}
+                >
+                  <Link
+                    to={`/job/${job._id}`}
+                    style={{ color: '#66c0f4', textDecoration: 'none' }}
+                  >
+                    {job.title}
+                  </Link>
+                </Typography>
+                <Typography sx={{ mb: 1 }}>{job.description}</Typography>
+                <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  Difficulty: {job.difficulty}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  Category: {job.category}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  Location: {job.location}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  Deadline: {new Date(job.deadline).toLocaleDateString()}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
 };
 
 export default BrowseJobs;

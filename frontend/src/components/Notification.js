@@ -1,12 +1,21 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { getFriendRequests, acceptFriendRequest, denyFriendRequest } from '../services/api';
 import { FriendContext } from '../context/FriendContext';
+import {
+  IconButton,
+  Badge,
+  Menu,
+  MenuItem,
+  Typography,
+  Box,
+  Button,
+} from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 const Notification = () => {
   const [friendRequests, setFriendRequests] = useState([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const { notifyFriendListUpdated } = useContext(FriendContext);
-  const dropdownRef = useRef(null);
 
   useEffect(() => {
     fetchFriendRequests();
@@ -43,126 +52,69 @@ const Notification = () => {
     }
   };
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
-    <div style={{ position: 'relative' }} ref={dropdownRef}>
-      <button onClick={toggleDropdown} style={styles.bellButton}>
-        🔔
-        {friendRequests.length > 0 && (
-          <span style={styles.badge}>{friendRequests.length}</span>
+    <Box>
+      <IconButton color="inherit" onClick={handleMenuOpen}>
+        <Badge badgeContent={friendRequests.length} color="error">
+          <NotificationsIcon />
+        </Badge>
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          sx: { bgcolor: '#171a21', color: '#c7d5e0', width: 300 },
+        }}
+      >
+        <Typography variant="h6" sx={{ px: 2, py: 1, borderBottom: '1px solid #3a3f4b' }}>
+          Friend Requests
+        </Typography>
+        {friendRequests.length === 0 ? (
+          <MenuItem disabled>
+            <Typography sx={{ fontStyle: 'italic' }}>No new friend requests</Typography>
+          </MenuItem>
+        ) : (
+          friendRequests.map((req) => (
+            <MenuItem key={req._id} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Box>
+                <Typography>{req.name}</Typography>
+                <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  {req.email}
+                </Typography>
+              </Box>
+              <Box>
+                <Button
+                  size="small"
+                  variant="contained"
+                  sx={{ bgcolor: '#4CAF50', mr: 1 }}
+                  onClick={() => handleAccept(req._id)}
+                >
+                  Accept
+                </Button>
+                <Button
+                  size="small"
+                  variant="contained"
+                  sx={{ bgcolor: '#ff4c4c' }}
+                  onClick={() => handleDeny(req._id)}
+                >
+                  Deny
+                </Button>
+              </Box>
+            </MenuItem>
+          ))
         )}
-      </button>
-      {isOpen && (
-        <div style={styles.dropdown}>
-          <h4 style={styles.heading}>Friend Requests</h4>
-          {friendRequests.length === 0 ? (
-            <p style={styles.noRequests}>No new friend requests</p>
-          ) : (
-            friendRequests.map((req) => (
-              <div key={req._id} style={styles.requestItem}>
-                <span>{req.name} ({req.email})</span>
-                <div>
-                  <button
-                    style={styles.acceptButton}
-                    onClick={() => handleAccept(req._id)}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    style={styles.denyButton}
-                    onClick={() => handleDeny(req._id)}
-                  >
-                    Deny
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      )}
-    </div>
+      </Menu>
+    </Box>
   );
-};
-
-const styles = {
-  bellButton: {
-    position: 'relative',
-    background: 'transparent',
-    border: 'none',
-    fontSize: '24px',
-    cursor: 'pointer',
-    color: '#c7d5e0',
-  },
-  badge: {
-    position: 'absolute',
-    top: '-5px',
-    right: '-5px',
-    background: '#ff4c4c',
-    borderRadius: '50%',
-    color: 'white',
-    padding: '2px 6px',
-    fontSize: '12px',
-  },
-  dropdown: {
-    position: 'absolute',
-    right: 0,
-    marginTop: '10px',
-    width: '300px',
-    backgroundColor: '#171a21',
-    border: '1px solid #3a3f4b',
-    borderRadius: '5px',
-    padding: '10px',
-    color: '#c7d5e0',
-    zIndex: 1000,
-  },
-  heading: {
-    margin: '0 0 10px 0',
-    fontSize: '16px',
-    borderBottom: '1px solid #3a3f4b',
-    paddingBottom: '5px',
-  },
-  noRequests: {
-    fontStyle: 'italic',
-  },
-  requestItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '8px',
-  },
-  acceptButton: {
-    backgroundColor: '#4CAF50',
-    border: 'none',
-    color: 'white',
-    padding: '5px 10px',
-    marginRight: '5px',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
-  denyButton: {
-    backgroundColor: '#ff4c4c',
-    border: 'none',
-    color: 'white',
-    padding: '5px 10px',
-    borderRadius: '3px',
-    cursor: 'pointer',
-  },
 };
 
 export default Notification;

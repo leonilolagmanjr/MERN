@@ -38,7 +38,7 @@ const getAllTasks = async (req, res) => {
 // Get Tasks Posted by Current User
 const getMyPostedTasks = async (req, res) => {
   try {
-    const tasks = await taskService.getMyPostedTasks(req.user.id);
+    const tasks = await taskService.getMyPostedTasks(req.user.id); // Ensure `req.user.id` is the logged-in user's ID
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });

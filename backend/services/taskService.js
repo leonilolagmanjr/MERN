@@ -56,7 +56,7 @@ const getAllTasks = async (difficulty) => {
 // Get Tasks Posted by Current User
 const getMyPostedTasks = async (userId) => {
   try {
-    return await Task.find({ createdBy: userId });
+    return await Task.find({ createdBy: userId }); // Ensure `createdBy` is the correct field in your Task model
   } catch (err) {
     throw new Error('Error fetching posted tasks');
   }
