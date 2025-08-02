@@ -24,13 +24,16 @@ const Navbar = () => {
           <li>
             <Link to="/taskmanager" style={styles.link}>Task Manager</Link>
           </li>
+          <li>
+            <Link to="/editprofile" style={styles.link}>Edit Profile</Link>
+          </li>
         </ul>
       </div>
       <div style={styles.rightSection}>
         {isLoggedIn ? (
           <>
             <Notification /> {/* Add Notification component */}
-            <Link to={`/profile/${user.id}`} style={styles.link}>
+            <Link to={`/profile/${user?.id}`} style={styles.link}>
               {user?.name}'s Profile
             </Link>
             <button onClick={handleLogout} style={styles.logoutButton}>

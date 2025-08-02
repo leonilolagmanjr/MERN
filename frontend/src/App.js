@@ -10,6 +10,7 @@ import TaskManager from './pages/TaskManager'; // Import TaskManager component
 import BrowseJobs from './pages/BrowseJobs'; // Import the new page
 import Job from './pages/Job';
 import ChatWidget from './components/ChatWidget';
+import EditProfile from './pages/EditProfile'; // Import EditProfile
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/taskmanager" element={<TaskManager />} /> {/* Add TaskManager route */}
             <Route path="/browse" element={<BrowseJobs />} /> {/* Add BrowseJobs route */}
             <Route path="/job/:jobId" element={<Job />} /> {/* Add Job route */}
+            <Route path="/editprofile" element={<EditProfile />} /> {/* Add EditProfile route */}
           </Routes>
         </div>
         <ChatWidget /> {/* Include ChatWidget for chat functionality */}

@@ -56,7 +56,12 @@ export const getUserProfile = async (userId, token) => {
 };
 
 export const updateUserProfile = async (profileData, token) => {
-  const response = await axios.patch(`${API_URL}/user/updateprofile`, profileData, {
+  const formData = new FormData();
+  Object.keys(profileData).forEach((key) => {
+    formData.append(key, profileData[key]);
+  });
+
+  const response = await axios.patch(`${API_URL}/user/updateprofile`, formData, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
