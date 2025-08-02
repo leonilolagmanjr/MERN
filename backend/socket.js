@@ -5,7 +5,8 @@ let io;
 const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: ['http://localhost:3000', 'http://100.123.122.74:3000'],
+
       methods: ['GET', 'POST'],
     },
   });

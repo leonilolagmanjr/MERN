@@ -11,7 +11,11 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // ⚠️ Use http://localhost:3000 for development or specific Tailscale IP/URL for security
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Routes
@@ -52,4 +56,5 @@ initSocket(server);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+

@@ -5,10 +5,10 @@ const authenticate = (requiredRole = null) => {
   return async (req, res, next) => {
     try {
       const token = req.header('Authorization').replace('Bearer ', '');
-      console.log('Token:', token); // Debugging log
+      //console.log('Token:', token); // Debugging log
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findById(decoded.id);
-      console.log('Authenticated User:', user); // Debugging log
+      console.log('Authenticated User:', user.name); // Debugging log
 
       if (!user) {
         return res.status(401).json({ msg: 'Not authorized' });
