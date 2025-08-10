@@ -10,6 +10,9 @@ router.get('/profile/:userId', authenticate(), userController.getUserProfile);
 // Route for updating the user profile
 router.patch('/updateprofile', authenticate(), userController.updateUserProfile);
 
+// Add a route for updating user profile
+//router.put('/profile', authenticate(), userController.getUserProfile);
+
 // Route for Deleting Profile
 router.delete('/remove/:userId', authenticate('admin'), userController.deleteUserProfile);
 

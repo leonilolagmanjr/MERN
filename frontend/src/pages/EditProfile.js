@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { updateUserProfile } from '../services/api';
+import React, { useState, useEffect } from 'react';
+import { updateUserProfile, fetchInfo, updateInfo } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Box, Card, CardContent, Typography, Avatar, Button, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Select, MenuItem } from '@mui/material';
 
@@ -27,6 +27,23 @@ const EditProfile = () => {
   });
   const [selectedSection, setSelectedSection] = useState('General');
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const userInfo = await fetchInfo(token);
+        setFormData((prevData) => ({
+          ...prevData,
+          profileBackground: userInfo.workPortfolio?.portfolioLink || '',
+        }));
+      } catch (err) {
+        console.error('Error fetching user info:', err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -39,7 +56,13 @@ const EditProfile = () => {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('token');
-      await updateUserProfile(formData, token);
+      if (selectedSection === 'General') {
+        await updateUserProfile(formData, token);
+      } else if (selectedSection === 'Profile Background') {
+        await updateInfo(token, {
+          workPortfolio: { portfolioLink: formData.profileBackground },
+        });
+      }
       alert('Profile updated successfully!');
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -152,6 +175,24 @@ const EditProfile = () => {
                 <MenuItem value="Taiwan">Taiwan</MenuItem>
                 {/* Add more countries as needed */}
               </Select>
+            </Box>
+          )}
+          {/* Profile Background Section */}
+          {selectedSection === 'Profile Background' && (
+            <Box>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: '#c7d5e0', mb: 2 }}>
+                PROFILE BACKGROUND
+              </Typography>
+              <TextField
+                label="Profile Background"
+                name="profileBackground"
+                value={formData.profileBackground}
+                onChange={handleInputChange}
+                fullWidth
+                sx={{ mb: 2 }}
+                InputProps={{ style: { color: '#c7d5e0', backgroundColor: '#2a475e' } }}
+                InputLabelProps={{ style: { color: '#66c0f4' } }}
+              />
             </Box>
           )}
           {/* Other sections can be added similarly */}
