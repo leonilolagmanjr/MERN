@@ -152,7 +152,7 @@ const Profile = () => {
           <p style={styles.userDetails}>Level: {profile.level || 1}</p>
           <p>  </p>
           {isCurrentUser ? (
-            <button style={styles.editButton}>Edit Profile</button>
+            <button style={styles.editButton} onClick={() => window.location.href = '/editprofile'}>Edit Profile</button>
           ) : loadingFriendStatus ? (
             <button style={styles.addFriendButton} disabled>Loading...</button>
           ) : (
