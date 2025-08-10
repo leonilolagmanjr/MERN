@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   AppBar,
   Toolbar,
@@ -11,36 +11,13 @@ import {
   Container,
   Link,
 } from '@mui/material';
-import { fetchPostedJobs } from '../services/api';
 
 const Home = () => {
-  const [jobs, setJobs] = useState([]);
-
-  useEffect(() => {
-    const getJobs = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const data = await fetchPostedJobs(token);
-        setJobs(data);
-      } catch (err) {
-        console.error('Error fetching jobs:', err);
-      }
-    };
-    getJobs();
-  }, []);
-
-  // Helper to get 4 random jobs
-  const getRandomJobs = (jobsArr, count = 4) => {
-    if (!Array.isArray(jobsArr)) return [];
-    const shuffled = jobsArr.slice().sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
-  };
-
-  const featuredJobs = getRandomJobs(jobs);
-
   return (
     <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh' }}>
       {/* Navbar */}
+      
+
       {/* Hero Section */}
       <Box
         sx={{
@@ -70,30 +47,18 @@ const Home = () => {
             Featured Jobs
           </Typography>
           <Grid container spacing={3}>
-            {featuredJobs.length > 0 ? (
-              featuredJobs.map((job) => (
-                <Grid item xs={12} sm={6} md={3} key={job._id}>
-                  <Card sx={{ bgcolor: '#2a475e', color: '#c7d5e0', textAlign: 'center' }}>
-                    <CardContent>
-                      <Typography variant="h6" sx={{ color: '#ffffff', mb: 1 }}>
-                        {job.title}
-                      </Typography>
-                      <Typography sx={{ mb: 1 }}>{job.description}</Typography>
-                      <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                        Difficulty: {job.difficulty}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                        Status: {job.status}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))
-            ) : (
-              <Typography variant="body1" sx={{ color: '#c7d5e0', width: '100%', textAlign: 'center', mt: 2 }}>
-                No featured jobs available.
-              </Typography>
-            )}
+            {['Job 1', 'Job 2', 'Job 3', 'Job 4'].map((job, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card sx={{ bgcolor: '#2a475e', color: '#c7d5e0', textAlign: 'center' }}>
+                  <CardContent>
+                    <Typography variant="h6" sx={{ color: '#ffffff' }}>
+                      {job}
+                    </Typography>
+                    <Typography>Details about {job}</Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
         </Container>
       </Box>
