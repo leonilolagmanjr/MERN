@@ -72,7 +72,72 @@ const TaskManager = () => {
         <Typography variant="h4" sx={{ color: '#ffffff', mb: 3, textAlign: 'center' }}>
           Browse Jobs
         </Typography>
-        {/* All Jobs label and search/filter box side by side */}
+  
+        {/* User Posted Tasks Action Buttons - MOVED TO TOP */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
+          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenCreate(true)}>
+            Create Task
+          </Button>
+          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenUpdate(true)}>
+            Update Task
+          </Button>
+          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenDelete(true)}>
+            Delete Task
+          </Button>
+        </Box>
+  
+        {/* User Posted Tasks - Steam-style Table - MOVED TO TOP */}
+        <Box sx={{ bgcolor: '#23262e', borderRadius: 2, boxShadow: 3, mb: 4, p: 2 }}>
+          <Typography variant="h6" sx={{ color: '#ffffff', mb: 2 }}>
+            My Posted Tasks ({userTasks.length})
+          </Typography>
+          {/* Table Labels */}
+          <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: '#1b2838', borderRadius: 1, fontWeight: 'bold', color: '#c7d5e0', fontSize: 16 }}>
+            <Box sx={{ flex: 2 }}>Name</Box>
+            <Box sx={{ flex: 1 }}>Date Listed</Box>
+            <Box sx={{ flex: 1 }}>Status</Box>
+            <Box sx={{ flex: 1, textAlign: 'right' }}>Remove</Box>
+          </Box>
+          {/* Table Rows */}
+          {userTasks.length === 0 ? (
+            <Box sx={{ px: 2, py: 2, color: '#8f98a0' }}>
+              You are not selling any items on the Community Market. Sell items from your inventory, or click the "Create Task" button above.
+            </Box>
+          ) : (
+            userTasks.map((job) => (
+              <Box key={job._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid #2a475e', ':last-child': { borderBottom: 'none' } }}>
+                {/* Name and description */}
+                <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  {/* If you have an image for the job, show it here. Otherwise, use a placeholder. */}
+                  <Box sx={{ width: 48, height: 48, bgcolor: '#1b2838', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
+                    {/* Placeholder icon or image */}
+                    <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Task'} alt="task" style={{ width: 40, height: 40, borderRadius: 4 }} />
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ color: '#66c0f4', fontWeight: 'bold' }}>{job.title}</Typography>
+                    <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description}</Typography>
+                  </Box>
+                </Box>
+                {/* Date Listed */}
+                <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
+                {/* Status */}
+                <Box sx={{ flex: 1, color: '#66c0f4', fontWeight: 'bold' }}>Active</Box>
+                {/* Remove Button */}
+                <Box sx={{ flex: 1, textAlign: 'right' }}>
+                  <Button
+                    variant="text"
+                    sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
+                    onClick={() => setOpenDelete(true)}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              </Box>
+            ))
+          )}
+        </Box>
+        
+        {/* All Jobs label and search/filter box side by side - MOVED TO BOTTOM */}
         <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 4, gap: 3 }}>
           {/* All Jobs table and label */}
           <Box sx={{ flex: 2 }}>
@@ -189,21 +254,8 @@ const TaskManager = () => {
             </Box>
           </Box>
         </Box>
-
-        {/* User Posted Tasks Action Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenCreate(true)}>
-            Create Task
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenUpdate(true)}>
-            Update Task
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenDelete(true)}>
-            Delete Task
-          </Button>
-        </Box>
-
-        {/* Modals for Task Actions */}
+  
+        {/* Modals for Task Actions - Keep these at the bottom */}
         <Modal open={openCreate} onClose={() => setOpenCreate(false)}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
             <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Create Task</Typography>
@@ -225,57 +277,7 @@ const TaskManager = () => {
             <Button onClick={() => setOpenDelete(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
           </Box>
         </Modal>
-
-        {/* User Posted Tasks - Steam-style Table */}
-        <Box sx={{ bgcolor: '#23262e', borderRadius: 2, boxShadow: 3, mb: 4, p: 2 }}>
-          <Typography variant="h6" sx={{ color: '#ffffff', mb: 2 }}>
-            My Posted Tasks ({userTasks.length})
-          </Typography>
-          {/* Table Labels */}
-          <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: '#1b2838', borderRadius: 1, fontWeight: 'bold', color: '#c7d5e0', fontSize: 16 }}>
-            <Box sx={{ flex: 2 }}>Name</Box>
-            <Box sx={{ flex: 1 }}>Date Listed</Box>
-            <Box sx={{ flex: 1 }}>Status</Box>
-            <Box sx={{ flex: 1, textAlign: 'right' }}>Remove</Box>
-          </Box>
-          {/* Table Rows */}
-          {userTasks.length === 0 ? (
-            <Box sx={{ px: 2, py: 2, color: '#8f98a0' }}>
-              You are not selling any items on the Community Market. Sell items from your inventory, or click the "Create Task" button above.
-            </Box>
-          ) : (
-            userTasks.map((job) => (
-              <Box key={job._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid #2a475e', ':last-child': { borderBottom: 'none' } }}>
-                {/* Name and description */}
-                <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                  {/* If you have an image for the job, show it here. Otherwise, use a placeholder. */}
-                  <Box sx={{ width: 48, height: 48, bgcolor: '#1b2838', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
-                    {/* Placeholder icon or image */}
-                    <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Task'} alt="task" style={{ width: 40, height: 40, borderRadius: 4 }} />
-                  </Box>
-                  <Box>
-                    <Typography variant="subtitle1" sx={{ color: '#66c0f4', fontWeight: 'bold' }}>{job.title}</Typography>
-                    <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description}</Typography>
-                  </Box>
-                </Box>
-                {/* Date Listed */}
-                <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
-                {/* Status */}
-                <Box sx={{ flex: 1, color: '#66c0f4', fontWeight: 'bold' }}>Active</Box>
-                {/* Remove Button */}
-                <Box sx={{ flex: 1, textAlign: 'right' }}>
-                  <Button
-                    variant="text"
-                    sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
-                    onClick={() => setOpenDelete(true)}
-                  >
-                    Remove
-                  </Button>
-                </Box>
-              </Box>
-            ))
-          )}
-        </Box>
+  
       </Box>
     </Box>
   );

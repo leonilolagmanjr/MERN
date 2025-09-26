@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import { FriendContext } from '../context/FriendContext';
 
 // --- Socket Setup ---
-const socket = io('http://localhost:5000', {
+const socket = io('http://100.123.122.74:5000', {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
