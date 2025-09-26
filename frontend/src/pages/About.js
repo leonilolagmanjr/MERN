@@ -4,17 +4,17 @@ import SteamLogo from '../logo.svg';
 
 const teamMembers = [
   {
-    name: 'Alice Smith',
+    name: 'Leonilo Lagman Jr',
     role: 'Lead Developer',
     avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
   },
   {
-    name: 'Bob Johnson',
+    name: 'Moira Radam',
     role: 'UI/UX Designer',
     avatar: 'https://randomuser.me/api/portraits/men/46.jpg',
   },
   {
-    name: 'Carol Lee',
+    name: 'Leonilo Lagman Jr',
     role: 'Backend Engineer',
     avatar: 'https://randomuser.me/api/portraits/women/47.jpg',
   },

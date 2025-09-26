@@ -4,7 +4,7 @@ import {
     getChats,
     getMessages,
     sendMessage as apiSendMessage,
-    getOrCreateChat, // This is now correctly imported from chatApi.js
+    getOrCreateChat,
 } from '../services/chatApi';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -16,6 +16,9 @@ const socket = io('http://100.123.122.74:5000', {
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
 });
+
+// FIX: Helper function to reliably determine if a chat object is the Global Chat
+const isGlobalChat = (chat) => chat.participants && chat.participants.length === 0;
 
 const ChatWidget = () => {
     const { user } = useAuth();
@@ -41,7 +44,7 @@ const ChatWidget = () => {
     
     // Helper to determine the name of the chat partner for a private chat
     const getChatPartner = (chat) => {
-        if (!chat.participants || chat.participants.length === 0) return '🌐 Global Chat'; // Global
+        if (isGlobalChat(chat)) return '🌐 Global Chat';
         
         // Find the participant who is NOT the current user
         const partner = chat.participants.find(p => p._id !== user?.id);
@@ -50,21 +53,26 @@ const ChatWidget = () => {
     
     // --- Data Fetching Functions ---
     const fetchChats = useCallback(async () => {
-        if (!user) return; // Prevent fetching if user is not logged in
+        if (!user) return;
         setIsLoading(true);
         setChatError('');
         try {
             const res = await getChats();
-            // Ensure chats are sorted by lastUpdated for better UX
-            const sortedChats = res.data.sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-            setChats(sortedChats);
+            // Separate Global Chat from Private Chats for organized rendering
+            const globalChat = res.data.find(isGlobalChat);
+            const privateChats = res.data
+                .filter(chat => !isGlobalChat(chat))
+                .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+
+            // Set chats with Global Chat first (if it exists)
+            setChats(globalChat ? [globalChat, ...privateChats] : privateChats);
         } catch (err) {
             console.error('Failed to fetch chats', err);
             setChatError('Failed to load chats.');
         } finally {
             setIsLoading(false);
         }
-    }, [user]); // Dependency: user
+    }, [user]);
 
     const fetchMessages = useCallback(async (chatId) => {
         if (!chatId) return;
@@ -79,15 +87,14 @@ const ChatWidget = () => {
         } finally {
             setIsLoading(false);
         }
-    }, []); // No external dependencies
+    }, []);
 
     const handleSelectChat = async (chat) => {
         setSelectedChat(chat);
-        setMessages([]); // Clear previous messages immediately for better perceived speed
+        setMessages([]);
         await fetchMessages(chat._id);
     };
 
-    // FIX: Wrapped in useCallback to resolve ESLint missing dependency warning.
     const handleGetOrCreateChat = useCallback(async (otherUserId = null) => {
         if (!user) {
             setChatError('You must be logged in to chat.');
@@ -96,45 +103,46 @@ const ChatWidget = () => {
         setIsLoading(true);
         setChatError('');
         try {
-            // Use the service function that handles both cases
             const res = await getOrCreateChat(otherUserId); 
-            
-            // Update the chat list only if a new chat was created (optional, but good for real-time)
-            const isNewChat = !chats.some(chat => chat._id === res.data._id);
-            if (isNewChat && otherUserId) {
-                // Refetch all chats to get the populated list
-                await fetchChats();
-            }
+            await fetchChats(); // Refetch to ensure the list is up-to-date
             
             setSelectedChat(res.data);
             await fetchMessages(res.data._id);
-            setIsOpen(true); // Open the widget if not already open
+            setIsOpen(true);
         } catch (err) {
             console.error('Failed to fetch or create chat', err);
             setChatError(err.response?.data?.msg || 'Failed to open chat.');
         } finally {
             setIsLoading(false);
         }
-    }, [user, chats, fetchChats, fetchMessages]); // Dependencies for useCallback
+    }, [user, fetchChats, fetchMessages]);
 
 
     // --- Socket Effects ---
-
-    // Effect for setting up and cleaning up socket listeners
     useEffect(() => {
         if (!selectedChat?._id) return;
         
         const chatId = selectedChat._id;
-        socket.emit('joinChat', chatId); // Join the room
+        socket.emit('joinChat', chatId);
 
         const handleReceiveMessage = (message) => {
-            // Robust check: only update if the message belongs to the currently selected chat
             if (message.chat === chatId) {
                 setMessages((prev) => [...prev, message]);
-                // Also update the chat list's last message for the currently selected chat
-                setChats(prevChats => prevChats.map(chat => 
-                    chat._id === chatId ? { ...chat, lastMessage: message.content, lastUpdated: message.createdAt } : chat
-                ).sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)));
+                
+                // Update chat list for last message/sort order
+                setChats(prevChats => {
+                    const updatedChats = prevChats.map(chat => 
+                        chat._id === chatId ? { ...chat, lastMessage: message.content, lastUpdated: message.createdAt } : chat
+                    );
+                    
+                    // Re-sort, but keep Global Chat always at index 0 if present
+                    const globalChat = updatedChats.find(isGlobalChat);
+                    const privateChats = updatedChats
+                        .filter(chat => !isGlobalChat(chat))
+                        .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+                        
+                    return globalChat ? [globalChat, ...privateChats] : privateChats;
+                });
             }
         };
         
@@ -142,79 +150,75 @@ const ChatWidget = () => {
 
         return () => {
             socket.off('receiveMessage', handleReceiveMessage);
-            socket.emit('leaveChat', chatId); // Clean up: leave the room
+            socket.emit('leaveChat', chatId);
         };
     }, [selectedChat?._id]);
 
-
-    // Effect for scrolling to bottom
     useEffect(() => {
         scrollToBottom();
     }, [messages, selectedChat]);
 
-
-    // --- Primary Logic Effects ---
-
-    // Effect to fetch chats when widget opens, user changes, or friend list updates (consolidated)
     useEffect(() => {
         if (isOpen && user) {
             fetchChats();
         }
     }, [isOpen, user, fetchChats, friendListUpdated]);
 
-    // Effect to handle opening a chat from an external button (FriendContext)
     useEffect(() => {
         if (openChatUserId) {
             handleGetOrCreateChat(openChatUserId);
-            clearOpenChatUser(); // Important: Clear the ID after processing
+            clearOpenChatUser();
         }
-    }, [openChatUserId, clearOpenChatUser, handleGetOrCreateChat]); // FIX: Added handleGetOrCreateChat
+    }, [openChatUserId, clearOpenChatUser, handleGetOrCreateChat]);
 
     // --- Message Sending Logic ---
     const handleSendMessage = async (e) => {
-        e.preventDefault(); // Prevent form submission default if using a form
+        e.preventDefault();
 
         if (!newMessage.trim() || !selectedChat || !user || isLoading) return;
         
         const content = newMessage.trim();
-        setNewMessage(''); // Clear input immediately for better responsiveness
+        setNewMessage('');
         setChatError('');
 
         try {
-            // Determine the receiver ID for the API call (null for global chat)
-            const isGlobal = selectedChat.participants.length === 0;
+            const isGlobal = isGlobalChat(selectedChat);
             const otherParticipant = selectedChat.participants.find(p => p._id !== user.id);
             const receiverId = isGlobal ? null : otherParticipant?._id;
 
-            // 1. Send the message to the API (saves to DB and broadcasts via backend)
-            // FIX: Removed the unused 'res =' declaration
             await apiSendMessage({
                 chatId: selectedChat._id,
                 receiverId: receiverId, 
                 content: content,
             });
             
-            // The backend's socket broadcast handles updating the 'messages' state.
-
-            // We update the chat list summary immediately for better UX.
-            setChats(prevChats => prevChats.map(chat => 
-                chat._id === selectedChat._id ? { ...chat, lastMessage: content, lastUpdated: new Date().toISOString() } : chat
-            ).sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated)));
+            // Update the chat list summary immediately
+            setChats(prevChats => {
+                 const updatedChats = prevChats.map(chat => 
+                    chat._id === selectedChat._id ? { ...chat, lastMessage: content, lastUpdated: new Date().toISOString() } : chat
+                );
+                
+                const globalChat = updatedChats.find(isGlobalChat);
+                const privateChats = updatedChats
+                    .filter(chat => !isGlobalChat(chat))
+                    .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+                    
+                return globalChat ? [globalChat, ...privateChats] : privateChats;
+            });
 
 
         } catch (err) {
             console.error('Failed to send message', err);
             setChatError(err.response?.data?.msg || 'Failed to send message.');
-            setNewMessage(content); // Restore input value on failure
+            setNewMessage(content);
         }
     };
 
     // --- Render Functions ---
-
     const renderChatContent = () => {
         if (!selectedChat) {
-            return (
-                <div style={{ padding: 20, textAlign: 'center', color: '#66c0f4' }}>
+             return (
+                <div style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2a2a2a', color: '#66c0f4', padding: 20 }}>
                     Select a chat from the list to start messaging.
                 </div>
             );
@@ -232,20 +236,19 @@ const ChatWidget = () => {
                     {chatHeader}
                 </div>
 
-                {/* Messages Area */}
+                {/* Messages Area (Omitted for brevity) */}
                 <div style={{ flex: 1, overflowY: 'auto', paddingRight: 8, display: 'flex', flexDirection: 'column' }}>
                     {isLoading && messages.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '20px' }}>Loading Messages...</div>
                     ) : (
                         messages.map((msg) => (
                             <div
-                                key={msg._id || msg.createdAt} // Use _id if available, fallback to createdAt/temp ID
+                                key={msg._id || msg.createdAt}
                                 style={{
                                     margin: '6px 0',
                                     backgroundColor: msg.sender?._id === user?.id ? '#2a475e' : '#4b4b4b',
                                     padding: '8px 12px',
                                     borderRadius: 10,
-                                    // Use flex properties for proper alignment
                                     alignSelf: msg.sender?._id === user?.id ? 'flex-end' : 'flex-start',
                                     maxWidth: '85%',
                                     lineHeight: '1.4',
@@ -273,7 +276,7 @@ const ChatWidget = () => {
                     <div ref={bottomRef} />
                 </div>
 
-                {/* Input Area */}
+                {/* Input Area (Omitted for brevity) */}
                 <form onSubmit={handleSendMessage} style={{ display: 'flex', marginTop: 10 }}>
                     <input
                         type="text"
@@ -296,12 +299,12 @@ const ChatWidget = () => {
                         disabled={!user || !selectedChat || isLoading || !newMessage.trim()}
                         style={{
                             padding: '10px 16px',
-                            backgroundColor: (user && selectedChat && !isLoading) ? '#66c0f4' : '#3a3f4b', // Dim when disabled
-                            color: (user && selectedChat && !isLoading) ? '#1b2838' : '#6c757d',
+                            backgroundColor: (user && selectedChat && !isLoading && newMessage.trim()) ? '#66c0f4' : '#3a3f4b',
+                            color: (user && selectedChat && !isLoading && newMessage.trim()) ? '#1b2838' : '#6c757d',
                             fontWeight: 'bold',
                             border: 'none',
                             borderRadius: 5,
-                            cursor: (user && selectedChat && !isLoading) ? 'pointer' : 'not-allowed',
+                            cursor: (user && selectedChat && !isLoading && newMessage.trim()) ? 'pointer' : 'not-allowed',
                         }}
                     >
                         {isLoading ? 'Sending...' : 'Send'}
@@ -319,23 +322,14 @@ const ChatWidget = () => {
     // --- Main Render ---
     return (
         <div className="chat-widget">
-            {/* Floating Toggle Button */}
+            {/* Floating Toggle Button (Omitted for brevity) */}
             <button
                 onClick={() => setIsOpen((prev) => !prev)}
                 style={{
-                    position: 'fixed',
-                    bottom: '20px',
-                    right: '20px',
-                    backgroundColor: '#1b2838',
-                    color: '#66c0f4',
-                    border: 'none',
-                    padding: '12px 16px',
-                    borderRadius: '50%',
-                    fontSize: '16px',
-                    fontWeight: 'bold',
-                    boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-                    cursor: 'pointer',
-                    zIndex: 1000,
+                    position: 'fixed', bottom: '20px', right: '20px', backgroundColor: '#1b2838',
+                    color: '#66c0f4', border: 'none', padding: '12px 16px', borderRadius: '50%',
+                    fontSize: '16px', fontWeight: 'bold', boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+                    cursor: 'pointer', zIndex: 1000,
                 }}
             >
                 💬
@@ -345,72 +339,80 @@ const ChatWidget = () => {
             {isOpen && (
                 <div
                     style={{
-                        position: 'fixed',
-                        bottom: '80px',
-                        right: '20px',
-                        width: '450px', 
-                        height: '550px', 
-                        backgroundColor: '#171a21',
-                        border: '2px solid #3a3f4b',
-                        borderRadius: '10px',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        boxShadow: '0 0 15px rgba(0,0,0,0.6)',
-                        zIndex: 999,
+                        position: 'fixed', bottom: '80px', right: '20px', width: '450px', 
+                        height: '550px', backgroundColor: '#171a21', border: '2px solid #3a3f4b',
+                        borderRadius: '10px', display: 'flex', flexDirection: 'row',
+                        boxShadow: '0 0 15px rgba(0,0,0,0.6)', zIndex: 999,
                     }}
                 >
                     {/* Chat List (Sidebar) */}
                     <div
                         style={{
-                            flex: 1.2, 
-                            borderRight: '1px solid #3a3f4b',
-                            padding: 10,
-                            backgroundColor: '#1b2838',
-                            color: '#c7d5e0',
-                            overflowY: 'auto',
+                            flex: 1.2, borderRight: '1px solid #3a3f4b', padding: 10,
+                            backgroundColor: '#1b2838', color: '#c7d5e0', overflowY: 'auto',
                         }}
                     >
-                        <button
-                            onClick={() => handleGetOrCreateChat(null)} // Use the generic function for global chat
-                            style={{
-                                background: '#66c0f4',
-                                color: '#1b2838',
-                                padding: '6px 12px',
-                                marginBottom: 10,
-                                border: 'none',
-                                borderRadius: 5,
-                                fontWeight: 'bold',
-                                width: '100%',
-                                cursor: 'pointer',
-                            }}
-                        >
-                            🌐 Global Chat
-                        </button>
-                        <h4 style={{ color: '#66c0f4', marginBottom: 10 }}>Private Chats</h4>
+                        {/* FIX: Map all chats now, but the fetching logic ensures Global Chat is first. */}
                         
                         {isLoading && !chats.length && <div style={{color: '#999'}}>Loading Chats...</div>}
-                        
-                        {chats.map((chat) => (
-                            <div
-                                key={chat._id}
-                                onClick={() => handleSelectChat(chat)}
-                                style={{
-                                    padding: '8px',
-                                    marginBottom: 6,
-                                    cursor: 'pointer',
-                                    borderRadius: 5,
-                                    backgroundColor: selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
-                                    transition: '0.2s',
-                                    border: '1px solid transparent',
-                                    ':hover': { borderColor: '#66c0f4' }
-                                }}
-                            >
-                                <div style={{fontWeight: 'bold'}}>{getChatPartner(chat)}</div>
-                                <small style={{color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
-                                    {chat.lastMessage || 'Start a conversation.'}
-                                </small>
-                            </div>
-                        ))}
+
+                        {chats.map((chat) => {
+                            const isCurrentGlobal = isGlobalChat(chat);
+
+                            return (
+                                <React.Fragment key={chat._id}>
+                                    {/* FIX: Render the Global Chat entry here */}
+                                    {isCurrentGlobal && (
+                                        <div 
+                                            style={{ 
+                                                // Global Chat header style to match original
+                                                color: '#66c0f4', 
+                                                marginBottom: 10, 
+                                                paddingTop: 0, 
+                                                fontWeight: 'bold',
+                                                // Make the whole block clickable
+                                                cursor: 'pointer',
+                                                backgroundColor: selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
+                                                padding: '8px',
+                                                borderRadius: 5,
+                                                borderBottom: '1px solid #3a3f4b',
+                                            }}
+                                            onClick={() => handleSelectChat(chat)}
+                                        >
+                                            <div style={{fontWeight: 'bold'}}>🌐 Global Chat</div>
+                                            <small style={{color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
+                                                {chat.lastMessage || 'Start a global conversation.'}
+                                            </small>
+                                        </div>
+                                    )}
+
+                                    {/* FIX: Render the Private Chats header after Global Chat, but only once */}
+                                    {isCurrentGlobal && <h4 style={{ color: '#66c0f4', marginBottom: 10, marginTop: 10 }}>Private Chats</h4>}
+                                    
+                                    {/* Render private chat items */}
+                                    {!isCurrentGlobal && (
+                                        <div
+                                            onClick={() => handleSelectChat(chat)}
+                                            style={{
+                                                padding: '8px',
+                                                marginBottom: 6,
+                                                cursor: 'pointer',
+                                                borderRadius: 5,
+                                                backgroundColor: selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
+                                                transition: '0.2s',
+                                                border: '1px solid transparent',
+                                                ':hover': { borderColor: '#66c0f4' }
+                                            }}
+                                        >
+                                            <div style={{fontWeight: 'bold'}}>{getChatPartner(chat)}</div>
+                                            <small style={{color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
+                                                {chat.lastMessage || 'Start a conversation.'}
+                                            </small>
+                                        </div>
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
                     </div>
 
                     {/* Messages Content */}
