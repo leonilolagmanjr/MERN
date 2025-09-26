@@ -1,62 +1,124 @@
 const Chat = require('../models/Chat');
 const Message = require('../models/Message');
 const User = require('../models/User');
+const { getIO } = require('../socket'); // CRITICAL: Import getIO
 
 // Create or Get Chat
 const getOrCreateChat = async (userId, otherUserId = null) => {
-  if (!otherUserId) {
-    // Return the global chat room
-    let globalChat = await Chat.findOne({ participants: [] });
-    if (!globalChat) {
-      globalChat = await Chat.create({ participants: [], lastMessage: 'Welcome to the global chat!' });
+    
+    // --- Global Chat Logic ---
+    if (!otherUserId) {
+        // Find or create the single global chat room, using .lean() for faster reads
+        let globalChat = await Chat.findOne({ participants: [], type: 'global' }).lean();
+        
+        if (!globalChat) {
+            globalChat = await Chat.create({ 
+                participants: [], 
+                lastMessage: 'Welcome to the global chat!', 
+                type: 'global' 
+            });
+        }
+        return globalChat;
     }
-    return globalChat;
-  }
 
-  // Validate friendship before creating or fetching chat
-  const user = await User.findById(userId);
-  if (!user.connections.includes(otherUserId)) {
-    throw new Error('Cannot create chat: users are not friends');
-  }
+    // --- Private Chat Logic ---
+    
+    // 1. Validate friendship before creating or fetching chat
+    // Use .lean() to speed up user fetching if User model is large
+    const [user1, user2] = await Promise.all([
+        User.findById(userId).lean(),
+        User.findById(otherUserId).lean()
+    ]);
+    
+    if (!user1 || !user2) {
+        throw new Error('One or both users not found.');
+    }
+    
+    // Check bi-directional connection
+    const isConnected = user1.connections.map(id => id.toString()).includes(otherUserId.toString()) && 
+                        user2.connections.map(id => id.toString()).includes(userId.toString());
 
-  // Handle private chats
-  let chat = await Chat.findOne({ participants: { $all: [userId, otherUserId] } });
-  if (!chat) {
-    chat = await Chat.create({ participants: [userId, otherUserId] });
-  }
-  return chat;
+    if (!isConnected) {
+        throw new Error('Cannot create chat: users are not connected (bi-directional required).');
+    }
+
+    // 2. Handle private chats
+    // Use $all for finding a private chat, ensuring both IDs are present. Use .lean() for efficiency.
+    let chat = await Chat.findOne({ 
+        participants: { $all: [userId, otherUserId] },
+        type: 'private'
+    }).lean();
+    
+    if (!chat) {
+        chat = await Chat.create({ 
+            participants: [userId, otherUserId], 
+            type: 'private' 
+        });
+    }
+    
+    return chat;
 };
 
-// Send Message
+// Send Message (Revised to include Socket.IO broadcast)
 const sendMessage = async (chatId, senderId, receiverId, content) => {
-  // Allow messages in global chat (receiverId null)
-  if (receiverId) {
-    const sender = await User.findById(senderId);
-    if (!sender.connections.includes(receiverId)) {
-      throw new Error('Cannot send message: users are not friends');
+    
+    // 1. Verify the chat and participant status
+    const chat = await Chat.findById(chatId).lean(); // Use .lean()
+    if (!chat) {
+        throw new Error('Chat not found.');
     }
-  }
+    
+    // Check if sender is a participant (only for private chats)
+    if (chat.type === 'private' && !chat.participants.map(id => id.toString()).includes(senderId.toString())) {
+        throw new Error('Sender is not a participant in this private chat.');
+    }
 
-  const message = await Message.create({
-    sender: senderId,
-    receiver: receiverId, // This will be null for global chat
-    content,
-    chat: chatId, // Ensure the chat ID is linked
-  });
-  await Chat.findByIdAndUpdate(chatId, { lastMessage: content, lastUpdated: Date.now() });
-  return message;
+    // 2. Create the message
+    const message = await Message.create({
+        sender: senderId,
+        receiver: receiverId, // Null for global chat
+        content,
+        chat: chatId,
+    });
+    
+    // 3. Update the chat
+    // Use $set for explicit updates, using new Date() instead of Date.now() for consistency
+    await Chat.findByIdAndUpdate(chatId, { 
+        $set: { lastMessage: content, lastUpdated: new Date() } 
+    });
+    
+    // 4. EFFICIENT SOCKET BROADCAST
+    const io = getIO();
+    
+    // Fully populate the message object to send complete data to the frontend
+    const populatedMessage = await Message.findById(message._id)
+        .populate('sender', 'name _id')
+        .lean(); // Use .lean() for the broadcast object too
+    
+    io.to(chatId.toString()).emit('receiveMessage', populatedMessage);
+    
+    return populatedMessage;
 };
 
-// Fetch Chat Messages
+// Fetch Chat Messages (Updated with .lean())
 const getChatMessages = async (chatId) => {
-  return await Message.find({ chat: chatId })
-    .sort({ timestamp: 1 })
-    .populate('sender', 'name _id'); // Populate sender's name and ID
+    return await Message.find({ chat: chatId })
+      .sort({ createdAt: 1 }) 
+      .populate('sender', 'name _id')
+      .lean(); // Use .lean() for speed
 };
 
-// Add this function to fetch all chats for a user
+// Fetch all chats for a user (Updated with .lean())
 const getUserChats = async (userId) => {
-  return await Chat.find({ participants: userId }).populate('participants', 'name email profileImage'); // Add more fields
+    return await Chat.find({ 
+        $or: [
+            { participants: userId }, 
+            { type: 'global' } // Include the global chat regardless of participation array
+        ]
+    })
+      .populate('participants', 'name email profileImage')
+      .sort({ lastUpdated: -1 }) // Sort by most recent activity
+      .lean(); // Use .lean() for speed
 };
 
 module.exports = { getOrCreateChat, sendMessage, getChatMessages, getUserChats };

@@ -1,54 +1,62 @@
 const chatService = require('../services/chatService');
 
-const createChat = async (req, res) => {
-  const { otherUserId } = req.body;
-  try {
-    const chat = await chatService.getOrCreateChat(req.user.id, otherUserId);
-    res.json(chat);
-  } catch (err) {
-    console.error('Error creating chat:', err.message); // Add detailed logging
-    res.status(400).json({ msg: err.message || 'Failed to create or fetch chat. Please try again.' });
-  }
+/**
+ * Handles creating a private chat or fetching an existing one.
+ * If 'otherUserId' is NOT provided in the body, it fetches the global chat.
+ * This function now replaces both createChat and getGlobalChat controller logic.
+ */
+const getOrCreateChat = async (req, res) => {
+    // otherUserId will be null/undefined for global chat
+    const { otherUserId } = req.body; 
+    
+    try {
+        // The service layer handles determining if it's a private or global chat
+        const chat = await chatService.getOrCreateChat(req.user.id, otherUserId || null);
+        res.json(chat);
+    } catch (err) {
+        console.error('Error in getOrCreateChat:', err.message); 
+        // Use 400 for business logic errors (like 'users are not friends')
+        res.status(400).json({ msg: err.message || 'Failed to create or fetch chat. Please try again.' });
+    }
 };
 
+// Original sendMessage, getMessages, and getChats remain good:
+
 const sendMessage = async (req, res) => {
-  const { chatId, receiverId, content } = req.body;
-  try {
-    // Check if it's a global chat (no receiverId)
-    const message = await chatService.sendMessage(chatId, req.user.id, receiverId || null, content);
-    res.json(message);
-  } catch (err) {
-    console.error('Error sending message:', err.message); // Add detailed logging
-    res.status(400).json({ msg: err.message || 'Failed to send message. Please try again.' });
-  }
+    const { chatId, receiverId, content } = req.body;
+    try {
+        const message = await chatService.sendMessage(chatId, req.user.id, receiverId || null, content);
+        // OPTIONAL: If using WebSockets, you might want to emit the message here 
+        // or let the service layer handle the socket broadcast *after* DB save.
+        res.status(201).json(message); // Use 201 Created for a new resource (the message)
+    } catch (err) {
+        console.error('Error sending message:', err.message); 
+        res.status(400).json({ msg: err.message || 'Failed to send message. Please try again.' });
+    }
 };
 
 const getMessages = async (req, res) => {
-  try {
-    const messages = await chatService.getChatMessages(req.params.chatId);
-    res.json(messages);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
+    try {
+        // Ensure chatId is properly validated and exists
+        const chatId = req.params.chatId;
+        if (!chatId) return res.status(400).json({ msg: 'Chat ID is required.' });
+
+        const messages = await chatService.getChatMessages(chatId);
+        res.json(messages);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
 };
 
-// Add this function to fetch all chats for the logged-in user
 const getChats = async (req, res) => {
-  try {
-    const chats = await chatService.getUserChats(req.user.id);
-    res.json(chats);
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
+    try {
+        // Use a more descriptive name for the ID if needed, but req.user.id is fine
+        const chats = await chatService.getUserChats(req.user.id);
+        res.json(chats);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
 };
 
-const getGlobalChat = async (req, res) => {
-  try {
-    const globalChat = await chatService.getOrCreateChat(req.user.id);
-    res.json(globalChat);
-  } catch (err) {
-    res.status(500).json({ msg: 'Failed to fetch global chat.' });
-  }
-};
-
-module.exports = { createChat, sendMessage, getMessages, getChats, getGlobalChat };
+// Export the newly combined function
+module.exports = { getOrCreateChat, sendMessage, getMessages, getChats };
