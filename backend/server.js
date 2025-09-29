@@ -17,6 +17,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 // Routes
 const taskRoutes = require('./routes/taskRoutes');
@@ -33,6 +34,9 @@ app.use('/api/info', infoRoutes); // Use info routes
 
 const chatRoutes = require('./routes/chatRoutes');
 app.use('/api/chat', chatRoutes);
+
+const videoRoutes = require('./routes/videoRoutes');
+app.use('/api/videos', videoRoutes);
 
 
 // DB Connect

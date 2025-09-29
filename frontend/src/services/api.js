@@ -218,3 +218,16 @@ export const checkFriendRelationshipStatus = async (userId1, userId2, token) => 
     throw error;
   }
 };
+
+// Video APIs
+export const fetchVideos = async (search = '') => {
+  const response = await axios.get(`${API_URL}/videos?search=${search}`);
+  return response.data;
+};
+
+export const uploadVideo = async (formData, token) => {
+  const response = await axios.post(`${API_URL}/videos/upload`, formData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
