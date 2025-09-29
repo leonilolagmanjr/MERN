@@ -17,6 +17,8 @@ import {
   DialogActions,
 } from '@mui/material';
 
+import CollapsibleText from '../components/CollapsibleText';
+
 const VideoManager = () => {
   const [refreshVideos, setRefreshVideos] = useState(false);
   const [userVideos, setUserVideos] = useState([]);
@@ -111,7 +113,13 @@ const VideoManager = () => {
             userVideos.map((video) => (
               <Box key={video._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid #2a475e', ':last-child': { borderBottom: 'none' } }}>
                 <Box sx={{ flex: 2, color: '#66c0f4', fontWeight: 'bold' }}>{video.title}</Box>
-                <Box sx={{ flex: 3, color: '#c7d5e0' }}>{video.description || 'No description'}</Box>
+                <Box sx={{ flex: 3, color: '#c7d5e0' }}>
+                  {video.description ? (
+                    <CollapsibleText text={video.description} limit={100} />
+                  ) : (
+                    'No description'
+                  )}
+                </Box>
                 <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(video.createdAt).toLocaleDateString()}</Box>
                 <Box sx={{ flex: 1, textAlign: 'right', display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                   <Button

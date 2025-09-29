@@ -11,6 +11,7 @@ import {
   TextField,
 } from '@mui/material';
 import { fetchVideos } from '../services/api';
+import CollapsibleText from '../components/CollapsibleText';
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
@@ -53,13 +54,13 @@ const Videos = () => {
           <Grid container spacing={3}>
             {videos.length > 0 ? (
               videos.map((video) => (
-                <Grid item xs={12} sm={6} md={4} key={video._id}>
-                  <Card sx={{ bgcolor: '#2a475e', color: '#c7d5e0' }}>
-                    <CardContent>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={video._id}>
+                  <Card sx={{ bgcolor: '#2a475e', color: '#c7d5e0', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <CardContent sx={{ flexGrow: 1 }}>
                       <video
                         width="100%"
                         height="auto"
-                        style={{ maxHeight: '200px', aspectRatio: '16/9' }}
+                        style={{ maxHeight: '240px', aspectRatio: '16/9' }}
                         controls
                         src={`http://${window.location.hostname}:5000/api/videos/stream/${video.videoUrl.split('/').pop()}`}
                       />
@@ -70,9 +71,7 @@ const Videos = () => {
                         By: {video.uploader.name}
                       </Typography>
                       {video.description && (
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                          {video.description}
-                        </Typography>
+                        <CollapsibleText text={video.description} limit={100} />
                       )}
                     </CardContent>
                   </Card>
