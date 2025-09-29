@@ -1,11 +1,10 @@
-# TODO for Video Page Creation
+# Video Streaming Implementation
 
-- [ ] Create backend/models/Video.js
-- [ ] Create backend/services/videoService.js
-- [ ] Create backend/controllers/videoController.js
-- [ ] Create backend/routes/videoRoutes.js
-- [ ] Edit backend/server.js to include video routes
-- [ ] Install multer for file uploads if not present
-- [ ] Create frontend/src/pages/Videos.js
-- [ ] Edit frontend/src/App.js to add /videos route
-- [ ] Test the video page functionality
+## Tasks
+- [x] Add streamVideo function to backend/controllers/videoController.js to handle HTTP range requests for video streaming
+- [x] Add GET /api/videos/stream/:filename route to backend/routes/videoRoutes.js
+- [x] Update frontend/src/pages/Videos.js to use the streaming URL instead of direct file URL for video src
+
+## Followup Steps
+- [ ] Test video streaming from another device
+- [ ] Verify video playback and seeking functionality

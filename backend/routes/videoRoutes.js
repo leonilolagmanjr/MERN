@@ -18,5 +18,6 @@ const upload = multer({ storage });
 
 router.post('/upload', authenticate(), upload.single('video'), videoController.uploadVideo);
 router.get('/', videoController.getVideos);
+router.get('/stream/:filename', videoController.streamVideo);
 
 module.exports = router;

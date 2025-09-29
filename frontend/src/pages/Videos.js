@@ -98,7 +98,7 @@ const Videos = () => {
                         width="100%"
                         height="200"
                         controls
-                        src={`http://localhost:5000${video.videoUrl}`}
+                        src={`http://${window.location.hostname}:5000/api/videos/stream/${video.videoUrl.split('/').pop()}`}
                       />
                       <Typography variant="h6" sx={{ mt: 1 }}>
                         {video.title}
