@@ -54,9 +54,10 @@ const Auth = () => {
       <Paper
         elevation={3}
         sx={{
-          padding: 4,
+          padding: { xs: 2, sm: 4 },
           borderRadius: 2,
-          width: 400,
+          width: { xs: '90%', sm: 400 },
+          maxWidth: 400,
           textAlign: 'center',
           backgroundColor: '#2a475e',
           color: '#c7d5e0',

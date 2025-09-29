@@ -96,7 +96,8 @@ const Videos = () => {
                     <CardContent>
                       <video
                         width="100%"
-                        height="200"
+                        height="auto"
+                        style={{ maxHeight: '200px', aspectRatio: '16/9' }}
                         controls
                         src={`http://${window.location.hostname}:5000/api/videos/stream/${video.videoUrl.split('/').pop()}`}
                       />
