@@ -14,6 +14,7 @@ import EditProfile from './pages/EditProfile'; // Import EditProfile
 import About from './pages/About';
 import Videos from './pages/Videos'; // Import Videos
 import VideoManager from './pages/VideoManager'; // Import VideoManager
+import SocialMedia from './pages/SocialMedia'; // Import SocialMedia
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
@@ -36,6 +37,7 @@ const App = () => {
             <Route path="/about" element={<About />} /> {/* Add About route */}
             <Route path="/videos" element={<Videos />} /> {/* Add Videos route */}
             <Route path="/videomanager" element={<VideoManager />} /> {/* Add VideoManager route */}
+            <Route path="/social" element={<SocialMedia />} /> {/* Add SocialMedia route */}
           </Routes>
         </div>
         <ChatWidget /> {/* Include ChatWidget for chat functionality */}

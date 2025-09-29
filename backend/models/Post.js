@@ -1,0 +1,20 @@
+const mongoose = require('mongoose');
+
+const commentSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  text: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const postSchema = new mongoose.Schema({
+  content: { type: String, required: true },
+  media: [{ type: String }], // Array of URLs to uploaded media files
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of user IDs who liked the post
+  comments: [commentSchema], // Sub-document array for comments
+  shareCount: { type: Number, default: 0 }, // Number of shares
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+}, { timestamps: true });
+
+const Post = mongoose.model('Post', postSchema);
+
+module.exports = Post;

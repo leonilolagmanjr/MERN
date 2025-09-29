@@ -35,8 +35,13 @@ app.use('/api/info', infoRoutes); // Use info routes
 const chatRoutes = require('./routes/chatRoutes');
 app.use('/api/chat', chatRoutes);
 
+// Existing video routes
 const videoRoutes = require('./routes/videoRoutes');
 app.use('/api/videos', videoRoutes);
+
+// New post routes
+const postRoutes = require('./routes/postRoutes');
+app.use('/api/posts', postRoutes);
 
 
 // DB Connect

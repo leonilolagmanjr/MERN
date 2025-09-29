@@ -27,6 +27,7 @@ const Navbar = () => {
     { text: 'Videos', to: '/videos' },
     { text: 'Video Manager', to: '/videomanager' },
     { text: 'Task Manager', to: '/taskmanager' },
+    { text: 'Social', to: '/social' },
     { text: 'Edit Profile', to: '/editprofile' },
   ];
 

@@ -252,3 +252,51 @@ export const deleteVideo = async (videoId, token) => {
   });
   return response.data;
 };
+
+// Post APIs
+export const fetchPosts = async () => {
+  const response = await axios.get(`${API_URL}/posts`);
+  return response.data;
+};
+
+export const createPost = async (formData, token) => {
+  const response = await axios.post(`${API_URL}/posts/create`, formData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updatePost = async (postId, data, token) => {
+  const response = await axios.patch(`${API_URL}/posts/${postId}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const deletePost = async (postId, token) => {
+  const response = await axios.delete(`${API_URL}/posts/${postId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const likePost = async (postId, token) => {
+  const response = await axios.post(`${API_URL}/posts/${postId}/like`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const addComment = async (postId, data, token) => {
+  const response = await axios.post(`${API_URL}/posts/${postId}/comment`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const sharePost = async (postId, token) => {
+  const response = await axios.post(`${API_URL}/posts/${postId}/share`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
