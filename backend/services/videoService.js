@@ -35,4 +35,5 @@ module.exports = {
   getUserVideos,
   updateVideo,
   deleteVideo,
+  getVideoById,
 };
