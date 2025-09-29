@@ -1,17 +1,23 @@
-# Responsive Design Implementation
+# VideoManager Implementation Plan
 
-## Completed Tasks
-- [x] Added CSS media queries in index.css for global responsive styles (mobile, tablet, desktop)
-- [x] Updated Auth.js to use responsive width and padding for the login form
-- [x] Enhanced Navbar.js with mobile drawer menu using Material-UI useMediaQuery
-- [x] Adjusted Videos.js video element to be responsive with aspect ratio
+## Backend Updates
+- [x] Add getUserVideos, updateVideo, deleteVideo to videoService.js
+- [x] Add getUserVideos, updateVideo, deleteVideo to videoController.js
+- [x] Add routes for getUserVideos, updateVideo, deleteVideo in videoRoutes.js
 
-## Summary
-The frontend now dynamically resizes based on screen size:
-- Global styles adjust font sizes and button padding for mobile (<600px), tablet (601-960px), and desktop (>960px)
-- Navbar switches to a hamburger menu on mobile devices
-- Auth form adapts width and padding for smaller screens
-- Video elements maintain aspect ratio and scale appropriately
-- Material-UI Grid components already provide responsive layouts for pages like Home, Videos, etc.
+## Frontend API Updates
+- [x] Add fetchUserVideos, updateVideo, deleteVideo to api.js
 
-All pages and components now utilize Material-UI's responsive features for a better user experience across devices.
+## Frontend Components
+- [x] Create EditVideo.js component
+- [x] Create DeleteVideo.js component
+
+## Pages
+- [x] Create VideoManager.js page
+- [x] Update Videos.js to remove upload button
+- [x] Update Navbar.js to add VideoManager link
+- [x] Update App.js to add VideoManager route
+
+## Testing
+- [ ] Test VideoManager upload, list, edit, delete
+- [ ] Ensure Videos.js still works for browsing

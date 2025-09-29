@@ -36,6 +36,46 @@ const getVideos = async (req, res) => {
   }
 };
 
+const getUserVideos = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const videos = await videoService.getUserVideos(userId);
+    res.json(videos);
+  } catch (err) {
+    console.error('Get User Videos Error:', err);
+    res.status(500).json({ msg: 'Server error fetching user videos' });
+  }
+};
+
+const updateVideo = async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const updateData = req.body;
+    const updatedVideo = await videoService.updateVideo(videoId, updateData);
+    if (!updatedVideo) {
+      return res.status(404).json({ msg: 'Video not found' });
+    }
+    res.json(updatedVideo);
+  } catch (err) {
+    console.error('Update Video Error:', err);
+    res.status(500).json({ msg: 'Server error updating video' });
+  }
+};
+
+const deleteVideo = async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const deletedVideo = await videoService.deleteVideo(videoId);
+    if (!deletedVideo) {
+      return res.status(404).json({ msg: 'Video not found' });
+    }
+    res.json({ msg: 'Video deleted successfully' });
+  } catch (err) {
+    console.error('Delete Video Error:', err);
+    res.status(500).json({ msg: 'Server error deleting video' });
+  }
+};
+
 // New function to stream video with range support
 const streamVideo = (req, res) => {
   const videoPath = path.join(__dirname, '../uploads/videos', req.params.filename);
@@ -74,5 +114,8 @@ const streamVideo = (req, res) => {
 module.exports = {
   uploadVideo,
   getVideos,
+  getUserVideos,
+  updateVideo,
+  deleteVideo,
   streamVideo,
 };

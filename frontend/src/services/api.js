@@ -225,8 +225,29 @@ export const fetchVideos = async (search = '') => {
   return response.data;
 };
 
+export const fetchUserVideos = async (token) => {
+  const response = await axios.get(`${API_URL}/videos/my-videos`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 export const uploadVideo = async (formData, token) => {
   const response = await axios.post(`${API_URL}/videos/upload`, formData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateVideo = async (videoId, updateData, token) => {
+  const response = await axios.patch(`${API_URL}/videos/${videoId}`, updateData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const deleteVideo = async (videoId, token) => {
+  const response = await axios.delete(`${API_URL}/videos/${videoId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;

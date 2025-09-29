@@ -3,30 +3,18 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   Grid,
   Card,
   CardContent,
   Container,
   TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
 } from '@mui/material';
-import { fetchVideos, uploadVideo } from '../services/api';
-import { useAuth } from '../context/AuthContext';
+import { fetchVideos } from '../services/api';
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
   const [search, setSearch] = useState('');
-  const [uploadOpen, setUploadOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [file, setFile] = useState(null);
-  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     const getVideos = async () => {
@@ -39,27 +27,6 @@ const Videos = () => {
     };
     getVideos();
   }, [search]);
-
-  const handleUpload = async () => {
-    if (!file || !title) return;
-    const formData = new FormData();
-    formData.append('video', file);
-    formData.append('title', title);
-    formData.append('description', description);
-    try {
-      const token = localStorage.getItem('token');
-      await uploadVideo(formData, token);
-      setUploadOpen(false);
-      setTitle('');
-      setDescription('');
-      setFile(null);
-      // Refresh videos
-      const data = await fetchVideos(search);
-      setVideos(data);
-    } catch (err) {
-      console.error('Error uploading video:', err);
-    }
-  };
 
   return (
     <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh' }}>
@@ -77,11 +44,6 @@ const Videos = () => {
             sx={{ mr: 2, bgcolor: '#ffffff', borderRadius: 1 }}
             size="small"
           />
-          {isLoggedIn && (
-            <Button variant="contained" onClick={() => setUploadOpen(true)}>
-              Upload Video
-            </Button>
-          )}
         </Toolbar>
       </AppBar>
 
@@ -124,40 +86,6 @@ const Videos = () => {
           </Grid>
         </Container>
       </Box>
-
-      {/* Upload Dialog */}
-      <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
-        <DialogTitle>Upload Video</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Title"
-            fullWidth
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Description"
-            fullWidth
-            multiline
-            rows={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <input
-            type="file"
-            accept="video/*"
-            onChange={(e) => setFile(e.target.files[0])}
-            style={{ marginTop: 16 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setUploadOpen(false)}>Cancel</Button>
-          <Button onClick={handleUpload}>Upload</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

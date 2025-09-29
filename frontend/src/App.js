@@ -13,6 +13,7 @@ import ChatWidget from './components/ChatWidget';
 import EditProfile from './pages/EditProfile'; // Import EditProfile
 import About from './pages/About';
 import Videos from './pages/Videos'; // Import Videos
+import VideoManager from './pages/VideoManager'; // Import VideoManager
 
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/editprofile" element={<EditProfile />} /> {/* Add EditProfile route */}
             <Route path="/about" element={<About />} /> {/* Add About route */}
             <Route path="/videos" element={<Videos />} /> {/* Add Videos route */}
+            <Route path="/videomanager" element={<VideoManager />} /> {/* Add VideoManager route */}
           </Routes>
         </div>
         <ChatWidget /> {/* Include ChatWidget for chat functionality */}
