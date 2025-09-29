@@ -32,6 +32,17 @@ const TaskManager = () => {
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+
+  const handleEdit = (task) => {
+    setSelectedTask(task);
+    setOpenUpdate(true);
+  };
+
+  const handleDelete = (task) => {
+    setSelectedTask(task);
+    setOpenDelete(true);
+  };
 
   useEffect(() => {
     const fetchAllJobs = async () => {
@@ -73,16 +84,10 @@ const TaskManager = () => {
           Browse Jobs
         </Typography>
   
-        {/* User Posted Tasks Action Buttons - MOVED TO TOP */}
+        {/* User Posted Tasks Action Buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
           <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenCreate(true)}>
             Create Task
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenUpdate(true)}>
-            Update Task
-          </Button>
-          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenDelete(true)}>
-            Delete Task
           </Button>
         </Box>
   
@@ -96,7 +101,7 @@ const TaskManager = () => {
             <Box sx={{ flex: 2 }}>Name</Box>
             <Box sx={{ flex: 1 }}>Date Listed</Box>
             <Box sx={{ flex: 1 }}>Status</Box>
-            <Box sx={{ flex: 1, textAlign: 'right' }}>Remove</Box>
+            <Box sx={{ flex: 1, textAlign: 'right' }}>Actions</Box>
           </Box>
           {/* Table Rows */}
           {userTasks.length === 0 ? (
@@ -122,12 +127,19 @@ const TaskManager = () => {
                 <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
                 {/* Status */}
                 <Box sx={{ flex: 1, color: '#66c0f4', fontWeight: 'bold' }}>Active</Box>
-                {/* Remove Button */}
-                <Box sx={{ flex: 1, textAlign: 'right' }}>
+                {/* Actions Buttons */}
+                <Box sx={{ flex: 1, textAlign: 'right', display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                   <Button
                     variant="text"
                     sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
-                    onClick={() => setOpenDelete(true)}
+                    onClick={() => handleEdit(job)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="text"
+                    sx={{ color: '#ff4c4c', fontWeight: 'bold', textTransform: 'none' }}
+                    onClick={() => handleDelete(job)}
                   >
                     Remove
                   </Button>
@@ -263,18 +275,16 @@ const TaskManager = () => {
             <Button onClick={() => setOpenCreate(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
           </Box>
         </Modal>
-        <Modal open={openUpdate} onClose={() => setOpenUpdate(false)}>
+        <Modal open={openUpdate} onClose={() => { setOpenUpdate(false); setSelectedTask(null); }}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
             <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Update Task</Typography>
-            <UpdateTask onTaskUpdated={() => { setOpenUpdate(false); triggerRefresh(); }} />
-            <Button onClick={() => setOpenUpdate(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
+            <UpdateTask task={selectedTask} onTaskUpdated={() => { setOpenUpdate(false); setSelectedTask(null); triggerRefresh(); }} onClose={() => { setOpenUpdate(false); setSelectedTask(null); }} />
+            <Button onClick={() => { setOpenUpdate(false); setSelectedTask(null); }} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
           </Box>
         </Modal>
-        <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
+        <Modal open={openDelete} onClose={() => { setOpenDelete(false); setSelectedTask(null); }}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Delete Task</Typography>
-            <DeleteTask onTaskDeleted={() => { setOpenDelete(false); triggerRefresh(); }} />
-            <Button onClick={() => setOpenDelete(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
+            <DeleteTask task={selectedTask} onTaskDeleted={() => { setOpenDelete(false); setSelectedTask(null); triggerRefresh(); }} onClose={() => { setOpenDelete(false); setSelectedTask(null); }} />
           </Box>
         </Modal>
   

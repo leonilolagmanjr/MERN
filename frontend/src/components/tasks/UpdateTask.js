@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { editTask, fetchPostedJobs } from '../../services/api';
+import { editTask } from '../../services/api';
 
-const UpdateTask = ({ onTaskUpdated }) => {
-  const [tasks, setTasks] = useState([]);
-  const [selectedTaskId, setSelectedTaskId] = useState('');
+const UpdateTask = ({ task, onTaskUpdated, onClose }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -14,54 +12,27 @@ const UpdateTask = ({ onTaskUpdated }) => {
   });
   const [message, setMessage] = useState('');
 
-  const fetchTasks = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const postedTasks = await fetchPostedJobs(token);
-      setTasks(postedTasks); // <- this is what updates the dropdown options
-    } catch (err) {
-      console.error('Error fetching tasks:', err);
-    }
-  };
-  
   useEffect(() => {
-    fetchTasks();
-  }, []);
-  
-
-  const handleTaskChange = (e) => {
-    const taskId = e.target.value;
-    setSelectedTaskId(taskId);
-    const selectedTask = tasks.find((task) => task._id === taskId);
-    if (selectedTask) {
+    if (task) {
       setFormData({
-        title: selectedTask.title,
-        description: selectedTask.description,
-        difficulty: selectedTask.difficulty,
-        category: selectedTask.category,
-        location: selectedTask.location,
-        deadline: selectedTask.deadline.split('T')[0], // Format date
+        title: task.title || '',
+        description: task.description || '',
+        difficulty: task.difficulty || '',
+        category: task.category || '',
+        location: task.location || '',
+        deadline: task.deadline ? task.deadline.split('T')[0] : '',
       });
     }
-  };
+  }, [task]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await editTask(selectedTaskId, formData, token);
+      await editTask(task._id, formData, token);
       setMessage('Task updated successfully!');
-      setSelectedTaskId('');
-      setFormData({
-        title: '',
-        description: '',
-        difficulty: '',
-        category: '',
-        location: '',
-        deadline: '',
-      });
-      await fetchTasks();
       onTaskUpdated();
+      onClose();
     } catch (err) {
       setMessage('Failed to update task. Please try again.');
     }
@@ -72,25 +43,13 @@ const UpdateTask = ({ onTaskUpdated }) => {
       <h3 style={styles.heading}>Update Task</h3>
       {message && <p style={styles.message}>{message}</p>}
       <form style={styles.form} onSubmit={handleSubmit}>
-        <select
-          value={selectedTaskId}
-          onChange={handleTaskChange}
-          style={styles.input}
-          required
-        >
-          <option value="">Select a task</option>
-          {tasks.map((task) => (
-            <option key={task._id} value={task._id}>
-              {task.title}
-            </option>
-          ))}
-        </select>
         <input
           type="text"
           placeholder="Title"
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           style={styles.input}
+          required
         />
         <textarea
           placeholder="Description"
@@ -99,6 +58,7 @@ const UpdateTask = ({ onTaskUpdated }) => {
             setFormData({ ...formData, description: e.target.value })
           }
           style={styles.textarea}
+          required
         />
         <input
           type="text"
@@ -108,6 +68,7 @@ const UpdateTask = ({ onTaskUpdated }) => {
             setFormData({ ...formData, difficulty: e.target.value })
           }
           style={styles.input}
+          required
         />
         <input
           type="text"
@@ -117,6 +78,7 @@ const UpdateTask = ({ onTaskUpdated }) => {
             setFormData({ ...formData, category: e.target.value })
           }
           style={styles.input}
+          required
         />
         <input
           type="text"
@@ -126,6 +88,7 @@ const UpdateTask = ({ onTaskUpdated }) => {
             setFormData({ ...formData, location: e.target.value })
           }
           style={styles.input}
+          required
         />
         <input
           type="date"
@@ -134,6 +97,7 @@ const UpdateTask = ({ onTaskUpdated }) => {
             setFormData({ ...formData, deadline: e.target.value })
           }
           style={styles.input}
+          required
         />
         <button type="submit" style={styles.button}>
           Update Task

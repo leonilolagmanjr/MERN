@@ -1,35 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { deleteTask, fetchPostedJobs } from '../../services/api';
+import React, { useState } from 'react';
+import { deleteTask } from '../../services/api';
 
-const DeleteTask = ({ onTaskDeleted }) => {
-  const [tasks, setTasks] = useState([]);
-  const [selectedTaskId, setSelectedTaskId] = useState('');
+const DeleteTask = ({ task, onTaskDeleted, onClose }) => {
   const [message, setMessage] = useState('');
 
-  const fetchTasks = async () => {
+  const handleDelete = async () => {
     try {
       const token = localStorage.getItem('token');
-      const postedTasks = await fetchPostedJobs(token);
-      setTasks(postedTasks); // <- this is what updates the dropdown options
-    } catch (err) {
-      console.error('Error fetching tasks:', err);
-    }
-  };
-  
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-  
-
-  const handleDelete = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem('token');
-      await deleteTask(selectedTaskId, token);
+      await deleteTask(task._id, token);
       setMessage('Task deleted successfully!');
-      setSelectedTaskId('');
-      await fetchTasks();
       onTaskDeleted();
+      onClose();
     } catch (err) {
       setMessage('Failed to delete task. Please try again.');
     }
@@ -39,24 +20,15 @@ const DeleteTask = ({ onTaskDeleted }) => {
     <div style={styles.container}>
       <h3 style={styles.heading}>Delete Task</h3>
       {message && <p style={styles.message}>{message}</p>}
-      <form style={styles.form} onSubmit={handleDelete}>
-        <select
-          value={selectedTaskId}
-          onChange={(e) => setSelectedTaskId(e.target.value)}
-          style={styles.input}
-          required
-        >
-          <option value="">Select a task</option>
-          {tasks.map((task) => (
-            <option key={task._id} value={task._id}>
-              {task.title}
-            </option>
-          ))}
-        </select>
-        <button type="submit" style={styles.button}>
+      <p>Are you sure you want to delete "{task.title}"?</p>
+      <div style={styles.buttonContainer}>
+        <button onClick={onClose} style={styles.cancelButton}>
+          Cancel
+        </button>
+        <button onClick={handleDelete} style={styles.deleteButton}>
           Delete Task
         </button>
-      </form>
+      </div>
     </div>
   );
 };
@@ -73,20 +45,21 @@ const styles = {
     color: '#66c0f4',
     marginBottom: '10px',
   },
-  form: {
+  buttonContainer: {
     display: 'flex',
-    flexDirection: 'column',
     gap: '10px',
+    justifyContent: 'flex-end',
   },
-  input: {
-    padding: '10px',
+  cancelButton: {
+    backgroundColor: '#666',
+    color: '#ffffff',
+    border: 'none',
+    padding: '10px 20px',
     borderRadius: '5px',
-    border: '1px solid #66c0f4',
-    backgroundColor: '#1b2838',
-    color: '#c7d5e0',
+    cursor: 'pointer',
   },
-  button: {
-    backgroundColor: '#66c0f4',
+  deleteButton: {
+    backgroundColor: '#ff4c4c',
     color: '#ffffff',
     border: 'none',
     padding: '10px 20px',
