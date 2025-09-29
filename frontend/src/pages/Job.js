@@ -70,7 +70,7 @@ const Job = () => {
           <strong>Status:</strong> {job.status}
         </Typography>
         <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
-          <strong>Posted by:</strong> {job.createdBy}
+          <strong>Posted by:</strong> {job.createdBy.name}
         </Typography>
       </Container>
     </Box>

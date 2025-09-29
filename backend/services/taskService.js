@@ -46,7 +46,7 @@ const acceptTask = async (taskId, assignedTo) => {
 const getAllTasks = async (difficulty) => {
   try {
     const filter = difficulty ? { status: 'open', difficulty } : { status: 'open' };
-    const tasks = await Task.find(filter);
+    const tasks = await Task.find(filter).populate('createdBy', 'name');
     return tasks;
   } catch (err) {
     throw new Error('Error fetching tasks');
