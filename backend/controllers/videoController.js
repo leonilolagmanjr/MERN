@@ -77,6 +77,20 @@ const deleteVideo = async (req, res) => {
 };
 
 // New function to stream video with range support
+const getVideo = async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const video = await videoService.getVideoById(videoId);
+    if (!video) {
+      return res.status(404).json({ msg: 'Video not found' });
+    }
+    res.json(video);
+  } catch (err) {
+    console.error('Get Video Error:', err);
+    res.status(500).json({ msg: 'Server error fetching video' });
+  }
+};
+
 const streamVideo = (req, res) => {
   const videoPath = path.join(__dirname, '../uploads/videos', req.params.filename);
   fs.stat(videoPath, (err, stats) => {
@@ -117,5 +131,6 @@ module.exports = {
   getUserVideos,
   updateVideo,
   deleteVideo,
+  getVideo,
   streamVideo,
 };

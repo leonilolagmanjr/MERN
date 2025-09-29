@@ -12,5 +12,6 @@ router.delete('/:postId', authenticate(), postController.deletePost);
 router.post('/:postId/like', authenticate(), postController.likePost);
 router.post('/:postId/comment', authenticate(), postController.addComment);
 router.post('/:postId/share', authenticate(), postController.sharePost);
+router.get('/stream/:filename', postController.streamMedia);
 
 module.exports = router;

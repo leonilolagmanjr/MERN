@@ -135,9 +135,9 @@ const PostItem = ({ post, onPostUpdated }) => {
           {post.media.map((url, idx) => {
             const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
             return isVideo ? (
-              <video key={idx} src={url} controls width="200" />
+              <video key={idx} src={`http://${window.location.hostname}:5000/api/posts/stream/${url.split('/').pop()}`} controls width="200" />
             ) : (
-              <img key={idx} src={url} alt="post media" style={{ maxWidth: 200, borderRadius: 4 }} />
+              <img key={idx} src={`http://${window.location.hostname}:5000${url}`} alt="post media" style={{ maxWidth: 200, borderRadius: 4 }} />
             );
           })}
         </Box>

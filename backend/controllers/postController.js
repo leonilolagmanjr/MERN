@@ -1,6 +1,7 @@
 const postService = require('../services/postService');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 // Multer setup for multiple file uploads
 const storage = multer.diskStorage({
@@ -117,6 +118,41 @@ const sharePost = async (req, res) => {
   }
 };
 
+// Stream media for posts (videos)
+const streamMedia = (req, res) => {
+  const mediaPath = path.join(__dirname, '../uploads/posts', req.params.filename);
+  fs.stat(mediaPath, (err, stats) => {
+    if (err) {
+      console.error('Media not found:', err);
+      return res.status(404).send('Media not found');
+    }
+
+    const range = req.headers.range;
+    if (!range) {
+      // 416 Wrong range
+      return res.status(416).send('Requires Range header');
+    }
+
+    const mediaSize = stats.size;
+    const CHUNK_SIZE = 10 ** 6; // 1MB chunk size
+    const start = Number(range.replace(/\D/g, ''));
+    const end = Math.min(start + CHUNK_SIZE, mediaSize - 1);
+
+    const contentLength = end - start + 1;
+    const headers = {
+      'Content-Range': `bytes ${start}-${end}/${mediaSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': contentLength,
+      'Content-Type': 'video/mp4', // Assuming videos are mp4, can be enhanced to detect type
+    };
+
+    res.writeHead(206, headers);
+
+    const mediaStream = fs.createReadStream(mediaPath, { start, end });
+    mediaStream.pipe(res);
+  });
+};
+
 module.exports = {
   createPost,
   getAllPosts,
@@ -126,5 +162,6 @@ module.exports = {
   likePost,
   addComment,
   sharePost,
+  streamMedia,
   upload, // export multer upload middleware if needed
 };

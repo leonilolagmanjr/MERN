@@ -25,6 +25,10 @@ const deleteVideo = async (videoId) => {
   return await Video.findByIdAndDelete(videoId);
 };
 
+const getVideoById = async (videoId) => {
+  return await Video.findById(videoId).populate('uploader', 'name');
+};
+
 module.exports = {
   createVideo,
   getVideos,

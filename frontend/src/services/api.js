@@ -225,6 +225,11 @@ export const fetchVideos = async (search = '') => {
   return response.data;
 };
 
+export const fetchVideo = async (videoId) => {
+  const response = await axios.get(`${API_URL}/videos/${videoId}`);
+  return response.data;
+};
+
 export const fetchUserVideos = async (token) => {
   const response = await axios.get(`${API_URL}/videos/my-videos`, {
     headers: { Authorization: `Bearer ${token}` },
