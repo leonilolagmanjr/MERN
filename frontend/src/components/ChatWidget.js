@@ -323,28 +323,18 @@ const ChatWidget = () => {
     return (
         <div className="chat-widget">
             {/* Floating Toggle Button (Omitted for brevity) */}
-            <button
-                onClick={() => setIsOpen((prev) => !prev)}
-                style={{
-                    position: 'fixed', bottom: '20px', right: '20px', backgroundColor: '#1b2838',
-                    color: '#66c0f4', border: 'none', padding: '12px 16px', borderRadius: '50%',
-                    fontSize: '16px', fontWeight: 'bold', boxShadow: '0 0 10px rgba(0,0,0,0.5)',
-                    cursor: 'pointer', zIndex: 1000,
-                }}
-            >
-                💬
-            </button>
+        <button
+            onClick={() => setIsOpen((prev) => !prev)}
+            className="chat-widget-toggle"
+        >
+            💬
+        </button>
 
-            {/* Chat Window */}
-            {isOpen && (
-                <div
-                    style={{
-                        position: 'fixed', bottom: '80px', right: '20px', width: '450px', 
-                        height: '550px', backgroundColor: '#171a21', border: '2px solid #3a3f4b',
-                        borderRadius: '10px', display: 'flex', flexDirection: 'row',
-                        boxShadow: '0 0 15px rgba(0,0,0,0.6)', zIndex: 999,
-                    }}
-                >
+        {/* Chat Window */}
+        {isOpen && (
+            <div
+                className="chat-widget-window"
+            >
                     {/* Chat List (Sidebar) */}
                     <div
                         style={{
