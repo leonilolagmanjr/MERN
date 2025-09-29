@@ -1,29 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, Button, Modal } from '@mui/material';
 import CreatePost from '../components/posts/CreatePost';
-import PostItem from '../components/posts/PostItem';
-import { fetchPosts } from '../services/api';
+import Posts from '../components/posts/Posts';
 
 const SocialMedia = () => {
-  const [posts, setPosts] = useState([]);
   const [refreshPosts, setRefreshPosts] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
 
   const triggerRefresh = () => {
     setRefreshPosts(!refreshPosts);
   };
-
-  useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        const data = await fetchPosts();
-        setPosts(data);
-      } catch (err) {
-        console.error('Error fetching posts:', err);
-      }
-    };
-    loadPosts();
-  }, [refreshPosts]);
 
   return (
     <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', p: 3 }}>
@@ -38,15 +24,7 @@ const SocialMedia = () => {
           </Button>
         </Box>
 
-        <Box>
-          {posts.length === 0 ? (
-            <Typography sx={{ textAlign: 'center', color: '#8f98a0' }}>No posts yet. Be the first to post!</Typography>
-          ) : (
-            posts.map((post) => (
-              <PostItem key={post._id} post={post} onPostUpdated={triggerRefresh} />
-            ))
-          )}
-        </Box>
+        <Posts refreshTrigger={refreshPosts} />
 
         <Modal open={openCreate} onClose={() => setOpenCreate(false)}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>

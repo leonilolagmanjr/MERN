@@ -259,6 +259,13 @@ export const fetchPosts = async () => {
   return response.data;
 };
 
+export const fetchUserPosts = async (userId, token) => {
+  const response = await axios.get(`${API_URL}/posts/user/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 export const createPost = async (formData, token) => {
   const response = await axios.post(`${API_URL}/posts/create`, formData, {
     headers: { Authorization: `Bearer ${token}` },

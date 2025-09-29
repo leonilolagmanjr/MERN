@@ -13,6 +13,7 @@ import {
 } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useFriend } from '../context/FriendContext';
+import Posts from '../components/posts/Posts';
 
 const Profile = () => {
   const { userId } = useParams();
@@ -268,14 +269,9 @@ const Profile = () => {
             </div>
           </div>
 
-          <div style={styles.postBox}>
-            <textarea
-              style={styles.postInput}
-              placeholder="Share your thoughts, updates, or job details..."
-            ></textarea>
-            <div style={styles.postActions}>
-              <button style={styles.postButton}>Post</button>
-            </div>
+          <div style={styles.postsSection}>
+            <h2 style={styles.sectionHeading}>Posts</h2>
+            <Posts userId={userId} />
           </div>
         </div>
 
