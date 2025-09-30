@@ -14,6 +14,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useFriend } from '../context/FriendContext';
 import Posts from '../components/posts/Posts';
+import FriendActions from '../components/friends/FriendActions';
 
 const Profile = () => {
   const { userId } = useParams();
@@ -153,46 +154,35 @@ const Profile = () => {
           <p style={styles.userDetails}>Level: {profile.level || 1}</p>
           <p>  </p>
           {isCurrentUser ? (
-            <button style={styles.editButton} onClick={() => window.location.href = '/editprofile'}>Edit Profile</button>
-          ) : loadingFriendStatus ? (
-            <button style={styles.addFriendButton} disabled>Loading...</button>
-          ) : (
             <>
-              {isFriend ? (
-                <button
-                  style={styles.addFriendButton}
-                  onClick={() => openChatWithUser(userId)}
-                >
-                  Message
-                </button>
-              ) : requestSent ? (
-                <>
-                  <button
-                    style={styles.addFriendButton}
-                    disabled
-                  >
-                    Request Sent
-                  </button>
-                  <button
-                    style={{ ...styles.addFriendButton, marginLeft: '10px', backgroundColor: '#f44336' }}
-                    onClick={handleCancelFriendRequest}
-                  >
-                    Cancel Request
-                  </button>
-                </>
-              ) : hasPendingRequest ? (
-                <button style={styles.addFriendButton} disabled>
-                  Request Pending
-                </button>
-              ) : (
-                <button
-                  style={styles.addFriendButton}
-                  onClick={handleSendFriendRequest}
-                >
-                  Add Friend
-                </button>
-              )}
+              <button style={styles.editButton} onClick={() => window.location.href = '/editprofile'}>Edit Profile</button>
+              <FriendActions
+                userId={userId}
+                isCurrentUser={isCurrentUser}
+                isFriend={isFriend}
+                requestSent={requestSent}
+                hasPendingRequest={hasPendingRequest}
+                loadingFriendStatus={loadingFriendStatus}
+                openChatWithUser={openChatWithUser}
+                updateFriendStatus={updateFriendStatus}
+                notifyFriendListUpdated={notifyFriendListUpdated}
+                friendRequests={friendRequests}
+                styles={styles}
+              />
             </>
+          ) : (
+            <FriendActions
+              userId={userId}
+              isCurrentUser={isCurrentUser}
+              isFriend={isFriend}
+              requestSent={requestSent}
+              hasPendingRequest={hasPendingRequest}
+              loadingFriendStatus={loadingFriendStatus}
+              openChatWithUser={openChatWithUser}
+              updateFriendStatus={updateFriendStatus}
+              notifyFriendListUpdated={notifyFriendListUpdated}
+              styles={styles}
+            />
           )}
         </div>
       </div>
@@ -256,8 +246,6 @@ const Profile = () => {
           </div>
 
           <div style={styles.recentActivity}>
-            <h2 style={styles.sectionHeading}>Recent Activity</h2>
-            <p style={styles.activitySummary}>79.8 hours past 2 weeks</p>
             <div style={styles.activityList}>
               {completedJobs.map((job) => (
                 <div key={job._id} style={styles.activityItem}>

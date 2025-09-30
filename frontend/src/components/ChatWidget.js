@@ -320,21 +320,22 @@ const ChatWidget = () => {
 
 
     // --- Main Render ---
+    if (!user) return null;
     return (
         <div className="chat-widget">
             {/* Floating Toggle Button (Omitted for brevity) */}
-        <button
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="chat-widget-toggle"
-        >
-            💬
-        </button>
-
-        {/* Chat Window */}
-        {isOpen && (
-            <div
-                className="chat-widget-window"
+            <button
+                onClick={() => setIsOpen((prev) => !prev)}
+                className="chat-widget-toggle"
             >
+                💬
+            </button>
+
+            {/* Chat Window */}
+            {isOpen && (
+                <div
+                    className="chat-widget-window"
+                >
                     {/* Chat List (Sidebar) */}
                     <div
                         style={{
