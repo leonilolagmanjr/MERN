@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -12,10 +13,13 @@ import {
 } from '@mui/material';
 import { fetchVideos } from '../services/api';
 import CollapsibleText from '../components/CollapsibleText';
+import { useAuth } from '../context/AuthContext';
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     const getVideos = async () => {
@@ -45,6 +49,21 @@ const Videos = () => {
             sx={{ mr: 2, bgcolor: '#ffffff', borderRadius: 1 }}
             size="small"
           />
+          {user && (
+            <button
+              onClick={() => navigate('/videomanager')}
+              style={{
+                backgroundColor: '#66c0f4',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '8px 16px',
+                cursor: 'pointer',
+              }}
+            >
+              Manage Videos
+            </button>
+          )}
         </Toolbar>
       </AppBar>
 
