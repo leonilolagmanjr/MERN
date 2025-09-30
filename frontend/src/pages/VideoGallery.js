@@ -12,10 +12,9 @@ import {
   TextField,
 } from '@mui/material';
 import { fetchVideos } from '../services/api';
-import CollapsibleText from '../components/CollapsibleText';
 import { useAuth } from '../context/AuthContext';
 
-const Videos = () => {
+const VideoGallery = () => {
   const [videos, setVideos] = useState([]);
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
@@ -32,6 +31,10 @@ const Videos = () => {
     };
     getVideos();
   }, [search]);
+
+  const handleCardClick = (videoId) => {
+    navigate(`/video/${videoId}`);
+  };
 
   return (
     <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh' }}>
@@ -74,14 +77,33 @@ const Videos = () => {
             {videos.length > 0 ? (
               videos.map((video) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={video._id}>
-                  <Card sx={{ bgcolor: '#2a475e', color: '#c7d5e0', height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Card
+                    sx={{
+                      bgcolor: '#2a475e',
+                      color: '#c7d5e0',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        bgcolor: '#3a586e',
+                        transform: 'scale(1.02)',
+                        transition: 'all 0.2s ease-in-out',
+                      },
+                    }}
+                    onClick={() => handleCardClick(video._id)}
+                  >
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <video
-                        width="100%"
-                        height="auto"
-                        style={{ maxHeight: '240px', aspectRatio: '16/9' }}
-                        controls
-                        src={`http://${window.location.hostname}:5000/api/videos/stream/${video.videoUrl.split('/').pop()}`}
+                      <img
+                        src="https://via.placeholder.com/320x180?text=Video+Thumbnail"
+                        alt={video.title}
+                        style={{
+                          width: '100%',
+                          height: 'auto',
+                          maxHeight: '180px',
+                          aspectRatio: '16/9',
+                          objectFit: 'cover',
+                        }}
                       />
                       <Typography variant="h6" sx={{ mt: 1 }}>
                         {video.title}
@@ -89,9 +111,6 @@ const Videos = () => {
                       <Typography variant="body2">
                         By: {video.uploader.name}
                       </Typography>
-                      {video.description && (
-                        <CollapsibleText text={video.description} limit={100} />
-                      )}
                     </CardContent>
                   </Card>
                 </Grid>
@@ -108,4 +127,4 @@ const Videos = () => {
   );
 };
 
-export default Videos;
+export default VideoGallery;

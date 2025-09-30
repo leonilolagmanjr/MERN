@@ -12,7 +12,8 @@ import Job from './pages/Job';
 import ChatWidget from './components/ChatWidget';
 import EditProfile from './pages/EditProfile'; // Import EditProfile
 import About from './pages/About';
-import Videos from './pages/Videos'; // Import Videos
+import VideoGallery from './pages/VideoGallery'; // Import VideoGallery
+import VideoPage from './pages/VideoPage'; // Import VideoPage
 import VideoManager from './pages/VideoManager'; // Import VideoManager
 import SocialMedia from './pages/SocialMedia'; // Import SocialMedia
 
@@ -35,7 +36,8 @@ const App = () => {
             <Route path="/job/:jobId" element={<Job />} /> {/* Add Job route */}
             <Route path="/editprofile" element={<EditProfile />} /> {/* Add EditProfile route */}
             <Route path="/about" element={<About />} /> {/* Add About route */}
-            <Route path="/videos" element={<Videos />} /> {/* Add Videos route */}
+            <Route path="/videos" element={<VideoGallery />} /> {/* Add VideoGallery route */}
+            <Route path="/video/:id" element={<VideoPage />} /> {/* Add VideoPage route */}
             <Route path="/videomanager" element={<VideoManager />} /> {/* Add VideoManager route */}
             <Route path="/social" element={<SocialMedia />} /> {/* Add SocialMedia route */}
           </Routes>

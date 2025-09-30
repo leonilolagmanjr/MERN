@@ -1,11 +1,4 @@
-# TODO: Implement Video and Image Upload Handling for User Posts with Streaming
-
-## Tasks
-- [x] Add streamMedia function in backend/controllers/postController.js for efficient video streaming
-- [x] Add /stream/:filename route in backend/routes/postRoutes.js
-- [x] Update frontend/src/components/posts/PostItem.js to use stream URL for videos instead of direct src
-
-## Completed
-- [x] Analyze existing code and understand current implementation
-- [x] Brainstorm plan for adding streaming support to post videos
-- [x] Get user confirmation on plan
+- [x] Create VideoGallery.js: Display video thumbnails in responsive grid, remove video player, make cards clickable to navigate to /video/:id, keep search and Manage Videos button.
+- [x] Create VideoPage.js: Display full video player, title, uploader, description using CollapsibleText, fetch video by id.
+- [x] Update App.js: Import VideoGallery and VideoPage, change /videos route to VideoGallery, add /video/:id route to VideoPage.
+- [x] Remove or rename Videos.js to avoid conflicts.
