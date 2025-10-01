@@ -1,6 +1,10 @@
 const videoService = require('../services/videoService');
 const path = require('path');
 const fs = require('fs');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegStatic = require('ffmpeg-static');
+
+ffmpeg.setFfmpegPath(ffmpegStatic);
 
 const uploadVideo = async (req, res) => {
   try {
@@ -19,6 +23,10 @@ const uploadVideo = async (req, res) => {
 
     const video = await videoService.createVideo(videoData);
     res.status(201).json(video);
+
+    // Generate thumbnail asynchronously
+    const videoPath = path.join(__dirname, '../uploads/videos', req.file.filename);
+    generateThumbnail(video._id, videoPath);
   } catch (err) {
     console.error('Upload Video Error:', err);
     res.status(500).json({ msg: 'Server error during video upload' });
@@ -123,6 +131,31 @@ const streamVideo = (req, res) => {
     const videoStream = fs.createReadStream(videoPath, { start, end });
     videoStream.pipe(res);
   });
+};
+
+const generateThumbnail = (videoId, videoPath) => {
+  const thumbnailFilename = path.parse(path.basename(videoPath)).name + '.jpg';
+  const thumbnailPath = path.join(__dirname, '../uploads/thumbnails', thumbnailFilename);
+
+  ffmpeg(videoPath)
+    .screenshots({
+      timestamps: [5], // At 5 seconds into the video
+      filename: thumbnailFilename,
+      folder: path.join(__dirname, '../uploads/thumbnails'),
+      size: '320x180', // Standard thumbnail size
+    })
+    .on('end', async () => {
+      try {
+        const thumbnailUrl = `/uploads/thumbnails/${thumbnailFilename}`;
+        await videoService.updateVideo(videoId, { thumbnailUrl });
+        console.log(`Thumbnail generated for video ${videoId}`);
+      } catch (err) {
+        console.error('Error updating video with thumbnail:', err);
+      }
+    })
+    .on('error', (err) => {
+      console.error('Error generating thumbnail:', err);
+    });
 };
 
 module.exports = {
