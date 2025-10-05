@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { FriendContext } from '../context/FriendContext';
+import UserLink from './UserLink';
 
 // --- Socket Setup ---
 const socket = io('http://100.123.122.74:5000', {
@@ -258,12 +259,11 @@ const ChatWidget = () => {
                                     {msg.sender?._id === user?.id ? (
                                         'You'
                                     ) : (
-                                        <Link
-                                            to={`/profile/${msg.sender?._id}`}
-                                            style={{ color: '#66c0f4', textDecoration: 'none' }}
-                                        >
-                                            {msg.sender?.name || 'Unknown'}
-                                        </Link>
+                                        <UserLink
+                                            userId={msg.sender?._id}
+                                            name={msg.sender?.name || 'Unknown'}
+                                            sx={{ color: '#66c0f4', textDecoration: 'none' }}
+                                        />
                                     )}
                                 </b>
                                 <span style={{ display: 'block', wordWrap: 'break-word' }}>{msg.content}</span>
@@ -381,26 +381,31 @@ const ChatWidget = () => {
                                     {isCurrentGlobal && <h4 style={{ color: '#66c0f4', marginBottom: 10, marginTop: 10 }}>Private Chats</h4>}
                                     
                                     {/* Render private chat items */}
-                                    {!isCurrentGlobal && (
-                                        <div
-                                            onClick={() => handleSelectChat(chat)}
-                                            style={{
-                                                padding: '8px',
-                                                marginBottom: 6,
-                                                cursor: 'pointer',
-                                                borderRadius: 5,
-                                                backgroundColor: selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
-                                                transition: '0.2s',
-                                                border: '1px solid transparent',
-                                                ':hover': { borderColor: '#66c0f4' }
-                                            }}
-                                        >
-                                            <div style={{fontWeight: 'bold'}}>{getChatPartner(chat)}</div>
-                                            <small style={{color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
-                                                {chat.lastMessage || 'Start a conversation.'}
-                                            </small>
-                                        </div>
-                                    )}
+                                    {!isCurrentGlobal && (() => {
+                                        const partner = chat.participants.find(p => p._id !== user?.id);
+                                        return (
+                                            <div
+                                                onClick={() => handleSelectChat(chat)}
+                                                style={{
+                                                    padding: '8px',
+                                                    marginBottom: 6,
+                                                    cursor: 'pointer',
+                                                    borderRadius: 5,
+                                                    backgroundColor: selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
+                                                    transition: '0.2s',
+                                                    border: '1px solid transparent',
+                                                    ':hover': { borderColor: '#66c0f4' }
+                                                }}
+                                            >
+                                                <div style={{fontWeight: 'bold'}}>
+                                                    <UserLink userId={partner?._id} name={partner?.name} />
+                                                </div>
+                                                <small style={{color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
+                                                    {chat.lastMessage || 'Start a conversation.'}
+                                                </small>
+                                            </div>
+                                        );
+                                    })()}
                                 </React.Fragment>
                             );
                         })}

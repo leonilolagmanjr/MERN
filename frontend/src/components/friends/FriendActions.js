@@ -6,6 +6,7 @@ import {
   cancelFriendRequest,
   getFriendRequests
 } from '../../services/api';
+import UserLink from '../UserLink';
 
 const FriendActions = ({
   userId,
@@ -88,7 +89,7 @@ const FriendActions = ({
             <h2 style={styles.sectionHeading}>Friend Requests</h2>
             {friendRequests.map((req) => (
               <div key={req._id} style={styles.friendRequestItem}>
-                <p>{req.name} ({req.email})</p>
+                <p><UserLink userId={req._id} name={req.name} /> ({req.email})</p>
                 <button
                   style={styles.acceptButton}
                   onClick={() => handleAcceptRequest(req._id)}

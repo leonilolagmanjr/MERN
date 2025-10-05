@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { fetchVideos } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import UserLink from '../components/UserLink';
 
 const VideoGallery = () => {
   const [videos, setVideos] = useState([]);
@@ -109,7 +110,7 @@ const VideoGallery = () => {
                         {video.title}
                       </Typography>
                       <Typography variant="body2">
-                        By: {video.uploader.name}
+                        By: <UserLink userId={video.uploader._id} name={video.uploader.name} />
                       </Typography>
                     </CardContent>
                   </Card>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Notification from './Notification';
+import UserLink from './UserLink';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
@@ -106,13 +107,7 @@ const Navbar = () => {
               {isLoggedIn ? (
                 <>
                   <Notification />
-                  <Button
-                    component={Link}
-                    to={`/profile/${user?.id}`}
-                    sx={{ color: '#66c0f4', textTransform: 'none' }}
-                  >
-                    {user?.name}'s Profile
-                  </Button>
+                  <UserLink userId={user?.id} name={user?.name} sx={{ textTransform: 'none' }} />
                   <Button
                     onClick={handleLogout}
                     sx={{ color: '#ff4c4c', textTransform: 'none' }}

@@ -11,6 +11,7 @@ import {
   Button,
 } from '@mui/material';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import UserLink from './UserLink';
 
 const Notification = () => {
   const [friendRequests, setFriendRequests] = useState([]);
@@ -86,7 +87,7 @@ const Notification = () => {
           friendRequests.map((req) => (
             <MenuItem key={req._id} sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>
-                <Typography>{req.name}</Typography>
+                <UserLink userId={req._id} name={req.name} />
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
                   {req.email}
                 </Typography>

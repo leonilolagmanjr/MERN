@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchTasks } from '../services/api';
 import { Box, Typography, Container, CircularProgress, Alert } from '@mui/material';
+import UserLink from '../components/UserLink';
 
 const Job = () => {
   const { jobId } = useParams(); // Get job ID from the URL
@@ -70,7 +71,7 @@ const Job = () => {
           <strong>Status:</strong> {job.status}
         </Typography>
         <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
-          <strong>Posted by:</strong> {job.createdBy.name}
+          <strong>Posted by:</strong> <UserLink userId={job.createdBy._id} name={job.createdBy.name} />
         </Typography>
       </Container>
     </Box>

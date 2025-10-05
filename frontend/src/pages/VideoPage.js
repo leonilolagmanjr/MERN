@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { fetchVideo } from '../services/api';
 import CollapsibleText from '../components/CollapsibleText';
+import UserLink from '../components/UserLink';
 
 const VideoPage = () => {
   const { id } = useParams();
@@ -63,7 +64,7 @@ const VideoPage = () => {
               {video.title}
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              By: {video.uploader.name}
+              By: <UserLink userId={video.uploader._id} name={video.uploader.name} />
             </Typography>
             {video.description && (
               <Box sx={{ mt: 2 }}>

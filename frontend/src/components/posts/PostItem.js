@@ -10,6 +10,7 @@ import { likePost, addComment, deletePost, sharePost } from '../../services/api'
 import { useAuth } from '../../context/AuthContext';
 import CommentForm from './CommentForm';
 import CommentItem from './CommentItem';
+import UserLink from '../UserLink';
 import dayjs from 'dayjs';
 
 const PostItem = ({ post, onPostUpdated }) => {
@@ -87,9 +88,7 @@ const PostItem = ({ post, onPostUpdated }) => {
     <Box sx={{ bgcolor: '#23262e', borderRadius: 2, p: 2, mb: 3, position: 'relative' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Box>
-          <Typography sx={{ color: '#66c0f4', fontWeight: 'bold' }}>
-            {post.createdBy?.name || 'Unknown'}
-          </Typography>
+          <UserLink userId={post.createdBy?._id} name={post.createdBy?.name} />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>

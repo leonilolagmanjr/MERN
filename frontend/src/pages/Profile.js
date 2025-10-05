@@ -15,6 +15,7 @@ import { useAuth } from '../context/AuthContext';
 import { useFriend } from '../context/FriendContext';
 import Posts from '../components/posts/Posts';
 import FriendActions from '../components/friends/FriendActions';
+import UserLink from '../components/UserLink';
 
 const Profile = () => {
   const { userId } = useParams();
@@ -148,7 +149,7 @@ const Profile = () => {
           />
         </div>
         <div style={styles.userInfo}>
-          <h1 style={styles.userName}>{profile.name || 'User Name'}</h1>
+          <h1 style={styles.userName}><UserLink userId={profile._id} name={profile.name} /></h1>
           <p style={styles.userDetails}>Email: {profile.email || 'Unknown'}</p>
           <p style={styles.userDetails}>ID: {profile.id || 'N/A'}</p>
           <p style={styles.userDetails}>Level: {profile.level || 1}</p>
@@ -194,7 +195,7 @@ const Profile = () => {
               <h2 style={styles.sectionHeading}>Friend Requests</h2>
               {friendRequests.map((req) => (
                 <div key={req._id} style={styles.friendRequestItem}>
-                  <p>{req.name} ({req.email})</p>
+                  <p><UserLink userId={req._id} name={req.name} /> ({req.email})</p>
                   <button
                     style={styles.acceptButton}
                     onClick={() => handleAcceptRequest(req._id)}
@@ -219,7 +220,7 @@ const Profile = () => {
                 <ul style={styles.friendList}>
                   {profile.connections.map((friend) => (
                     <li key={friend._id} style={styles.friendListItem}>
-                      {friend.name} ({friend.email})
+                      <UserLink userId={friend._id} name={friend.name} /> ({friend.email})
                     </li>
                   ))}
                 </ul>
@@ -274,7 +275,7 @@ const Profile = () => {
           </div>
           <div style={styles.sidebarSection}>
             <h3 style={styles.sidebarHeading}>Basic Information</h3>
-            <p>Full Name: {profile.name || 'N/A'}</p>
+            <p>Full Name: <UserLink userId={profile._id} name={profile.name} /></p>
             <p>Email Address: {profile.email || 'N/A'}</p>
             <p>Phone Number: {profile.phone || 'N/A'}</p>
             <p>Location: {profile.location || 'N/A'}</p>

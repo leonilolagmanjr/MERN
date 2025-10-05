@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import dayjs from 'dayjs';
 import { fetchVideo } from '../../services/api';
+import UserLink from '../UserLink';
 
 const DisplayVideo = ({ videoId }) => {
   const [video, setVideo] = useState(null);
@@ -41,9 +42,7 @@ const DisplayVideo = ({ videoId }) => {
   return (
     <Box sx={{ bgcolor: '#23262e', borderRadius: 2, p: 2, mb: 3 }}>
       <Box sx={{ mb: 2 }}>
-        <Typography sx={{ color: '#66c0f4', fontWeight: 'bold', mb: 1 }}>
-          {video.uploader?.name || 'Unknown'}
-        </Typography>
+        <UserLink userId={video.uploader?._id} name={video.uploader?.name} sx={{ fontWeight: 'bold', mb: 1 }} />
         <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>
           {dayjs(video.createdAt).format('h:mm A · MMM D, YYYY')}
         </Typography>
