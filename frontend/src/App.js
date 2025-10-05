@@ -8,7 +8,7 @@ import { useAuth } from './context/AuthContext';
 import ReadTask from './components/tasks/ReadTask';
 import TaskManager from './pages/TaskManager'; // Import TaskManager component
 import BrowseJobs from './pages/BrowseJobs'; // Import the new page
-import Job from './pages/Job';
+import JobDetail from './pages/JobDetail';
 import ChatWidget from './components/ChatWidget';
 import EditProfile from './pages/EditProfile'; // Import EditProfile
 import About from './pages/About';
@@ -33,7 +33,7 @@ const App = () => {
             <Route path="/profile/:userId" element={isLoggedIn ? <Profile /> : <Auth />} /> {/* Add dynamic Profile route */}
             <Route path="/taskmanager" element={<TaskManager />} /> {/* Add TaskManager route */}
             <Route path="/browse" element={<BrowseJobs />} /> {/* Add BrowseJobs route */}
-            <Route path="/job/:jobId" element={<Job />} /> {/* Add Job route */}
+            <Route path="/job/:jobId" element={<JobDetail />} /> {/* Add Job route */}
             <Route path="/editprofile" element={<EditProfile />} /> {/* Add EditProfile route */}
             <Route path="/about" element={<About />} /> {/* Add About route */}
             <Route path="/videos" element={<VideoGallery />} /> {/* Add VideoGallery route */}

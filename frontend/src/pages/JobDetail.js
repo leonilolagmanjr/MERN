@@ -4,7 +4,7 @@ import { fetchTasks } from '../services/api';
 import { Box, Typography, Container, CircularProgress, Alert } from '@mui/material';
 import UserLink from '../components/UserLink';
 
-const Job = () => {
+const JobDetail = () => {
   const { jobId } = useParams(); // Get job ID from the URL
   const [job, setJob] = useState(null);
   const [error, setError] = useState(null);
@@ -78,4 +78,4 @@ const Job = () => {
   );
 };
 
-export default Job;
+export default JobDetail;
