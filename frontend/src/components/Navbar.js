@@ -26,7 +26,7 @@ const Navbar = () => {
     { text: 'About', to: '/about' },
     { text: 'Videos', to: '/videos' },
     //{ text: 'Video Manager', to: '/videomanager' },
-    { text: 'Task Manager', to: '/taskmanager' },
+    { text: 'Market', to: '/market' },
     { text: 'Social', to: '/social' },
     //{ text: 'Edit Profile', to: '/editprofile' },
   ];

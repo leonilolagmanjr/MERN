@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchTasks } from '../services/api';
+import { fetchProducts } from '../services/api';
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -11,36 +11,36 @@ import {
   CardContent,
 } from '@mui/material';
 
-const BrowseJobs = () => {
-  const [jobs, setJobs] = useState([]);
+const BrowseProducts = () => {
+  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredJobs, setFilteredJobs] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
-    const fetchAllJobs = async () => {
+    const fetchAllProducts = async () => {
       try {
-        const data = await fetchTasks();
-        setJobs(data);
-        setFilteredJobs(data);
+        const data = await fetchProducts();
+        setProducts(data);
+        setFilteredProducts(data);
       } catch (err) {
-        console.error('Error fetching jobs:', err);
+        console.error('Error fetching products:', err);
       }
     };
-    fetchAllJobs();
+    fetchAllProducts();
   }, []);
 
   const handleSearch = () => {
-    const filtered = jobs.filter((job) =>
-      job.title.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = products.filter((product) =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredJobs(filtered);
+    setFilteredProducts(filtered);
   };
 
   return (
     <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', p: 3 }}>
       {/* Heading */}
       <Typography variant="h4" sx={{ color: '#ffffff', mb: 3, textAlign: 'center' }}>
-        Browse Jobs
+        Browse Products
       </Typography>
 
       {/* Search Bar */}
@@ -54,7 +54,7 @@ const BrowseJobs = () => {
       >
         <TextField
           variant="outlined"
-          placeholder="Search jobs by title..."
+          placeholder="Search products by title..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           fullWidth
@@ -80,10 +80,10 @@ const BrowseJobs = () => {
         </Button>
       </Box>
 
-      {/* Jobs Grid */}
+      {/* Products Grid */}
       <Grid container spacing={3}>
-        {filteredJobs.map((job) => (
-          <Grid item xs={12} sm={6} md={4} key={job._id}>
+        {filteredProducts.map((product) => (
+          <Grid item xs={12} sm={6} md={4} key={product._id}>
             <Card
               sx={{
                 bgcolor: '#2a475e',
@@ -98,24 +98,27 @@ const BrowseJobs = () => {
                   sx={{ color: '#ffffff', mb: 1 }}
                 >
                   <Link
-                    to={`/job/${job._id}`}
+                    to={`/product/${product._id}`}
                     style={{ color: '#66c0f4', textDecoration: 'none' }}
                   >
-                    {job.title}
+                    {product.title}
                   </Link>
                 </Typography>
-                <Typography sx={{ mb: 1 }}>{job.description}</Typography>
+                <Typography sx={{ mb: 1 }}>{product.description}</Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                  Difficulty: {job.difficulty}
+                  Price: ${product.price}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                  Category: {job.category}
+                  Quantity: {product.quantity}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                  Location: {job.location}
+                  Category: {product.category}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                  Deadline: {new Date(job.deadline).toLocaleDateString()}
+                  Status: {product.status}
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  Location: {product.location}
                 </Typography>
               </CardContent>
             </Card>
@@ -126,4 +129,4 @@ const BrowseJobs = () => {
   );
 };
 
-export default BrowseJobs;
+export default BrowseProducts;

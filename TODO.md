@@ -1,4 +1,4 @@
-- [x] Create VideoGallery.js: Display video thumbnails in responsive grid, remove video player, make cards clickable to navigate to /video/:id, keep search and Manage Videos button.
-- [x] Create VideoPage.js: Display full video player, title, uploader, description using CollapsibleText, fetch video by id.
-- [x] Update App.js: Import VideoGallery and VideoPage, change /videos route to VideoGallery, add /video/:id route to VideoPage.
-- [x] Remove or rename Videos.js to avoid conflicts.
+- [x] Refactor BrowseJobs.js content for products: change fetch to fetchProducts, state variables, displayed fields, link to /product/${product._id}, heading to "Browse Products", search placeholder.
+- [x] Rename BrowseJobs.js to BrowseProducts.js
+- [x] Update App.js: change import from BrowseJobs to BrowseProducts, add route for /product/:productId to Product component
+- [x] Test the refactored page

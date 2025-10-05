@@ -47,6 +47,40 @@ export const fetchAcceptedJobs = async (token) => {
   return response.data;
 };
 
+// Product APIs
+export const fetchProducts = async () => {
+  const response = await axios.get(`${API_URL}/product/list`);
+  return response.data;
+};
+
+export const postProduct = async (productData, token) => {
+  const response = await axios.post(`${API_URL}/product/post`, productData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const fetchPostedProducts = async (token) => {
+  const response = await axios.get(`${API_URL}/product/my-posted`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const fetchSoldProducts = async (token) => {
+  const response = await axios.get(`${API_URL}/product/my-sold`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const fetchPurchasedProducts = async (token) => {
+  const response = await axios.get(`${API_URL}/product/my-purchased`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 // User APIs
 export const getUserProfile = async (userId, token) => {
   const response = await axios.get(`${API_URL}/user/profile/${userId}`, {
@@ -76,6 +110,19 @@ export const editTask = async (taskId, data, token) => {
 
 export const deleteTask = async (taskId, token) => {
   return await axios.delete(`${API_URL}/task/remove/${taskId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+// Edit and Delete Product APIs
+export const editProduct = async (productId, data, token) => {
+  return await axios.patch(`${API_URL}/product/edit/${productId}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+export const deleteProduct = async (productId, token) => {
+  return await axios.delete(`${API_URL}/product/remove/${productId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
