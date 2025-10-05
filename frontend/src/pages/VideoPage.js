@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -63,7 +63,10 @@ const VideoPage = () => {
               {video.title}
             </Typography>
             <Typography variant="body1" sx={{ mt: 1 }}>
-              By: {video.uploader.name}
+              By:{' '}
+              <Link to={`/profile/${video.uploader._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+                {video.uploader.name}
+              </Link>
             </Typography>
             {video.description && (
               <Box sx={{ mt: 2 }}>

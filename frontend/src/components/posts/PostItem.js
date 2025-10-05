@@ -6,6 +6,7 @@ import RepeatIcon from '@mui/icons-material/Repeat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import { Link } from 'react-router-dom';
 import { likePost, addComment, deletePost, sharePost } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import CommentForm from './CommentForm';
@@ -88,7 +89,9 @@ const PostItem = ({ post, onPostUpdated }) => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Box>
           <Typography sx={{ color: '#66c0f4', fontWeight: 'bold' }}>
-            {post.createdBy?.name || 'Unknown'}
+            <Link to={`/profile/${post.createdBy?._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+              {post.createdBy?.name || 'Unknown'}
+            </Link>
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

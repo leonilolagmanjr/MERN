@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -109,7 +109,10 @@ const VideoGallery = () => {
                         {video.title}
                       </Typography>
                       <Typography variant="body2">
-                        By: {video.uploader.name}
+                        By:{' '}
+                        <Link to={`/profile/${video.uploader._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+                          {video.uploader.name}
+                        </Link>
                       </Typography>
                     </CardContent>
                   </Card>

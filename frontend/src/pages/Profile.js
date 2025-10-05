@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   fetchPostedJobs,
   fetchCompletedJobs,
@@ -194,7 +194,11 @@ const Profile = () => {
               <h2 style={styles.sectionHeading}>Friend Requests</h2>
               {friendRequests.map((req) => (
                 <div key={req._id} style={styles.friendRequestItem}>
-                  <p>{req.name} ({req.email})</p>
+                  <p>
+                    <Link to={`/profile/${req._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+                      {req.name}
+                    </Link> ({req.email})
+                  </p>
                   <button
                     style={styles.acceptButton}
                     onClick={() => handleAcceptRequest(req._id)}
@@ -219,7 +223,9 @@ const Profile = () => {
                 <ul style={styles.friendList}>
                   {profile.connections.map((friend) => (
                     <li key={friend._id} style={styles.friendListItem}>
-                      {friend.name} ({friend.email})
+                      <Link to={`/profile/${friend._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+                        {friend.name}
+                      </Link> ({friend.email})
                     </li>
                   ))}
                 </ul>

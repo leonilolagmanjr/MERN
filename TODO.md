@@ -1,4 +1,11 @@
-- [x] Refactor BrowseJobs.js content for products: change fetch to fetchProducts, state variables, displayed fields, link to /product/${product._id}, heading to "Browse Products", search placeholder.
-- [x] Rename BrowseJobs.js to BrowseProducts.js
-- [x] Update App.js: change import from BrowseJobs to BrowseProducts, add route for /product/:productId to Product component
-- [x] Test the refactored page
+# Make User Mentions Clickable
+
+## Tasks
+- [x] Update PostItem.js: Make post author name clickable to profile
+- [x] Update CommentItem.js: Make comment author name clickable to profile
+- [x] Update Profile.js: Make friend request names clickable to profile
+- [x] Update Profile.js: Make friend list names clickable to profile
+- [x] Verify ChatWidget.js already has clickable sender names in messages
+- [x] Update Product.js: Make seller name clickable to profile
+- [x] Update VideoGallery.js: Make uploader name clickable to profile
+- [x] Update VideoPage.js: Make uploader name clickable to profile

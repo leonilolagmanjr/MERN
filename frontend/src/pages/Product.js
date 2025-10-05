@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { fetchProducts } from '../services/api';
 import { Box, Typography, Container, CircularProgress, Alert } from '@mui/material';
 
@@ -67,7 +67,10 @@ const Product = () => {
           <strong>Status:</strong> {product.status}
         </Typography>
         <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
-          <strong>Posted by:</strong> {product.createdBy.name}
+          <strong>Posted by:</strong>{' '}
+          <Link to={`/profile/${product.createdBy._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+            {product.createdBy.name}
+          </Link>
         </Typography>
       </Container>
     </Box>
