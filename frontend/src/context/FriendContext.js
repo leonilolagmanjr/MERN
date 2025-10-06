@@ -8,6 +8,8 @@ export const FriendProvider = ({ children }) => {
   const { user } = useAuth();
   const [friendRequests, setFriendRequests] = useState([]);
   const [friendStatusCache, setFriendStatusCache] = useState({}); // Cache friend status by userId
+  const [openChatUserId, setOpenChatUserId] = useState(null);
+  const [friendListVersion, setFriendListVersion] = useState(0);
 
   useEffect(() => {
     if (user?.id) {
@@ -28,6 +30,7 @@ export const FriendProvider = ({ children }) => {
   const notifyFriendListUpdated = () => {
     fetchFriendRequests();
     clearFriendStatusCache();
+    setFriendListVersion(prev => prev + 1);
   };
 
   const clearFriendStatusCache = () => {
@@ -52,8 +55,11 @@ export const FriendProvider = ({ children }) => {
   };
 
   const openChatWithUser = (userId) => {
-    // Placeholder for chat opening logic
-    console.log('Open chat with user:', userId);
+    setOpenChatUserId(userId);
+  };
+
+  const clearOpenChatUser = () => {
+    setOpenChatUserId(null);
   };
 
   return (
@@ -64,6 +70,9 @@ export const FriendProvider = ({ children }) => {
         getFriendStatus,
         openChatWithUser,
         clearFriendStatusCache,
+        openChatUserId,
+        clearOpenChatUser,
+        friendListUpdated: friendListVersion,
       }}
     >
       {children}
