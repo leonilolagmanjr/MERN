@@ -312,3 +312,90 @@ export const sharePost = async (postId, token) => {
   });
   return response.data;
 };
+
+// Payment APIs
+export const addPaymentMethod = async (paymentData, token) => {
+  const response = await axios.post(`${API_URL}/payments/add`, paymentData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const getPaymentMethods = async (token) => {
+  const response = await axios.get(`${API_URL}/payments`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const deletePaymentMethod = async (methodId, token) => {
+  const response = await axios.delete(`${API_URL}/payments/${methodId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+// Transaction APIs
+export const depositFunds = async (depositData, token) => {
+  const response = await axios.post(`${API_URL}/transactions/deposit`, depositData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const withdrawFunds = async (withdrawData, token) => {
+  const response = await axios.post(`${API_URL}/transactions/withdraw`, withdrawData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const tradeFunds = async (tradeData, token) => {
+  const response = await axios.post(`${API_URL}/transactions/trade`, tradeData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const getTransactions = async (token) => {
+  const response = await axios.get(`${API_URL}/transactions`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const getWalletBalance = async (token) => {
+  const response = await axios.get(`${API_URL}/transactions/wallet`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+// Verification/KYC APIs
+export const initiateVerification = async (verificationData, token) => {
+  const response = await axios.post(`${API_URL}/verification/initiate`, verificationData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const uploadDocument = async (formData, token) => {
+  const response = await axios.post(`${API_URL}/verification/upload-document`, formData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const getVerificationInfo = async (token) => {
+  const response = await axios.get(`${API_URL}/verification/info`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const checkVerificationStatus = async (token) => {
+  const response = await axios.get(`${API_URL}/verification/status`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};

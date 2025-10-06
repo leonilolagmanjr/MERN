@@ -1,18 +1,21 @@
-# Refactor User Links Task
+# TODO for Real Payment Method Integration and Transaction Tests
 
-## Steps
-- [x] Create UserLink component in frontend/src/components/UserLink.js
-- [x] Update PostItem.js to use UserLink for post.createdBy
-- [x] Update CommentItem.js to use UserLink for comment.user
-- [x] Update VideoPage.js to use UserLink for video.uploader
-- [x] Update VideoGallery.js to use UserLink for video.uploader
-- [x] Update DisplayVideo.js to use UserLink for video.uploader
-- [x] Update Job.js to use UserLink for job.createdBy
-- [x] Update Profile.js to use UserLink for profile.name, req.name, friend.name
-- [x] Update FriendActions.js to use UserLink for req.name
-- [x] Update Notification.js to use UserLink for req.name
-- [x] Update Navbar.js to use UserLink for user?.name (already links, but text is "name's Profile")
-- [x] Update ChatWidget.js to use UserLink for partner?.name in chat list, msg.sender?.name (already Link)
-- [ ] Update EditProfile.js to use UserLink for user?.name (own name, not necessary)
-- [ ] Update Auth.js to use UserLink for response.user.name (in messages, not UI)
-- [x] Test the changes by running the app and verifying links work
+## Backend
+- [x] Setup environment variables for real payment API keys in `.env`
+- [ ] Verify paymentService.js uses environment variables for real API keys
+- [ ] Add unit tests for paymentService methods with fake wallet simulation
+- [ ] Add integration tests for paymentController and transactionController endpoints
+
+## Frontend
+- [ ] Verify PaymentSettings.js supports adding real payment methods
+- [ ] Add tests for payment method addition and deletion flows
+- [ ] Add tests for deposit, withdrawal, and trade transaction flows using fake wallet
+
+## Testing
+- [ ] Perform manual testing of payment method addition and transactions using fake wallet
+- [ ] Ensure no changes to existing unrelated features
+- [ ] Validate error handling and edge cases for payment and transaction flows
+
+## Follow-up
+- [ ] User to replace temporary API keys in `.env` with real keys
+- [ ] Monitor logs and errors during real payment gateway usage

@@ -157,6 +157,9 @@ const Profile = () => {
           {isCurrentUser ? (
             <>
               <button style={styles.editButton} onClick={() => window.location.href = '/editprofile'}>Edit Profile</button>
+              <button style={styles.paymentButton} onClick={() => window.location.href = '/payments'}>Payment Settings</button>
+              <button style={styles.historyButton} onClick={() => window.location.href = '/transactions'}>Transaction History</button>
+              <button style={styles.tradeButton} onClick={() => window.location.href = '/trade'}>Trade Funds</button>
               <FriendActions
                 userId={userId}
                 isCurrentUser={isCurrentUser}
@@ -358,6 +361,37 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     fontSize: '16px',
+    marginRight: '10px',
+  },
+  paymentButton: {
+    backgroundColor: '#4CAF50',
+    color: '#ffffff',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    marginRight: '10px',
+  },
+  historyButton: {
+    backgroundColor: '#FF9800',
+    color: '#ffffff',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    marginRight: '10px',
+  },
+  tradeButton: {
+    backgroundColor: '#9C27B0',
+    color: '#ffffff',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    marginRight: '10px',
   },
   addFriendButton: {
     backgroundColor: '#4CAF50',

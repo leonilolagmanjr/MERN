@@ -16,7 +16,13 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    if (req.originalUrl.startsWith('/api/transactions/webhook')) {
+      req.rawBody = buf.toString();
+    }
+  }
+}));
 app.use('/uploads', express.static('uploads'));
 
 // Routes
@@ -42,6 +48,18 @@ app.use('/api/videos', videoRoutes);
 // New post routes
 const postRoutes = require('./routes/postRoutes');
 app.use('/api/posts', postRoutes);
+
+// Payment routes
+const paymentRoutes = require('./routes/paymentRoutes');
+app.use('/api/payments', paymentRoutes);
+
+// Transaction routes
+const transactionRoutes = require('./routes/transactionRoutes');
+app.use('/api/transactions', transactionRoutes);
+
+// Verification/KYC routes
+const verificationRoutes = require('./routes/verificationRoutes');
+app.use('/api/verification', verificationRoutes);
 
 
 // DB Connect
