@@ -1,6 +1,0 @@
-- [x] Identify issue: openChatWithUser in FriendContext was a placeholder
-- [x] Add openChatUserId state and clearOpenChatUser function in FriendContext
-- [x] Implement openChatWithUser to set openChatUserId
-- [x] Provide openChatUserId, clearOpenChatUser, friendListUpdated in FriendContext
-- [x] Verify backend supports creating chat with otherUserId and checks friendship
-- [x] Test the fix by running the app

@@ -1,4 +1,6 @@
 TODO.md
 /backend/uploads
 /backend/node_modules
-TODO.md
+/backend/.env
+/frontend/.env
+
