@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { editTask } from '../../services/api';
+import { editJob } from '../../services/api';
 
-const UpdateTask = ({ task, onTaskUpdated, onClose }) => {
+const UpdateJob = ({ job, onJobUpdated, onClose }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -13,34 +13,34 @@ const UpdateTask = ({ task, onTaskUpdated, onClose }) => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    if (task) {
+    if (job) {
       setFormData({
-        title: task.title || '',
-        description: task.description || '',
-        difficulty: task.difficulty || '',
-        category: task.category || '',
-        location: task.location || '',
-        deadline: task.deadline ? task.deadline.split('T')[0] : '',
+        title: job.title || '',
+        description: job.description || '',
+        difficulty: job.difficulty || '',
+        category: job.category || '',
+        location: job.location || '',
+        deadline: job.deadline ? job.deadline.split('T')[0] : '',
       });
     }
-  }, [task]);
+  }, [job]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await editTask(task._id, formData, token);
-      setMessage('Task updated successfully!');
-      onTaskUpdated();
+      await editJob(job._id, formData, token);
+      setMessage('Job updated successfully!');
+      onJobUpdated();
       onClose();
     } catch (err) {
-      setMessage('Failed to update task. Please try again.');
+      setMessage('Failed to update job. Please try again.');
     }
   };
 
   return (
     <div style={styles.container}>
-      <h3 style={styles.heading}>Update Task</h3>
+      <h3 style={styles.heading}>Update Job</h3>
       {message && <p style={styles.message}>{message}</p>}
       <form style={styles.form} onSubmit={handleSubmit}>
         <input
@@ -100,7 +100,7 @@ const UpdateTask = ({ task, onTaskUpdated, onClose }) => {
           required
         />
         <button type="submit" style={styles.button}>
-          Update Task
+          Update Job
         </button>
       </form>
     </div>
@@ -149,4 +149,4 @@ const styles = {
   },
 };
 
-export default UpdateTask;
+export default UpdateJob;

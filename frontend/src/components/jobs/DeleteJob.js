@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
-import { deleteTask } from '../../services/api';
+import { deleteJob } from '../../services/api';
 
-const DeleteTask = ({ task, onTaskDeleted, onClose }) => {
+const DeleteJob = ({ job, onJobDeleted, onClose }) => {
   const [message, setMessage] = useState('');
 
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem('token');
-      await deleteTask(task._id, token);
-      setMessage('Task deleted successfully!');
-      onTaskDeleted();
+      await deleteJob(job._id, token);
+      setMessage('Job deleted successfully!');
+      onJobDeleted();
       onClose();
     } catch (err) {
-      setMessage('Failed to delete task. Please try again.');
+      setMessage('Failed to delete job. Please try again.');
     }
   };
 
   return (
     <div style={styles.container}>
-      <h3 style={styles.heading}>Delete Task</h3>
+      <h3 style={styles.heading}>Delete Job</h3>
       {message && <p style={styles.message}>{message}</p>}
-      <p>Are you sure you want to delete "{task.title}"?</p>
+      <p>Are you sure you want to delete "{job.title}"?</p>
       <div style={styles.buttonContainer}>
         <button onClick={onClose} style={styles.cancelButton}>
           Cancel
         </button>
         <button onClick={handleDelete} style={styles.deleteButton}>
-          Delete Task
+          Delete Job
         </button>
       </div>
     </div>
@@ -68,4 +68,4 @@ const styles = {
   },
 };
 
-export default DeleteTask;
+export default DeleteJob;

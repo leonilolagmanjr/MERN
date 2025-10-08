@@ -5,8 +5,8 @@ import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Profile from './pages/Profile';
 import { useAuth } from './context/AuthContext';
-import ReadTask from './components/tasks/ReadTask';
-import TaskManager from './pages/TaskManager'; // Import TaskManager component
+import ReadJob from './components/jobs/ReadJob';
+import JobManager from './pages/JobManager'; // Import JobManager component
 import BrowseJobs from './pages/BrowseJobs'; // Import the new page
 import JobDetail from './pages/JobDetail';
 import ChatWidget from './components/ChatWidget';
@@ -32,10 +32,10 @@ const App = () => {
           <Routes>
             {/* Render Home for both logged-in and logged-out users */}
             <Route path="/" element={<Home />} />
-            <Route path="/tasks" element={<ReadTask />} />
+            <Route path="/jobs" element={<ReadJob />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/profile/:userId" element={isLoggedIn ? <Profile /> : <Auth />} /> {/* Add dynamic Profile route */}
-            <Route path="/taskmanager" element={<TaskManager />} /> {/* Add TaskManager route */}
+            <Route path="/jobmanager" element={<JobManager />} /> {/* Add JobManager route */}
             <Route path="/browse" element={<BrowseJobs />} /> {/* Add BrowseJobs route */}
             <Route path="/job/:jobId" element={<JobDetail />} /> {/* Add Job route */}
             <Route path="/editprofile" element={<EditProfile />} /> {/* Add EditProfile route */}

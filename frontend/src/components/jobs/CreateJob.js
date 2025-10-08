@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { postTask } from '../../services/api';
+import { postJob } from '../../services/api';
 
-const CreateTask = ({ onTaskCreated }) => {
+const CreateJob = ({ onJobCreated }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -16,8 +16,8 @@ const CreateTask = ({ onTaskCreated }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await postTask(formData, token);
-      setMessage('Task created successfully!');
+      await postJob(formData, token);
+      setMessage('Job created successfully!');
       setFormData({
         title: '',
         description: '',
@@ -26,16 +26,16 @@ const CreateTask = ({ onTaskCreated }) => {
         location: '',
         deadline: '',
       });
-      onTaskCreated();
-      window.location.href = '/taskmanager'; // Redirect to Task Manager after creation
+      onJobCreated();
+      window.location.href = '/jobmanager'; // Redirect to Job Manager after creation
     } catch (err) {
-      setMessage('Failed to create task. Please try again.');
+      setMessage('Failed to create job. Please try again.');
     }
   };
 
   return (
     <div style={styles.container}>
-      <h3 style={styles.heading}>Create Task</h3>
+      <h3 style={styles.heading}>Create Job</h3>
       {message && <p style={styles.message}>{message}</p>}
       <form style={styles.form} onSubmit={handleSubmit}>
         <input
@@ -85,7 +85,7 @@ const CreateTask = ({ onTaskCreated }) => {
           required
         />
         <button type="submit" style={styles.button}>
-          Create Task
+          Create Job
         </button>
       </form>
     </div>
@@ -134,4 +134,4 @@ const styles = {
   },
 };
 
-export default CreateTask;
+export default CreateJob;

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import CreateTask from '../components/tasks/CreateTask';
-import UpdateTask from '../components/tasks/UpdateTask';
-import DeleteTask from '../components/tasks/DeleteTask';
+import CreateJob from '../components/jobs/CreateJob';
+import UpdateJob from '../components/jobs/UpdateJob';
+import DeleteJob from '../components/jobs/DeleteJob';
 import { Modal } from '@mui/material';
 import { fetchPostedJobs } from '../services/api';
-import { fetchTasks } from '../services/api';
+import { fetchJobs } from '../services/api';
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -13,56 +13,56 @@ import {
   Button,
 } from '@mui/material';
 
-const TaskManager = () => {
-  const [refreshTasks, setRefreshTasks] = useState(false);
+const JobManager = () => {
+  const [refreshJobs, setRefreshJobs] = useState(false);
   const [allJobs, setAllJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredJobs, setFilteredJobs] = useState([]);
-  const [userTasks, setUserTasks] = useState([]);
+  const [userJobs, setUserJobs] = useState([]);
   const [filterDifficulty, setFilterDifficulty] = useState('');
 
   const triggerRefresh = () => {
-    setRefreshTasks(!refreshTasks);
+    setRefreshJobs(!refreshJobs);
   };
 
   // Modal state
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedJob, setSelectedJob] = useState(null);
 
-  const handleEdit = (task) => {
-    setSelectedTask(task);
+  const handleEdit = (job) => {
+    setSelectedJob(job);
     setOpenUpdate(true);
   };
 
-  const handleDelete = (task) => {
-    setSelectedTask(task);
+  const handleDelete = (job) => {
+    setSelectedJob(job);
     setOpenDelete(true);
   };
 
   useEffect(() => {
     const fetchAllJobs = async () => {
       try {
-        const data = await fetchTasks();
+        const data = await fetchJobs();
         setAllJobs(data);
         setFilteredJobs(data);
       } catch (err) {
         console.error('Error fetching jobs:', err);
       }
     };
-    const fetchUserTasks = async () => {
+    const fetchUserJobs = async () => {
       try {
         const token = localStorage.getItem('token');
         const data = await fetchPostedJobs(token);
-        setUserTasks(data);
+        setUserJobs(data);
       } catch (err) {
-        console.error('Error fetching user tasks:', err);
+        console.error('Error fetching user jobs:', err);
       }
     };
     fetchAllJobs();
-    fetchUserTasks();
-  }, [refreshTasks]);
+    fetchUserJobs();
+  }, [refreshJobs]);
 
   const handleSearch = () => {
     let filtered = allJobs.filter((job) =>
@@ -81,17 +81,17 @@ const TaskManager = () => {
           Browse Jobs
         </Typography>
   
-        {/* User Posted Tasks Action Buttons */}
+        {/* User Posted Jobs Action Buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
           <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenCreate(true)}>
-            Create Task
+            Create Job
           </Button>
         </Box>
   
-        {/* User Posted Tasks - Steam-style Table - MOVED TO TOP */}
+        {/* User Posted Jobs - Steam-style Table - MOVED TO TOP */}
         <Box sx={{ bgcolor: '#23262e', borderRadius: 2, boxShadow: 3, mb: 4, p: 2 }}>
           <Typography variant="h6" sx={{ color: '#ffffff', mb: 2 }}>
-            My Posted Tasks ({userTasks.length})
+            My Posted Jobs ({userJobs.length})
           </Typography>
           {/* Table Labels */}
           <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: '#1b2838', borderRadius: 1, fontWeight: 'bold', color: '#c7d5e0', fontSize: 16 }}>
@@ -101,19 +101,19 @@ const TaskManager = () => {
             <Box sx={{ flex: 1, textAlign: 'right' }}>Actions</Box>
           </Box>
           {/* Table Rows */}
-          {userTasks.length === 0 ? (
+          {userJobs.length === 0 ? (
             <Box sx={{ px: 2, py: 2, color: '#8f98a0' }}>
-              You are not selling any items on the Community Market. Sell items from your inventory, or click the "Create Task" button above.
+              You are not selling any items on the Community Market. Sell items from your inventory, or click the "Create Job" button above.
             </Box>
           ) : (
-            userTasks.map((job) => (
+            userJobs.map((job) => (
               <Box key={job._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid #2a475e', ':last-child': { borderBottom: 'none' } }}>
                 {/* Name and description */}
                 <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
                   {/* If you have an image for the job, show it here. Otherwise, use a placeholder. */}
                   <Box sx={{ width: 48, height: 48, bgcolor: '#1b2838', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
                     {/* Placeholder icon or image */}
-                    <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Task'} alt="task" style={{ width: 40, height: 40, borderRadius: 4 }} />
+                    <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Job'} alt="job" style={{ width: 40, height: 40, borderRadius: 4 }} />
                   </Box>
                   <Box>
                     <Typography variant="subtitle1" sx={{ color: '#66c0f4', fontWeight: 'bold' }}>{job.title}</Typography>
@@ -264,24 +264,24 @@ const TaskManager = () => {
           </Box>
         </Box>
   
-        {/* Modals for Task Actions - Keep these at the bottom */}
+        {/* Modals for Job Actions - Keep these at the bottom */}
         <Modal open={openCreate} onClose={() => setOpenCreate(false)}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Create Task</Typography>
-            <CreateTask onTaskCreated={() => { setOpenCreate(false); triggerRefresh(); }} />
+            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Create Job</Typography>
+            <CreateJob onJobCreated={() => { setOpenCreate(false); triggerRefresh(); }} />
             <Button onClick={() => setOpenCreate(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
           </Box>
         </Modal>
-        <Modal open={openUpdate} onClose={() => { setOpenUpdate(false); setSelectedTask(null); }}>
+        <Modal open={openUpdate} onClose={() => { setOpenUpdate(false); setSelectedJob(null); }}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Update Task</Typography>
-            <UpdateTask task={selectedTask} onTaskUpdated={() => { setOpenUpdate(false); setSelectedTask(null); triggerRefresh(); }} onClose={() => { setOpenUpdate(false); setSelectedTask(null); }} />
-            <Button onClick={() => { setOpenUpdate(false); setSelectedTask(null); }} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
+            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Update Job</Typography>
+            <UpdateJob job={selectedJob} onJobUpdated={() => { setOpenUpdate(false); setSelectedJob(null); triggerRefresh(); }} onClose={() => { setOpenUpdate(false); setSelectedJob(null); }} />
+            <Button onClick={() => { setOpenUpdate(false); setSelectedJob(null); }} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
           </Box>
         </Modal>
-        <Modal open={openDelete} onClose={() => { setOpenDelete(false); setSelectedTask(null); }}>
+        <Modal open={openDelete} onClose={() => { setOpenDelete(false); setSelectedJob(null); }}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-            <DeleteTask task={selectedTask} onTaskDeleted={() => { setOpenDelete(false); setSelectedTask(null); triggerRefresh(); }} onClose={() => { setOpenDelete(false); setSelectedTask(null); }} />
+            <DeleteJob job={selectedJob} onJobDeleted={() => { setOpenDelete(false); setSelectedJob(null); triggerRefresh(); }} onClose={() => { setOpenDelete(false); setSelectedJob(null); }} />
           </Box>
         </Modal>
   
@@ -290,4 +290,4 @@ const TaskManager = () => {
   );
 };
 
-export default TaskManager;
+export default JobManager;

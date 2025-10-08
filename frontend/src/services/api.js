@@ -13,35 +13,35 @@ export const loginUser = async (userData) => {
   return response.data;
 };
 
-// Task APIs
-export const fetchTasks = async () => {
-  const response = await axios.get(`${API_URL}/task/list`);
+// Job APIs
+export const fetchJobs = async () => {
+  const response = await axios.get(`${API_URL}/job/list`);
   return response.data;
 };
 
-export const postTask = async (taskData, token) => {
-  const response = await axios.post(`${API_URL}/task/post`, taskData, {
+export const postJob = async (jobData, token) => {
+  const response = await axios.post(`${API_URL}/job/post`, jobData, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
 };
 
 export const fetchPostedJobs = async (token) => {
-  const response = await axios.get(`${API_URL}/task/my-posted`, {
+  const response = await axios.get(`${API_URL}/job/my-posted`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
 };
 
 export const fetchCompletedJobs = async (token) => {
-  const response = await axios.get(`${API_URL}/task/my-completed`, {
+  const response = await axios.get(`${API_URL}/job/my-completed`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
 };
 
 export const fetchAcceptedJobs = async (token) => {
-  const response = await axios.get(`${API_URL}/task/my-accepted`, {
+  const response = await axios.get(`${API_URL}/job/my-accepted`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
@@ -67,15 +67,15 @@ export const updateUserProfile = async (profileData, token) => {
   return response.data;
 };
 
-// Edit and Delete Task APIs
-export const editTask = async (taskId, data, token) => {
-  return await axios.patch(`${API_URL}/task/edit/${taskId}`, data, {
+// Edit and Delete Job APIs
+export const editJob = async (jobId, data, token) => {
+  return await axios.patch(`${API_URL}/job/edit/${jobId}`, data, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
 
-export const deleteTask = async (taskId, token) => {
-  return await axios.delete(`${API_URL}/task/remove/${taskId}`, {
+export const deleteJob = async (jobId, token) => {
+  return await axios.delete(`${API_URL}/job/remove/${jobId}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };

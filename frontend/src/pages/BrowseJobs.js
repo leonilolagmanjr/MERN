@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchTasks } from '../services/api';
+import { fetchJobs } from '../services/api';
 import { Link } from 'react-router-dom';
 import {
   Box,
@@ -19,7 +19,7 @@ const BrowseJobs = () => {
   useEffect(() => {
     const fetchAllJobs = async () => {
       try {
-        const data = await fetchTasks();
+        const data = await fetchJobs();
         setJobs(data);
         setFilteredJobs(data);
       } catch (err) {
@@ -81,14 +81,14 @@ const BrowseJobs = () => {
         <Button
           variant="contained"
           component={Link}
-          to="/taskmanager"
+          to="/jobmanager"
           sx={{
             bgcolor: '#66c0f4',
             color: '#ffffff',
             '&:hover': { bgcolor: '#5aafde' },
           }}
         >
-          Go to Task Manager
+          Go to Job Manager
         </Button>
       </Box>
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchTasks } from '../services/api';
+import { fetchJobs } from '../services/api';
 import { Box, Typography, Container, CircularProgress, Alert } from '@mui/material';
 import UserLink from '../components/UserLink';
 
@@ -12,8 +12,8 @@ const JobDetail = () => {
   useEffect(() => {
     const fetchJobDetails = async () => {
       try {
-        const tasks = await fetchTasks(); // Fetch all tasks
-        const selectedJob = tasks.find((task) => task._id === jobId); // Find the specific job
+        const jobs = await fetchJobs(); // Fetch all jobs
+        const selectedJob = jobs.find((job) => job._id === jobId); // Find the specific job
         if (selectedJob) {
           setJob(selectedJob);
         } else {

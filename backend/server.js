@@ -26,8 +26,8 @@ app.use(express.json({
 app.use('/uploads', express.static('uploads'));
 
 // Routes
-const taskRoutes = require('./routes/taskRoutes');
-app.use('/api/task', taskRoutes);
+const jobRoutes = require('./routes/jobRoutes');
+app.use('/api/job', jobRoutes);
 
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes); 

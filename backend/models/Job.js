@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const taskSchema = new mongoose.Schema({
+const jobSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   difficulty: { type: String, required: true },
@@ -12,6 +12,6 @@ const taskSchema = new mongoose.Schema({
   status: { type: String, enum: ['open', 'in-progress', 'completed', 'canceled'], default: 'open' },
 });
 
-const Task = mongoose.model('Task', taskSchema);
+const Job = mongoose.model('Job', jobSchema);
 
-module.exports = Task;
+module.exports = Job;
