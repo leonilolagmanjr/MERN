@@ -57,8 +57,8 @@ const acceptJob = async (jobId, assignedTo) => {
 // Get All Jobs
 const getAllJobs = async (difficulty) => {
   try {
-    const filter = difficulty ? { status: 'open', difficulty } : { status: 'open' };
-    const jobs = await Job.find(filter).populate('createdBy', 'name').populate('location');
+    const filter = difficulty ? { difficulty } : {};
+    const jobs = await Job.find(filter).populate('createdBy', 'name');
     return jobs;
   } catch (err) {
     throw new Error('Error fetching jobs');
@@ -68,7 +68,7 @@ const getAllJobs = async (difficulty) => {
 // Get Jobs Posted by Current User
 const getMyPostedJobs = async (userId) => {
   try {
-    return await Job.find({ createdBy: userId }).populate('location'); // Ensure `createdBy` is the correct field in your Job model
+    return await Job.find({ createdBy: userId }); // Ensure `createdBy` is the correct field in your Job model
   } catch (err) {
     throw new Error('Error fetching posted jobs');
   }
@@ -77,7 +77,7 @@ const getMyPostedJobs = async (userId) => {
 // Get Jobs Accepted by Current User
 const getMyAcceptedJobs = async (userId) => {
   try {
-    return await Job.find({ assignedTo: userId, status: 'in-progress' }).populate('location');
+    return await Job.find({ assignedTo: userId, status: 'in-progress' });
   } catch (err) {
     throw new Error('Error fetching accepted jobs');
   }
@@ -86,7 +86,7 @@ const getMyAcceptedJobs = async (userId) => {
 // Get Jobs Completed by Current User
 const getMyCompletedJobs = async (userId) => {
   try {
-    return await Job.find({ assignedTo: userId, status: 'completed' }).populate('location');
+    return await Job.find({ assignedTo: userId, status: 'completed' });
   } catch (err) {
     throw new Error('Error fetching completed jobs');
   }

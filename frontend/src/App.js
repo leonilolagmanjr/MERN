@@ -16,6 +16,8 @@ import VideoGallery from './pages/VideoGallery'; // Import VideoGallery
 import VideoPage from './pages/VideoPage'; // Import VideoPage
 import VideoManager from './pages/VideoManager'; // Import VideoManager
 import SocialMedia from './pages/SocialMedia'; // Import SocialMedia
+import Forum from './pages/Forum.js'; // Import Forum
+import ForumCategory from './pages/ForumCategory.js'; // Import ForumCategory
 import PaymentSettings from './pages/PaymentSettings'; // Import PaymentSettings
 import TransactionHistory from './pages/TransactionHistory'; // Import TransactionHistory
 import TradingInterface from './pages/TradingInterface'; // Import TradingInterface
@@ -44,6 +46,8 @@ const App = () => {
             <Route path="/video/:id" element={<VideoPage />} /> {/* Add VideoPage route */}
             <Route path="/videomanager" element={<VideoManager />} /> {/* Add VideoManager route */}
             <Route path="/social" element={<SocialMedia />} /> {/* Add SocialMedia route */}
+            <Route path="/forum" element={<Forum />} /> {/* Add Forum route */}
+            <Route path="/forum/:groupId" element={<ForumCategory />} /> {/* Add ForumCategory route */}
             <Route path="/payments" element={<PaymentSettings />} /> {/* Add PaymentSettings route */}
             <Route path="/transactions" element={<TransactionHistory />} /> {/* Add TransactionHistory route */}
             <Route path="/trade" element={<TradingInterface />} /> {/* Add TradingInterface route */}

@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import PostItem from './PostItem';
 import { fetchPosts, fetchUserPosts } from '../../services/api';
 
-const Posts = ({ refreshTrigger, userId }) => {
+const Posts = ({ refreshTrigger, userId, type, category }) => {
   const [posts, setPosts] = useState([]);
   const [internalRefresh, setInternalRefresh] = useState(0);
 
@@ -15,7 +15,10 @@ const Posts = ({ refreshTrigger, userId }) => {
         if (userId) {
           data = await fetchUserPosts(userId, token);
         } else {
-          data = await fetchPosts();
+          const params = {};
+          if (type) params.type = type;
+          if (category) params.category = category;
+          data = await fetchPosts(params);
         }
         setPosts(data);
       } catch (err) {
@@ -23,7 +26,7 @@ const Posts = ({ refreshTrigger, userId }) => {
       }
     };
     loadPosts();
-  }, [refreshTrigger, internalRefresh, userId]);
+  }, [refreshTrigger, internalRefresh, userId, type, category]);
 
   const handlePostUpdated = () => {
     setInternalRefresh(prev => prev + 1);

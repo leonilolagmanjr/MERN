@@ -1,12 +1,16 @@
 const Post = require('../models/Post');
 
 // Create Post
-const createPost = async (content, media, createdBy) => {
+const createPost = async (content, media, createdBy, type = 'post', category, groupId, pinned = false) => {
   try {
     const post = new Post({
       content,
       media,
       createdBy,
+      type,
+      category,
+      groupId,
+      pinned,
     });
     await post.save();
     return post;
@@ -15,10 +19,14 @@ const createPost = async (content, media, createdBy) => {
   }
 };
 
-// Get All Posts
-const getAllPosts = async () => {
+// Get All Posts with optional filters
+const getAllPosts = async (filters = {}) => {
   try {
-    const posts = await Post.find().populate('createdBy', 'name').populate('comments.user', 'name').sort({ createdAt: -1 });
+    const query = {};
+    if (filters.type) query.type = filters.type;
+    if (filters.category) query.category = filters.category;
+    if (filters.groupId) query.groupId = filters.groupId;
+    const posts = await Post.find(query).populate('createdBy', 'name').populate('comments.user', 'name').sort({ pinned: -1, createdAt: -1 });
     return posts;
   } catch (err) {
     throw new Error('Error fetching posts');
@@ -89,6 +97,8 @@ const addComment = async (postId, userId, text) => {
     if (!post) throw new Error('Post not found');
     post.comments.push({ user: userId, text });
     await post.save();
+    // Populate the user in the newly added comment
+    await post.populate('comments.user', 'name');
     return post;
   } catch (err) {
     throw new Error('Error adding comment');

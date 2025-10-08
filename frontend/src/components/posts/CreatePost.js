@@ -3,7 +3,7 @@ import { TextField, Button, Box } from '@mui/material';
 import { createPost } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
-const CreatePost = ({ onPostCreated }) => {
+const CreatePost = ({ onPostCreated, type = 'post', category, groupId }) => {
   const { user } = useAuth();
   const [content, setContent] = useState('');
   const [media, setMedia] = useState([]);
@@ -25,6 +25,9 @@ const CreatePost = ({ onPostCreated }) => {
       for (let i = 0; i < media.length; i++) {
         formData.append('media', media[i]);
       }
+      if (type) formData.append('type', type);
+      if (category) formData.append('category', category);
+      if (groupId) formData.append('groupId', groupId);
 
       await createPost(formData, token);
       setContent('');

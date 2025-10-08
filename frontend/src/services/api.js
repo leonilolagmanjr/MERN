@@ -259,8 +259,8 @@ export const deleteVideo = async (videoId, token) => {
 };
 
 // Post APIs
-export const fetchPosts = async () => {
-  const response = await axios.get(`${API_URL}/posts`);
+export const fetchPosts = async (params = {}) => {
+  const response = await axios.get(`${API_URL}/posts`, { params });
   return response.data;
 };
 
@@ -308,6 +308,19 @@ export const addComment = async (postId, data, token) => {
 
 export const sharePost = async (postId, token) => {
   const response = await axios.post(`${API_URL}/posts/${postId}/share`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+// Forum APIs
+export const fetchForumGroups = async () => {
+  const response = await axios.get(`${API_URL}/forum`);
+  return response.data;
+};
+
+export const createForumGroup = async (data, token) => {
+  const response = await axios.post(`${API_URL}/forum/create`, data, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;

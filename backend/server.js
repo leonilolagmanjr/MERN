@@ -49,6 +49,10 @@ app.use('/api/videos', videoRoutes);
 const postRoutes = require('./routes/postRoutes');
 app.use('/api/posts', postRoutes);
 
+// Forum routes
+const forumRoutes = require('./routes/forumRoutes');
+app.use('/api/forum', forumRoutes);
+
 // Payment routes
 const paymentRoutes = require('./routes/paymentRoutes');
 app.use('/api/payments', paymentRoutes);

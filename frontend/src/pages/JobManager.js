@@ -192,7 +192,7 @@ const JobManager = () => {
                     {/* Category */}
                     <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.category}</Box>
                     {/* Location */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}</Box>
+                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.location ? 'Physical' : 'Remote'}</Box>
                     {/* Deadline */}
                     <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.deadline).toLocaleDateString()}</Box>
                   </Box>

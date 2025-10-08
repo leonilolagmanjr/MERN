@@ -28,7 +28,7 @@ const SocialMedia = () => {
           </Button>
         </Box>
 
-        <Posts refreshTrigger={refreshPosts} />
+        <Posts refreshTrigger={refreshPosts} type="post" />
 
         <Modal open={openCreate} onClose={() => setOpenCreate(false)}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>

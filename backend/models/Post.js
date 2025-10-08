@@ -12,7 +12,11 @@ const postSchema = new mongoose.Schema({
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of user IDs who liked the post
   comments: [commentSchema], // Sub-document array for comments
   shareCount: { type: Number, default: 0 }, // Number of shares
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  type: { type: String, enum: ['post', 'thread'], default: 'post' }, // Type of post
+  category: { type: String }, // Category for forum threads
+  groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'ForumGroup' }, // Reference to forum group
+  pinned: { type: Boolean, default: false } // Pinned status
 }, { timestamps: true });
 
 const Post = mongoose.model('Post', postSchema);

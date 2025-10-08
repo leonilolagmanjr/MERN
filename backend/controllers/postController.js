@@ -22,9 +22,9 @@ const createPost = (req, res) => {
     }
     try {
       const mediaUrls = req.files ? req.files.map(file => `/uploads/posts/${file.filename}`) : [];
-      const { content } = req.body;
+      const { content, type, category, groupId, pinned } = req.body;
       const createdBy = req.user.id;
-      const post = await postService.createPost(content, mediaUrls, createdBy);
+      const post = await postService.createPost(content, mediaUrls, createdBy, type, category, groupId, pinned);
       res.status(201).json(post);
     } catch (error) {
       res.status(500).json({ msg: 'Server error creating post' });
@@ -35,7 +35,11 @@ const createPost = (req, res) => {
 // Get all posts
 const getAllPosts = async (req, res) => {
   try {
-    const posts = await postService.getAllPosts();
+    const filters = {};
+    if (req.query.type) filters.type = req.query.type;
+    if (req.query.category) filters.category = req.query.category;
+    if (req.query.groupId) filters.groupId = req.query.groupId;
+    const posts = await postService.getAllPosts(filters);
     res.json(posts);
   } catch (error) {
     res.status(500).json({ msg: 'Server error fetching posts' });
@@ -50,6 +54,19 @@ const getUserPosts = async (req, res) => {
     res.json(posts);
   } catch (error) {
     res.status(500).json({ msg: 'Server error fetching user posts' });
+  }
+};
+
+// Get threads (forum posts)
+const getThreads = async (req, res) => {
+  try {
+    const filters = { type: 'thread' };
+    if (req.query.category) filters.category = req.query.category;
+    if (req.query.groupId) filters.groupId = req.query.groupId;
+    const posts = await postService.getAllPosts(filters);
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ msg: 'Server error fetching threads' });
   }
 };
 
@@ -157,6 +174,7 @@ module.exports = {
   createPost,
   getAllPosts,
   getUserPosts,
+  getThreads,
   updatePost,
   deletePost,
   likePost,
