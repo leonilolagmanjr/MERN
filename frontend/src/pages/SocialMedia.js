@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Box, Typography, Button, Modal } from '@mui/material';
 import CreatePost from '../components/posts/CreatePost';
 import Posts from '../components/posts/Posts';
@@ -18,9 +19,12 @@ const SocialMedia = () => {
           Social Media Feed
         </Typography>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 3 }}>
           <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff' }} onClick={() => setOpenCreate(true)}>
             Create Post
+          </Button>
+          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff' }} component={Link} to="/videos">
+            View Videos
           </Button>
         </Box>
 

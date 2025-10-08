@@ -78,6 +78,18 @@ const BrowseJobs = () => {
         >
           Search
         </Button>
+        <Button
+          variant="contained"
+          component={Link}
+          to="/taskmanager"
+          sx={{
+            bgcolor: '#66c0f4',
+            color: '#ffffff',
+            '&:hover': { bgcolor: '#5aafde' },
+          }}
+        >
+          Go to Task Manager
+        </Button>
       </Box>
 
       {/* Jobs Grid */}
