@@ -3,20 +3,9 @@ import { Wrapper, Status } from '@googlemaps/react-wrapper';
 
 const MapModal = ({ isOpen, onClose, onLocationSelect }) => {
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const autocompleteRef = useRef(null);
 
-  const handlePlaceSelect = useCallback(() => {
-    const place = autocompleteRef.current.getPlace();
-    if (place && place.geometry) {
-      const location = {
-        address: place.formatted_address,
-        coordinates: {
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-        },
-      };
-      setSelectedLocation(location);
-    }
+  const handlePlaceSelect = useCallback((location) => {
+    setSelectedLocation(location);
   }, []);
 
   const handleConfirm = () => {
@@ -31,18 +20,24 @@ const MapModal = ({ isOpen, onClose, onLocationSelect }) => {
     <div style={styles.overlay}>
       <div style={styles.modal}>
         <h3 style={styles.title}>Select Location</h3>
-        <Wrapper apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} libraries={['places']} render={render}>
+        <Wrapper 
+          apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY} 
+          libraries={['places']} 
+          render={render}
+        >
           <MapComponent
-            center={{ lat: 40.7128, lng: -74.0060 }} // Default to NYC
+            center={{ lat: 40.7128, lng: -74.0060 }}
             zoom={10}
-            onLocationSelect={setSelectedLocation}
-            autocompleteRef={autocompleteRef}
-            onPlaceSelect={handlePlaceSelect}
+            onLocationSelect={handlePlaceSelect}
             selectedLocation={selectedLocation}
           />
         </Wrapper>
         <div style={styles.actions}>
-          <button onClick={handleConfirm} style={styles.confirmButton} disabled={!selectedLocation}>
+          <button 
+            onClick={handleConfirm} 
+            style={styles.confirmButton} 
+            disabled={!selectedLocation}
+          >
             Confirm Location
           </button>
           <button onClick={onClose} style={styles.cancelButton}>
@@ -60,67 +55,117 @@ const render = (status) => {
   return null;
 };
 
-const MapComponent = ({ center, zoom, onLocationSelect, autocompleteRef, onPlaceSelect, selectedLocation }) => {
+const MapComponent = ({ center, zoom, onLocationSelect, selectedLocation }) => {
   const mapRef = useRef(null);
   const inputRef = useRef(null);
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
+  const [autocomplete, setAutocomplete] = useState(null);
 
-  // Initialize map and marker
+  // Initialize map
   useEffect(() => {
-    if (window.google && window.google.maps && mapRef.current && !map) {
+    if (!map && mapRef.current && window.google) {
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center,
         zoom,
       });
       setMap(mapInstance);
 
+      // Create initial marker
       const markerInstance = new window.google.maps.Marker({
         position: center,
         map: mapInstance,
         draggable: true,
       });
+      setMarker(markerInstance);
 
-      const geocoder = new window.google.maps.Geocoder();
-
-      markerInstance.addListener('dragend', (event) => {
+      // Add click listener to map
+      mapInstance.addListener('click', (event) => {
         const position = event.latLng;
+        const geocoder = new window.google.maps.Geocoder();
+        
         geocoder.geocode({ location: position }, (results, status) => {
-          if (status === window.google.maps.GeocoderStatus.OK && results[0]) {
+          if (status === 'OK' && results[0]) {
             const address = results[0].formatted_address;
-            onLocationSelect({
+            const location = {
               address,
               coordinates: { lat: position.lat(), lng: position.lng() },
-            });
-          } else {
-            onLocationSelect({
-              address: '',
-              coordinates: { lat: position.lat(), lng: position.lng() },
-            });
+            };
+            onLocationSelect(location);
+            markerInstance.setPosition(position);
           }
         });
       });
 
-      setMarker(markerInstance);
+      // Add dragend listener to marker
+      markerInstance.addListener('dragend', (event) => {
+        const position = event.latLng;
+        const geocoder = new window.google.maps.Geocoder();
+        
+        geocoder.geocode({ location: position }, (results, status) => {
+          if (status === 'OK' && results[0]) {
+            const address = results[0].formatted_address;
+            const location = {
+              address,
+              coordinates: { lat: position.lat(), lng: position.lng() },
+            };
+            onLocationSelect(location);
+          }
+        });
+      });
     }
-  }, [center, zoom, onLocationSelect, map]);
+  }, [map, center, zoom, onLocationSelect]);
 
-  // Initialize autocomplete
+  // Initialize autocomplete after map is ready
   useEffect(() => {
-    if (inputRef.current && window.google && window.google.maps && window.google.maps.places && !autocompleteRef.current) {
-      const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current);
-      autocomplete.addListener('place_changed', onPlaceSelect);
-      autocompleteRef.current = autocomplete;
+    if (map && inputRef.current && window.google && window.google.maps.places) {
+      // Create autocomplete
+      const autocompleteInstance = new window.google.maps.places.Autocomplete(
+        inputRef.current,
+        {
+          types: ['geocode'],
+          fields: ['formatted_address', 'geometry', 'name']
+        }
+      );
 
+      // Add place changed listener
+      autocompleteInstance.addListener('place_changed', () => {
+        const place = autocompleteInstance.getPlace();
+        
+        if (place.geometry && place.geometry.location) {
+          const location = {
+            address: place.formatted_address,
+            coordinates: {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng(),
+            },
+          };
+          
+          onLocationSelect(location);
+          
+          // Update marker position
+          if (marker) {
+            marker.setPosition(place.geometry.location);
+          }
+          
+          // Center map on selected location
+          map.setCenter(place.geometry.location);
+          map.setZoom(15);
+        }
+      });
+
+      setAutocomplete(autocompleteInstance);
+
+      // Cleanup
       return () => {
-        if (autocompleteRef.current) {
-          window.google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        if (autocompleteInstance) {
+          window.google.maps.event.clearInstanceListeners(autocompleteInstance);
         }
       };
     }
-  }, [onPlaceSelect, autocompleteRef]);
+  }, [map, marker, onLocationSelect]);
 
-  // Update marker position when selectedLocation changes
+  // Update marker when selectedLocation changes
   useEffect(() => {
     if (marker && selectedLocation && selectedLocation.coordinates) {
       marker.setPosition(selectedLocation.coordinates);
@@ -131,13 +176,21 @@ const MapComponent = ({ center, zoom, onLocationSelect, autocompleteRef, onPlace
     }
   }, [marker, selectedLocation, map]);
 
+  // Prevent form submission on enter
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div style={styles.mapContainer}>
       <input
         ref={inputRef}
         type="text"
-        placeholder="Search for a location"
+        placeholder="Search for a location..."
         style={styles.autocomplete}
+        onKeyPress={handleKeyPress}
       />
       <div ref={mapRef} style={styles.map} />
     </div>
@@ -161,41 +214,71 @@ const styles = {
     backgroundColor: '#1b2838',
     padding: '20px',
     borderRadius: '10px',
-    width: '80%',
-    maxWidth: '600px',
+    width: '90%',
+    maxWidth: '800px',
     maxHeight: '90vh',
     overflowY: 'auto',
     color: '#c7d5e0',
+    boxSizing: 'border-box',
   },
-  title: { marginBottom: '20px', color: '#ffffff' },
-  mapContainer: { height: '400px', marginBottom: '20px', position: 'relative', zIndex: 1, overflow: 'hidden' },
-  map: { height: '100%', width: '100%', boxSizing: 'border-box' },
+  title: { 
+    marginBottom: '20px', 
+    color: '#ffffff',
+    textAlign: 'center'
+  },
+  mapContainer: { 
+    height: '500px',
+    marginBottom: '20px', 
+    position: 'relative', 
+    zIndex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+  },
   autocomplete: {
     width: '100%',
-    padding: '10px',
-    marginBottom: '10px',
+    padding: '12px',
+    marginBottom: '15px',
     borderRadius: '5px',
     border: '1px solid #66c0f4',
     backgroundColor: '#2a475e',
     color: '#c7d5e0',
+    fontSize: '16px',
+    boxSizing: 'border-box',
+    outline: 'none',
   },
-  map: { height: '100%', width: '100%' },
-  actions: { display: 'flex', justifyContent: 'space-between' },
+  map: { 
+    flex: 1,
+    width: '100%',
+    borderRadius: '5px',
+    border: '1px solid #66c0f4',
+  },
+  actions: { 
+    display: 'flex', 
+    justifyContent: 'space-between',
+    gap: '15px',
+    marginTop: '20px'
+  },
   confirmButton: {
     backgroundColor: '#66c0f4',
     color: '#ffffff',
     border: 'none',
-    padding: '10px 20px',
+    padding: '12px 24px',
     borderRadius: '5px',
     cursor: 'pointer',
+    flex: 1,
+    fontSize: '16px',
+    fontWeight: 'bold',
   },
   cancelButton: {
     backgroundColor: '#c7d5e0',
     color: '#1b2838',
     border: 'none',
-    padding: '10px 20px',
+    padding: '12px 24px',
     borderRadius: '5px',
     cursor: 'pointer',
+    flex: 1,
+    fontSize: '16px',
+    fontWeight: 'bold',
   },
 };
 

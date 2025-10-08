@@ -1,12 +1,24 @@
 const Job = require('../models/Job');
 
 // Create Job
-const createJob = async (title, description, difficulty, category, location, deadline, createdBy) => {
+const createJob = async (title, description, difficulty, category, locationData, deadline, createdBy) => {
   try {
     // Check for duplicate jobs
     const existingJob = await Job.findOne({ title, description, createdBy });
     if (existingJob) {
       throw new Error('A job with the same title and description already exists.');
+    }
+
+    let location = null;
+    if (locationData.type === 'physical') {
+      const Location = require('../models/Location');
+      const newLocation = new Location({
+        type: locationData.type,
+        address: locationData.address,
+        coordinates: locationData.coordinates,
+      });
+      await newLocation.save();
+      location = newLocation._id;
     }
 
     // Create a new job
@@ -46,7 +58,7 @@ const acceptJob = async (jobId, assignedTo) => {
 const getAllJobs = async (difficulty) => {
   try {
     const filter = difficulty ? { status: 'open', difficulty } : { status: 'open' };
-    const jobs = await Job.find(filter).populate('createdBy', 'name');
+    const jobs = await Job.find(filter).populate('createdBy', 'name').populate('location');
     return jobs;
   } catch (err) {
     throw new Error('Error fetching jobs');
@@ -56,7 +68,7 @@ const getAllJobs = async (difficulty) => {
 // Get Jobs Posted by Current User
 const getMyPostedJobs = async (userId) => {
   try {
-    return await Job.find({ createdBy: userId }); // Ensure `createdBy` is the correct field in your Job model
+    return await Job.find({ createdBy: userId }).populate('location'); // Ensure `createdBy` is the correct field in your Job model
   } catch (err) {
     throw new Error('Error fetching posted jobs');
   }
@@ -65,7 +77,7 @@ const getMyPostedJobs = async (userId) => {
 // Get Jobs Accepted by Current User
 const getMyAcceptedJobs = async (userId) => {
   try {
-    return await Job.find({ assignedTo: userId, status: 'in-progress' });
+    return await Job.find({ assignedTo: userId, status: 'in-progress' }).populate('location');
   } catch (err) {
     throw new Error('Error fetching accepted jobs');
   }
@@ -74,7 +86,7 @@ const getMyAcceptedJobs = async (userId) => {
 // Get Jobs Completed by Current User
 const getMyCompletedJobs = async (userId) => {
   try {
-    return await Job.find({ assignedTo: userId, status: 'completed' });
+    return await Job.find({ assignedTo: userId, status: 'completed' }).populate('location');
   } catch (err) {
     throw new Error('Error fetching completed jobs');
   }
@@ -95,18 +107,35 @@ const completeJob = async (jobId, assignedTo) => {
 };
 
 // Edit Job
-const editJob = async (jobId, title, description, difficulty, category, location, deadline, userId) => {
+const editJob = async (jobId, title, description, difficulty, category, locationData, deadline, userId) => {
   try {
     console.log('Edit Job Service Input:', { jobId, userId }); // Debugging log
     const job = await Job.findById(jobId);
     console.log('Job Found:', job); // Debugging log
     if (!job) throw new Error('Job not found');
     if (String(job.createdBy) !== String(userId)) throw new Error('Not authorized to edit this job'); // Fix comparison
+
+    let location = job.location; // keep existing if not provided
+    if (locationData) {
+      if (locationData.type === 'physical') {
+        const Location = require('../models/Location');
+        const newLocation = new Location({
+          type: locationData.type,
+          address: locationData.address,
+          coordinates: locationData.coordinates,
+        });
+        await newLocation.save();
+        location = newLocation._id;
+      } else if (locationData.type === 'remote') {
+        location = null;
+      }
+    }
+
     job.title = title || job.title;
     job.description = description || job.description;
     job.difficulty = difficulty || job.difficulty;
     job.category = category || job.category;
-    job.location = location || job.location;
+    job.location = location;
     job.deadline = deadline || job.deadline;
     await job.save();
     return job;

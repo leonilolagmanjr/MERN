@@ -62,7 +62,7 @@ const JobDetail = () => {
           <strong>Category:</strong> {job.category}
         </Typography>
         <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
-          <strong>Location:</strong> {typeof job.location === 'string' ? job.location : (job.location.type === 'remote' ? 'Remote' : job.location.address)}
+          <strong>Location:</strong> {job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}
         </Typography>
         <Typography variant="body2" sx={{ color: '#a9b7c6', mb: 1 }}>
           <strong>Deadline:</strong> {new Date(job.deadline).toLocaleDateString()}
