@@ -12,7 +12,7 @@ const initSocket = (server) => {
     });
 
     io.on('connection', (socket) => {
-        console.log('A user connected:', socket.id);
+        //console.log('A user connected:', socket.id);
 
         // This remains necessary: clients join a room specific to the chat ID
         socket.on('joinChat', (chatId) => {
@@ -30,7 +30,7 @@ const initSocket = (server) => {
         // Broadcasting is now handled reliably by the chatService after DB save.
 
         socket.on('disconnect', () => {
-            console.log('A user disconnected:', socket.id);
+            //console.log('A user disconnected:', socket.id);
         });
     });
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { editJob } from '../../services/api';
+import LocationSelector from './LocationSelector';
 
 const UpdateJob = ({ job, onJobUpdated, onClose }) => {
   const [formData, setFormData] = useState({
@@ -7,19 +8,26 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
     description: '',
     difficulty: '',
     category: '',
-    location: '',
+    location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
     deadline: '',
   });
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (job) {
+      let location = { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } };
+      if (typeof job.location === 'string') {
+        // Backward compatibility: old string location
+        location = { type: 'physical', address: job.location, coordinates: { lat: 0, lng: 0 } };
+      } else if (job.location) {
+        location = job.location;
+      }
       setFormData({
         title: job.title || '',
         description: job.description || '',
         difficulty: job.difficulty || '',
         category: job.category || '',
-        location: job.location || '',
+        location,
         deadline: job.deadline ? job.deadline.split('T')[0] : '',
       });
     }
@@ -80,15 +88,9 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
           style={styles.input}
           required
         />
-        <input
-          type="text"
-          placeholder="Location"
-          value={formData.location}
-          onChange={(e) =>
-            setFormData({ ...formData, location: e.target.value })
-          }
-          style={styles.input}
-          required
+        <LocationSelector
+          location={formData.location}
+          onLocationChange={(location) => setFormData({ ...formData, location })}
         />
         <input
           type="date"

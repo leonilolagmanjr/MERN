@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { postJob } from '../../services/api';
+import LocationSelector from './LocationSelector';
 
 const CreateJob = ({ onJobCreated }) => {
   const [formData, setFormData] = useState({
@@ -7,10 +8,34 @@ const CreateJob = ({ onJobCreated }) => {
     description: '',
     difficulty: '',
     category: '',
-    location: '',
+    location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
     deadline: '',
   });
   const [message, setMessage] = useState('');
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+
+  const categories = [
+    'Web Development',
+    'Graphic Design',
+    'Content Writing',
+    'Video Editing',
+    'Music Production',
+    'Game Development',
+    'Marketing',
+    'Data Entry',
+    'Custom',
+  ];
+
+  const handleCategoryChange = (e) => {
+    const selected = e.target.value;
+    if (selected === 'Custom') {
+      setIsCustomCategory(true);
+      setFormData({ ...formData, category: '' });
+    } else {
+      setIsCustomCategory(false);
+      setFormData({ ...formData, category: selected });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,11 +48,12 @@ const CreateJob = ({ onJobCreated }) => {
         description: '',
         difficulty: '',
         category: '',
-        location: '',
+        location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
         deadline: '',
       });
+      setIsCustomCategory(false);
       onJobCreated();
-      window.location.href = '/jobmanager'; // Redirect to Job Manager after creation
+      window.location.href = '/jobmanager';
     } catch (err) {
       setMessage('Failed to create job. Please try again.');
     }
@@ -46,6 +72,7 @@ const CreateJob = ({ onJobCreated }) => {
           style={styles.input}
           required
         />
+
         <textarea
           placeholder="Description"
           value={formData.description}
@@ -53,6 +80,7 @@ const CreateJob = ({ onJobCreated }) => {
           style={styles.textarea}
           required
         />
+
         <input
           type="text"
           placeholder="Difficulty"
@@ -61,22 +89,37 @@ const CreateJob = ({ onJobCreated }) => {
           style={styles.input}
           required
         />
-        <input
-          type="text"
-          placeholder="Category"
-          value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+
+        {/* Category Selection */}
+        <select
+          value={isCustomCategory ? 'Custom' : formData.category}
+          onChange={handleCategoryChange}
           style={styles.input}
           required
+        >
+          <option value="" disabled>Select Category</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        {/* Custom Category Input */}
+        {isCustomCategory && (
+          <input
+            type="text"
+            placeholder="Enter custom category"
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            style={styles.input}
+            required
+          />
+        )}
+
+        <LocationSelector
+          location={formData.location}
+          onLocationChange={(location) => setFormData({ ...formData, location })}
         />
-        <input
-          type="text"
-          placeholder="Location"
-          value={formData.location}
-          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-          style={styles.input}
-          required
-        />
+
         <input
           type="date"
           value={formData.deadline}
@@ -84,6 +127,7 @@ const CreateJob = ({ onJobCreated }) => {
           style={styles.input}
           required
         />
+
         <button type="submit" style={styles.button}>
           Create Job
         </button>
@@ -93,22 +137,10 @@ const CreateJob = ({ onJobCreated }) => {
 };
 
 const styles = {
-  container: {
-    marginBottom: '20px',
-  },
-  heading: {
-    color: '#ffffff',
-    marginBottom: '10px',
-  },
-  message: {
-    color: '#66c0f4',
-    marginBottom: '10px',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-  },
+  container: { marginBottom: '20px' },
+  heading: { color: '#ffffff', marginBottom: '10px' },
+  message: { color: '#66c0f4', marginBottom: '10px' },
+  form: { display: 'flex', flexDirection: 'column', gap: '10px' },
   input: {
     padding: '10px',
     borderRadius: '5px',

@@ -5,7 +5,14 @@ const jobSchema = new mongoose.Schema({
   description: { type: String, required: true },
   difficulty: { type: String, required: true },
   category: { type: String, required: true },
-  location: { type: String, required: true },
+  location: {
+    type: { type: String, enum: ['remote', 'physical'], default: 'remote' },
+    address: String,
+    coordinates: {
+      lat: Number,
+      lng: Number,
+    },
+  },
   deadline: { type: Date, required: true },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },

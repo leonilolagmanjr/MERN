@@ -9,12 +9,30 @@ const UserLink = ({ userId, name, sx = {} }) => {
   const displayName = isOwn ? name : name || 'Unknown';
 
   if (!userId) {
-    return <Typography sx={{ color: '#66c0f4', ...sx }}>{displayName}</Typography>;
+    return (
+      <Typography
+        component="span"
+        sx={{ color: '#66c0f4', display: 'inline', ...sx }}
+      >
+        {displayName}
+      </Typography>
+    );
   }
 
   return (
-    <Link to={`/profile/${userId}`} style={{ textDecoration: 'none' }}>
-      <Typography sx={{ color: '#66c0f4', '&:hover': { textDecoration: 'underline' }, ...sx }}>
+    <Link
+      to={`/profile/${userId}`}
+      style={{ textDecoration: 'none', display: 'inline-block' }}
+    >
+      <Typography
+        component="span"
+        sx={{
+          color: '#66c0f4',
+          display: 'inline',
+          '&:hover': { textDecoration: 'underline' },
+          ...sx,
+        }}
+      >
         {displayName}
       </Typography>
     </Link>
