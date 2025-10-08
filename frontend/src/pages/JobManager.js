@@ -265,13 +265,14 @@ const JobManager = () => {
         </Box>
   
         {/* Modals for Job Actions - Keep these at the bottom */}
-        <Modal open={openCreate} onClose={() => setOpenCreate(false)}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Create Job</Typography>
-            <CreateJob onJobCreated={() => { setOpenCreate(false); triggerRefresh(); }} />
-            <Button onClick={() => setOpenCreate(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
-          </Box>
-        </Modal>
+<Modal open={openCreate} onClose={() => setOpenCreate(false)}>
+  <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
+    {/* Removed duplicate Create Job header */}
+    {/* <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Create Job</Typography> */}
+    <CreateJob onJobCreated={() => { setOpenCreate(false); triggerRefresh(); }} />
+    <Button onClick={() => setOpenCreate(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
+  </Box>
+</Modal>
         <Modal open={openUpdate} onClose={() => { setOpenUpdate(false); setSelectedJob(null); }}>
           <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
             <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Update Job</Typography>
