@@ -157,9 +157,6 @@ const Profile = () => {
           {isCurrentUser ? (
             <>
               <button style={styles.editButton} onClick={() => window.location.href = '/editprofile'}>Edit Profile</button>
-              <button style={styles.paymentButton} onClick={() => window.location.href = '/payments'}>Payment Settings</button>
-              <button style={styles.historyButton} onClick={() => window.location.href = '/transactions'}>Transaction History</button>
-              <button style={styles.tradeButton} onClick={() => window.location.href = '/trade'}>Trade Funds</button>
               <FriendActions
                 userId={userId}
                 isCurrentUser={isCurrentUser}
@@ -307,11 +304,6 @@ const Profile = () => {
             <p>Average Rating: {profile.rating || 'N/A'}</p>
             <p>Job Success Rate: {profile.successRate || 'N/A'}%</p>
             <p>Completed Jobs: {completedJobs.length}</p>
-          </div>
-          <div style={styles.sidebarSection}>
-            <h3 style={styles.sidebarHeading}>Rates and Payment</h3>
-            <p>Hourly Rate: ${profile.hourlyRate || 'N/A'}</p>
-            <p>Preferred Payment Method: {profile.paymentMethod || 'N/A'}</p>
           </div>
         </div>
       </div>

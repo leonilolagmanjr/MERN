@@ -18,11 +18,6 @@ import VideoManager from './pages/VideoManager'; // Import VideoManager
 import SocialMedia from './pages/SocialMedia'; // Import SocialMedia
 import Forum from './pages/Forum.js'; // Import Forum
 import ForumCategory from './pages/ForumCategory.js'; // Import ForumCategory
-import PaymentSettings from './pages/PaymentSettings'; // Import PaymentSettings
-import TransactionHistory from './pages/TransactionHistory'; // Import TransactionHistory
-import TradingInterface from './pages/TradingInterface'; // Import TradingInterface
-import VerificationPage from './pages/VerificationPage'; // Import VerificationPage
-
 const App = () => {
   const { isLoggedIn } = useAuth(); // Use isLoggedIn to determine the user's status
 
@@ -48,10 +43,6 @@ const App = () => {
             <Route path="/social" element={<SocialMedia />} /> {/* Add SocialMedia route */}
             <Route path="/forum" element={<Forum />} /> {/* Add Forum route */}
             <Route path="/forum/:groupId" element={<ForumCategory />} /> {/* Add ForumCategory route */}
-            <Route path="/payments" element={<PaymentSettings />} /> {/* Add PaymentSettings route */}
-            <Route path="/transactions" element={<TransactionHistory />} /> {/* Add TransactionHistory route */}
-            <Route path="/trade" element={<TradingInterface />} /> {/* Add TradingInterface route */}
-            <Route path="/verification" element={<VerificationPage />} /> {/* Add VerificationPage route */}
           </Routes>
         </div>
         <ChatWidget /> {/* Include ChatWidget for chat functionality */}

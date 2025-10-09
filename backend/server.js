@@ -53,17 +53,7 @@ app.use('/api/posts', postRoutes);
 const forumRoutes = require('./routes/forumRoutes');
 app.use('/api/forum', forumRoutes);
 
-// Payment routes
-const paymentRoutes = require('./routes/paymentRoutes');
-app.use('/api/payments', paymentRoutes);
 
-// Transaction routes
-const transactionRoutes = require('./routes/transactionRoutes');
-app.use('/api/transactions', transactionRoutes);
-
-// Verification/KYC routes
-const verificationRoutes = require('./routes/verificationRoutes');
-app.use('/api/verification', verificationRoutes);
 
 
 // DB Connect
