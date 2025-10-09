@@ -121,26 +121,6 @@ const deleteJob = async (req, res) => {
   }
 };
 
-const createJob = async (title, description, difficulty, category, location, deadline, createdBy) => {
-  try {
-    const job = new Job({
-      title,
-      description,
-      difficulty,
-      category,
-      location,
-      deadline,
-      createdBy,
-    });
-    console.log('Job to Save:', job); // Debugging log
-    await job.save();
-    return job;
-  } catch (err) {
-    console.error('Error in createJob:', err.message); // Debugging log
-    throw new Error('Error creating job');
-  }
-};
-
 module.exports = {
   postJob,
   acceptJob,
@@ -151,6 +131,5 @@ module.exports = {
   completeJob,
   editJob,
   cancelJob,
-  deleteJob,
-  createJob
+  deleteJob
 };

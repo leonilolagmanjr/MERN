@@ -10,15 +10,12 @@ const createJob = async (title, description, difficulty, category, locationData,
     }
 
     let location = null;
-    if (locationData.type === 'physical') {
-      const Location = require('../models/Location');
-      const newLocation = new Location({
+    if (locationData && locationData.type) {
+      location = {
         type: locationData.type,
         address: locationData.address,
         coordinates: locationData.coordinates,
-      });
-      await newLocation.save();
-      location = newLocation._id;
+      };
     }
 
     // Create a new job
@@ -116,19 +113,12 @@ const editJob = async (jobId, title, description, difficulty, category, location
     if (String(job.createdBy) !== String(userId)) throw new Error('Not authorized to edit this job'); // Fix comparison
 
     let location = job.location; // keep existing if not provided
-    if (locationData) {
-      if (locationData.type === 'physical') {
-        const Location = require('../models/Location');
-        const newLocation = new Location({
-          type: locationData.type,
-          address: locationData.address,
-          coordinates: locationData.coordinates,
-        });
-        await newLocation.save();
-        location = newLocation._id;
-      } else if (locationData.type === 'remote') {
-        location = null;
-      }
+    if (locationData && locationData.type) {
+      location = {
+        type: locationData.type,
+        address: locationData.address,
+        coordinates: locationData.coordinates,
+      };
     }
 
     job.title = title || job.title;

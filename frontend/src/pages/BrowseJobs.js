@@ -124,7 +124,7 @@ const BrowseJobs = () => {
                   Category: {job.category}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                  Location: {job.location ? 'Physical' : 'Remote'}
+                  Location: {job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
                   Deadline: {new Date(job.deadline).toLocaleDateString()}
