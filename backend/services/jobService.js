@@ -1,7 +1,7 @@
 const Job = require('../models/Job');
 
 // Create Job
-const createJob = async (title, description, difficulty, category, locationData, deadline, createdBy) => {
+const createJob = async (title, description, difficulty, category, locationData, createdBy) => {
   try {
     // Check for duplicate jobs
     const existingJob = await Job.findOne({ title, description, createdBy });
@@ -25,7 +25,6 @@ const createJob = async (title, description, difficulty, category, locationData,
       difficulty,
       category,
       location,
-      deadline,
       createdBy,
     });
     await job.save();
@@ -104,7 +103,7 @@ const completeJob = async (jobId, assignedTo) => {
 };
 
 // Edit Job
-const editJob = async (jobId, title, description, difficulty, category, locationData, deadline, userId) => {
+const editJob = async (jobId, title, description, difficulty, category, locationData, userId) => {
   try {
     console.log('Edit Job Service Input:', { jobId, userId }); // Debugging log
     const job = await Job.findById(jobId);
@@ -126,7 +125,6 @@ const editJob = async (jobId, title, description, difficulty, category, location
     job.difficulty = difficulty || job.difficulty;
     job.category = category || job.category;
     job.location = location;
-    job.deadline = deadline || job.deadline;
     await job.save();
     return job;
   } catch (err) {

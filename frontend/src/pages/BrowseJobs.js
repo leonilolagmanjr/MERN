@@ -127,7 +127,7 @@ const BrowseJobs = () => {
                   Location: {job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                  Deadline: {new Date(job.deadline).toLocaleDateString()}
+                  Date Listed: {new Date(job.dateListed).toLocaleDateString()}
                 </Typography>
               </CardContent>
             </Card>

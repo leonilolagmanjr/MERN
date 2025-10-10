@@ -2,10 +2,10 @@ const jobService = require('../services/jobService');
 
 // Post Job
 const postJob = async (req, res) => {
-  const { title, description, difficulty, category, location, deadline } = req.body;
+  const { title, description, difficulty, category, location } = req.body;
 
   try {
-    const job = await jobService.createJob(title, description, difficulty, category, location, deadline, req.user.id);
+    const job = await jobService.createJob(title, description, difficulty, category, location, req.user.id);
     res.status(201).json(job);
   } catch (err) {
     console.error('Error in postJob:', err.message); // Debugging log
@@ -77,7 +77,7 @@ const completeJob = async (req, res) => {
 
 // Edit Job
 const editJob = async (req, res) => {
-  const { title, description, difficulty, category, location, deadline } = req.body;
+  const { title, description, difficulty, category, location } = req.body;
   console.log('Edit Job Request:', {
     jobId: req.params.jobId,
     userId: req.user.id,
@@ -91,7 +91,6 @@ const editJob = async (req, res) => {
       difficulty,
       category,
       location,
-      deadline,
       req.user.id
     );
     res.json(job);

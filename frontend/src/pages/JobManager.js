@@ -121,7 +121,7 @@ const JobManager = () => {
                   </Box>
                 </Box>
                 {/* Date Listed */}
-                <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
+                <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
                 {/* Status */}
                 <Box sx={{ flex: 1, color: '#66c0f4', fontWeight: 'bold' }}>Active</Box>
                 {/* Actions Buttons */}
@@ -161,7 +161,7 @@ const JobManager = () => {
                 <Box sx={{ flex: 1 }}>Difficulty</Box>
                 <Box sx={{ flex: 1 }}>Category</Box>
                 <Box sx={{ flex: 1 }}>Location</Box>
-                <Box sx={{ flex: 1 }}>Deadline</Box>
+                <Box sx={{ flex: 1 }}>Date Listed</Box>
               </Box>
               {/* Table Rows */}
               {filteredJobs.length === 0 ? (
@@ -186,15 +186,15 @@ const JobManager = () => {
                       </Box>
                     </Box>
                     {/* Date Listed */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
+                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
                     {/* Difficulty */}
                     <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.difficulty}</Box>
                     {/* Category */}
                     <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.category}</Box>
                     {/* Location */}
                     <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}</Box>
-                    {/* Deadline */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.deadline).toLocaleDateString()}</Box>
+                    {/* Date Listed */}
+                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.dateListed).toLocaleDateString()}</Box>
                   </Box>
                 ))
               )}

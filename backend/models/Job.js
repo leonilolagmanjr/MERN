@@ -13,7 +13,7 @@ const jobSchema = new mongoose.Schema({
       lng: Number,
     },
   },
-  deadline: { type: Date, required: true },
+  dateListed: { type: Date, default: Date.now },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   candidates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

@@ -12,12 +12,12 @@ import {
   Divider,
   Button
 } from '@mui/material';
-import { 
-  WorkOutline, 
-  Category, 
-  LocationOn, 
-  Schedule, 
-  Person 
+import {
+  WorkOutline,
+  Category,
+  LocationOn,
+  Event,
+  Person
 } from '@mui/icons-material';
 import { fetchJobs } from '../services/api';
 import UserLink from '../components/UserLink';
@@ -268,17 +268,17 @@ const JobDetail = () => {
 
                 <Divider sx={{ borderColor: '#3c6382' }} />
 
-                {/* Deadline */}
+                {/* Date Listed */}
                 <Box>
-                  <Typography 
-                    variant="caption" 
+                  <Typography
+                    variant="caption"
                     sx={{ color: '#8f98a0', display: 'block', mb: 0.5 }}
                   >
-                    <Schedule sx={{ fontSize: 16, mr: 0.5 }} />
-                    DEADLINE
+                    <Event sx={{ fontSize: 16, mr: 0.5 }} />
+                    DATE LISTED
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#c7d5e0' }}>
-                    {formatDate(job.deadline)}
+                    {formatDate(job.dateListed)}
                   </Typography>
                 </Box>
 

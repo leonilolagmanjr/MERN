@@ -9,7 +9,6 @@ const CreateJob = ({ onJobCreated }) => {
     difficulty: '',
     category: '',
     location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
-    deadline: '',
   });
   const [message, setMessage] = useState('');
   const [isCustomCategory, setIsCustomCategory] = useState(false);
@@ -49,7 +48,6 @@ const CreateJob = ({ onJobCreated }) => {
         difficulty: '',
         category: '',
         location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
-        deadline: '',
       });
       setIsCustomCategory(false);
       onJobCreated();
@@ -118,14 +116,6 @@ const CreateJob = ({ onJobCreated }) => {
         <LocationSelector
           location={formData.location}
           onLocationChange={(location) => setFormData({ ...formData, location })}
-        />
-
-        <input
-          type="date"
-          value={formData.deadline}
-          onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-          style={styles.input}
-          required
         />
 
         <button type="submit" style={styles.button}>

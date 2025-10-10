@@ -9,7 +9,6 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
     difficulty: '',
     category: '',
     location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
-    deadline: '',
   });
   const [message, setMessage] = useState('');
 
@@ -28,7 +27,6 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
         difficulty: job.difficulty || '',
         category: job.category || '',
         location,
-        deadline: job.deadline ? job.deadline.split('T')[0] : '',
       });
     }
   }, [job]);
@@ -91,15 +89,6 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
         <LocationSelector
           location={formData.location}
           onLocationChange={(location) => setFormData({ ...formData, location })}
-        />
-        <input
-          type="date"
-          value={formData.deadline}
-          onChange={(e) =>
-            setFormData({ ...formData, deadline: e.target.value })
-          }
-          style={styles.input}
-          required
         />
         <button type="submit" style={styles.button}>
           Update Job
