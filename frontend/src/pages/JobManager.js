@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CreateJob from '../components/jobs/CreateJob';
 import UpdateJob from '../components/jobs/UpdateJob';
 import DeleteJob from '../components/jobs/DeleteJob';
+import ViewCandidates from '../components/jobs/ViewCandidates';
 import { Modal } from '@mui/material';
 import { fetchPostedJobs } from '../services/api';
 import { fetchJobs } from '../services/api';
@@ -29,6 +30,7 @@ const JobManager = () => {
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
+  const [openCandidates, setOpenCandidates] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
 
   const handleEdit = (job) => {
@@ -39,6 +41,11 @@ const JobManager = () => {
   const handleDelete = (job) => {
     setSelectedJob(job);
     setOpenDelete(true);
+  };
+
+  const handleViewCandidates = (job) => {
+    setSelectedJob(job);
+    setOpenCandidates(true);
   };
 
   useEffect(() => {
@@ -126,6 +133,13 @@ const JobManager = () => {
                 <Box sx={{ flex: 1, color: '#66c0f4', fontWeight: 'bold' }}>Active</Box>
                 {/* Actions Buttons */}
                 <Box sx={{ flex: 1, textAlign: 'right', display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                  <Button
+                    variant="text"
+                    sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
+                    onClick={() => handleViewCandidates(job)}
+                  >
+                    View Candidates
+                  </Button>
                   <Button
                     variant="text"
                     sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
@@ -285,7 +299,13 @@ const JobManager = () => {
             <DeleteJob job={selectedJob} onJobDeleted={() => { setOpenDelete(false); setSelectedJob(null); triggerRefresh(); }} onClose={() => { setOpenDelete(false); setSelectedJob(null); }} />
           </Box>
         </Modal>
-  
+        <ViewCandidates
+          open={openCandidates}
+          onClose={() => { setOpenCandidates(false); setSelectedJob(null); }}
+          jobId={selectedJob?._id}
+          jobTitle={selectedJob?.title}
+        />
+
       </Box>
     </Box>
   );

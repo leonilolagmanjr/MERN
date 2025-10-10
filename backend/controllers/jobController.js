@@ -1,4 +1,5 @@
 const jobService = require('../services/jobService');
+const Job = require('../models/Job');
 
 // Post Job
 const postJob = async (req, res) => {
@@ -143,6 +144,19 @@ const removeCandidate = async (req, res) => {
   }
 };
 
+// Get Candidates for a Job
+const getCandidates = async (req, res) => {
+  const jobId = req.params.jobId;
+  try {
+    const job = await Job.findById(jobId).populate('candidates', 'name email');
+    if (!job) throw new Error('Job not found');
+    if (String(job.createdBy) !== String(req.user.id)) throw new Error('Not authorized to view candidates');
+    res.json(job.candidates);
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+};
+
 module.exports = {
   postJob,
   acceptJob,
@@ -155,5 +169,6 @@ module.exports = {
   cancelJob,
   deleteJob,
   addCandidate,
-  removeCandidate
+  removeCandidate,
+  getCandidates
 };

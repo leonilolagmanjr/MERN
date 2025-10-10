@@ -40,4 +40,7 @@ router.put('/add-candidate/:jobId', authenticate(), jobController.addCandidate);
 // Route to Remove Candidate
 router.put('/remove-candidate/:jobId', authenticate(), jobController.removeCandidate);
 
+// Route to Get Candidates for a Job
+router.get('/candidates/:jobId', authenticate(), jobController.getCandidates);
+
 module.exports = router;
