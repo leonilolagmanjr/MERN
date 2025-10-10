@@ -116,7 +116,7 @@ const BrowseJobs = () => {
                     {job.title}
                   </Link>
                 </Typography>
-                <Typography sx={{ mb: 1 }}>{job.description}</Typography>
+                <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
                   Difficulty: {job.difficulty}
                 </Typography>

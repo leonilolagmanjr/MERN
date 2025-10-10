@@ -251,7 +251,7 @@ const Profile = () => {
               {completedJobs.map((job) => (
                 <div key={job._id} style={styles.activityItem}>
                   <h3 style={styles.activityTitle}>{job.title}</h3>
-                  <p style={styles.activityDetails}>{job.description}</p>
+                  <p style={styles.activityDetails}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</p>
                   <p style={styles.activityMeta}>Completed on: {new Date(job.updatedAt).toLocaleDateString()}</p>
                 </div>
               ))}

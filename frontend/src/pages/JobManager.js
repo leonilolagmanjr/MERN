@@ -117,7 +117,7 @@ const JobManager = () => {
                   </Box>
                   <Box>
                     <Typography variant="subtitle1" sx={{ color: '#66c0f4', fontWeight: 'bold' }}>{job.title}</Typography>
-                    <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description}</Typography>
+                    <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                   </Box>
                 </Box>
                 {/* Date Listed */}
@@ -182,7 +182,7 @@ const JobManager = () => {
                             {job.title}
                           </Link>
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description}</Typography>
+                        <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                       </Box>
                     </Box>
                     {/* Date Listed */}
