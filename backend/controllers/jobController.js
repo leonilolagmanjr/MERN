@@ -121,6 +121,29 @@ const deleteJob = async (req, res) => {
   }
 };
 
+// Add Candidate
+const addCandidate = async (req, res) => {
+  const { candidateId } = req.body;
+  const finalCandidateId = candidateId || req.user.id; // Allow self-apply if no candidateId provided
+  try {
+    const job = await jobService.addCandidate(req.params.jobId, finalCandidateId, req.user.id);
+    res.json({ msg: 'Candidate added successfully', job });
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+};
+
+// Remove Candidate
+const removeCandidate = async (req, res) => {
+  const { candidateId } = req.body;
+  try {
+    const job = await jobService.removeCandidate(req.params.jobId, candidateId, req.user.id);
+    res.json({ msg: 'Candidate removed successfully', job });
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+};
+
 module.exports = {
   postJob,
   acceptJob,
@@ -131,5 +154,7 @@ module.exports = {
   completeJob,
   editJob,
   cancelJob,
-  deleteJob
+  deleteJob,
+  addCandidate,
+  removeCandidate
 };

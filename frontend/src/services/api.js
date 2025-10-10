@@ -80,6 +80,13 @@ export const deleteJob = async (jobId, token) => {
   });
 };
 
+export const applyToJob = async (jobId, token) => {
+  const response = await axios.put(`${API_URL}/job/add-candidate/${jobId}`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 // Fetch Info
 export const fetchInfo = async (token) => {
   const response = await axios.get(`${API_URL}/info`, {

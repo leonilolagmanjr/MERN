@@ -161,6 +161,37 @@ const deleteJob = async (jobId) => {
   }
 };
 
+// Add Candidate
+const addCandidate = async (jobId, candidateId, currentUserId) => {
+  try {
+    const job = await Job.findById(jobId);
+    if (!job) throw new Error('Job not found');
+    // Allow if current user is the creator or the candidate is applying themselves
+    if (String(job.createdBy) !== String(currentUserId) && String(candidateId) !== String(currentUserId)) {
+      throw new Error('Not authorized to add candidates');
+    }
+    if (job.candidates.includes(candidateId)) throw new Error('User is already a candidate');
+    job.candidates.push(candidateId);
+    await job.save();
+    return job;
+  } catch (err) {
+    throw new Error(err.message || 'Error adding candidate');
+  }
+};
+
+// Remove Candidate
+const removeCandidate = async (jobId, candidateId, currentUserId) => {
+  try {
+    const job = await Job.findById(jobId);
+    if (!job) throw new Error('Job not found');
+    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to remove candidates');
+    job.candidates = job.candidates.filter(id => String(id) !== String(candidateId));
+    await job.save();
+    return job;
+  } catch (err) {
+    throw new Error(err.message || 'Error removing candidate');
+  }
+};
 
 module.exports = {
   createJob,
@@ -172,5 +203,7 @@ module.exports = {
   completeJob,
   editJob,
   cancelJob,
-  deleteJob
+  deleteJob,
+  addCandidate,
+  removeCandidate
 };

@@ -34,4 +34,10 @@ router.delete('/remove/:jobId', jobController.deleteJob);
 // Route to Get Jobs Accepted by Current User
 router.get('/my-accepted', authenticate(), jobController.getMyAcceptedJobs);
 
+// Route to Add Candidate
+router.put('/add-candidate/:jobId', authenticate(), jobController.addCandidate);
+
+// Route to Remove Candidate
+router.put('/remove-candidate/:jobId', authenticate(), jobController.removeCandidate);
+
 module.exports = router;
