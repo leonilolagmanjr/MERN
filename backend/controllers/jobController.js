@@ -157,6 +157,30 @@ const getCandidates = async (req, res) => {
   }
 };
 
+// Accept Candidate
+const acceptCandidate = async (req, res) => {
+  const { candidateId } = req.body;
+  const jobId = req.params.jobId;
+  try {
+    const job = await jobService.acceptCandidate(jobId, candidateId, req.user.id);
+    res.json({ msg: 'Candidate accepted successfully', job });
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+};
+
+// Reject Candidate
+const rejectCandidate = async (req, res) => {
+  const { candidateId } = req.body;
+  const jobId = req.params.jobId;
+  try {
+    const job = await jobService.rejectCandidate(jobId, candidateId, req.user.id);
+    res.json({ msg: 'Candidate rejected successfully', job });
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+};
+
 module.exports = {
   postJob,
   acceptJob,
@@ -170,5 +194,7 @@ module.exports = {
   deleteJob,
   addCandidate,
   removeCandidate,
-  getCandidates
+  getCandidates,
+  acceptCandidate,
+  rejectCandidate
 };

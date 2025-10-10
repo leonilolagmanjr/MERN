@@ -169,6 +169,7 @@ const addCandidate = async (jobId, candidateId, currentUserId) => {
       throw new Error('Not authorized to add candidates');
     }
     if (job.candidates.includes(candidateId)) throw new Error('User is already a candidate');
+    if (job.rejectedCandidates.includes(candidateId)) throw new Error('User has been rejected and cannot reapply');
     job.candidates.push(candidateId);
     await job.save();
     return job;
@@ -191,6 +192,40 @@ const removeCandidate = async (jobId, candidateId, currentUserId) => {
   }
 };
 
+// Accept Candidate
+const acceptCandidate = async (jobId, candidateId, currentUserId) => {
+  try {
+    const job = await Job.findById(jobId);
+    if (!job) throw new Error('Job not found');
+    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to accept candidates');
+    if (!job.candidates.includes(candidateId)) throw new Error('User is not a candidate');
+    if (job.status !== 'open') throw new Error('Job is not open');
+    job.candidates = job.candidates.filter(id => String(id) !== String(candidateId));
+    job.assignedTo = candidateId;
+    job.status = 'in-progress';
+    await job.save();
+    return job;
+  } catch (err) {
+    throw new Error(err.message || 'Error accepting candidate');
+  }
+};
+
+// Reject Candidate
+const rejectCandidate = async (jobId, candidateId, currentUserId) => {
+  try {
+    const job = await Job.findById(jobId);
+    if (!job) throw new Error('Job not found');
+    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to reject candidates');
+    if (!job.candidates.includes(candidateId)) throw new Error('User is not a candidate');
+    job.candidates = job.candidates.filter(id => String(id) !== String(candidateId));
+    job.rejectedCandidates.push(candidateId);
+    await job.save();
+    return job;
+  } catch (err) {
+    throw new Error(err.message || 'Error rejecting candidate');
+  }
+};
+
 module.exports = {
   createJob,
   acceptJob,
@@ -203,5 +238,7 @@ module.exports = {
   cancelJob,
   deleteJob,
   addCandidate,
-  removeCandidate
+  removeCandidate,
+  acceptCandidate,
+  rejectCandidate
 };

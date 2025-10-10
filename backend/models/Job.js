@@ -17,6 +17,7 @@ const jobSchema = new mongoose.Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   candidates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  rejectedCandidates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   status: { type: String, enum: ['open', 'in-progress', 'completed', 'canceled'], default: 'open' },
 });
 

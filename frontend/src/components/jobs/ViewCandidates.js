@@ -15,8 +15,9 @@ import {
   Alert,
   Box
 } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-import { fetchCandidates, removeCandidate } from '../../services/api';
+import { Delete as DeleteIcon, Check as AcceptIcon, Close as RejectIcon } from '@mui/icons-material';
+import { fetchCandidates, removeCandidate, acceptCandidate, rejectCandidate } from '../../services/api';
+import UserLink from '../UserLink';
 
 const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
   const [candidates, setCandidates] = useState([]);
@@ -54,6 +55,30 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
     }
   };
 
+  const handleAcceptCandidate = async (candidateId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await acceptCandidate(jobId, candidateId, token);
+      // Reload the candidates list after acceptance
+      await loadCandidates();
+      // Close the modal since the job is now assigned
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Failed to accept candidate');
+    }
+  };
+
+  const handleRejectCandidate = async (candidateId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await rejectCandidate(jobId, candidateId, token);
+      // Reload the candidates list after rejection
+      await loadCandidates();
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Failed to reject candidate');
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
@@ -73,14 +98,25 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
             {candidates.map((candidate) => (
               <ListItem key={candidate._id}>
                 <ListItemText
-                  primary={candidate.name}
+                  primary={<UserLink userId={candidate._id} name={candidate.name} />}
                   secondary={candidate.email}
                 />
                 <ListItemSecondaryAction>
                   <IconButton
-                    edge="end"
-                    onClick={() => handleRemoveCandidate(candidate._id)}
+                    onClick={() => handleAcceptCandidate(candidate._id)}
+                    color="success"
+                  >
+                    <AcceptIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleRejectCandidate(candidate._id)}
                     color="error"
+                  >
+                    <RejectIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleRemoveCandidate(candidate._id)}
+                    color="default"
                   >
                     <DeleteIcon />
                   </IconButton>

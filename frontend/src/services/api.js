@@ -101,6 +101,20 @@ export const removeCandidate = async (jobId, candidateId, token) => {
   return response.data;
 };
 
+export const acceptCandidate = async (jobId, candidateId, token) => {
+  const response = await axios.put(`${API_URL}/job/accept-candidate/${jobId}`, { candidateId }, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const rejectCandidate = async (jobId, candidateId, token) => {
+  const response = await axios.put(`${API_URL}/job/reject-candidate/${jobId}`, { candidateId }, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
 // Fetch Info
 export const fetchInfo = async (token) => {
   const response = await axios.get(`${API_URL}/info`, {
