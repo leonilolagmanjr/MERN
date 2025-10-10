@@ -46,15 +46,15 @@ const Forum = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', p: 3 }}>
+    <Box sx={{ bgcolor: 'var(--primary-bg)', color: 'var(--text-light)', minHeight: '100vh', p: 3 }}>
       <Box sx={{ maxWidth: '800px', mx: 'auto' }}>
-        <Typography variant="h4" sx={{ color: '#ffffff', mb: 3, textAlign: 'center' }}>
+        <Typography variant="h4" sx={{ color: 'var(--white)', mb: 3, textAlign: 'center' }}>
           Forum
         </Typography>
 
         {user && (
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-            <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff' }} onClick={() => setOpenCreate(true)}>
+            <Button variant="contained" sx={{ bgcolor: 'var(--accent-blue)', color: 'var(--white)' }} onClick={() => setOpenCreate(true)}>
               Create Group
             </Button>
           </Box>
@@ -62,15 +62,15 @@ const Forum = () => {
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {groups.map((group) => (
-            <Card key={group._id} sx={{ bgcolor: '#2a475e', color: '#c7d5e0' }}>
+            <Card key={group._id} sx={{ bgcolor: 'var(--button-bg)', color: 'var(--text-light)' }}>
               <CardContent>
-                <Typography variant="h6" sx={{ color: '#66c0f4' }}>
-                  <Link to={`/forum/${group._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+                <Typography variant="h6" sx={{ color: 'var(--accent-blue)' }}>
+                  <Link to={`/forum/${group._id}`} style={{ color: 'var(--accent-blue)', textDecoration: 'none' }}>
                     {group.name}
                   </Link>
                 </Typography>
-                <Typography sx={{ color: '#8f98a0' }}>{group.description}</Typography>
-                <Typography sx={{ fontSize: '0.8rem', color: '#8f98a0' }}>
+                <Typography sx={{ color: 'var(--text-gray)' }}>{group.description}</Typography>
+                <Typography sx={{ fontSize: '0.8rem', color: 'var(--text-gray)' }}>
                   Created by {group.createdBy.name}
                 </Typography>
               </CardContent>
@@ -79,15 +79,15 @@ const Forum = () => {
         </Box>
 
         <Modal open={openCreate} onClose={() => setOpenCreate(false)}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Create Forum Group</Typography>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'var(--card-bg)', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
+            <Typography variant="h6" sx={{ color: 'var(--accent-blue)', mb: 2 }}>Create Forum Group</Typography>
             <form onSubmit={handleCreateGroup}>
               <input
                 type="text"
                 placeholder="Group Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                style={{ width: '100%', padding: '8px', marginBottom: '16px', backgroundColor: '#2a475e', color: '#c7d5e0', border: '1px solid #66c0f4' }}
+                style={{ width: '100%', padding: '8px', marginBottom: '16px', backgroundColor: 'var(--button-bg)', color: 'var(--text-light)', border: '1px solid var(--accent-blue)' }}
                 required
               />
               <textarea
@@ -95,13 +95,13 @@ const Forum = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
-                style={{ width: '100%', padding: '8px', marginBottom: '16px', backgroundColor: '#2a475e', color: '#c7d5e0', border: '1px solid #66c0f4' }}
+                style={{ width: '100%', padding: '8px', marginBottom: '16px', backgroundColor: 'var(--button-bg)', color: 'var(--text-light)', border: '1px solid var(--accent-blue)' }}
                 required
               />
-              <Button type="submit" variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', mr: 2 }} disabled={loading}>
+              <Button type="submit" variant="contained" sx={{ bgcolor: 'var(--accent-blue)', color: 'var(--white)', mr: 2 }} disabled={loading}>
                 {loading ? 'Creating...' : 'Create'}
               </Button>
-              <Button onClick={() => setOpenCreate(false)} sx={{ color: '#fff', bgcolor: '#ff4c4c' }}>Close</Button>
+              <Button onClick={() => setOpenCreate(false)} sx={{ color: 'var(--white)', bgcolor: 'var(--error-red)' }}>Close</Button>
             </form>
           </Box>
         </Modal>
