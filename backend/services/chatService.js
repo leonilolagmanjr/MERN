@@ -110,9 +110,19 @@ const getChatMessages = async (chatId) => {
 
 // Fetch all chats for a user (Updated with .lean())
 const getUserChats = async (userId) => {
-    return await Chat.find({ 
+    // Ensure the global chat exists
+    let globalChat = await Chat.findOne({ type: 'global' }).lean();
+    if (!globalChat) {
+        globalChat = await Chat.create({
+            participants: [],
+            lastMessage: 'Welcome to the global chat!',
+            type: 'global'
+        });
+    }
+
+    return await Chat.find({
         $or: [
-            { participants: userId }, 
+            { participants: userId },
             { type: 'global' } // Include the global chat regardless of participation array
         ]
     })
