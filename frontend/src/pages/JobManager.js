@@ -175,7 +175,6 @@ const JobManager = () => {
                 <Box sx={{ flex: 1 }}>Price</Box>
                 <Box sx={{ flex: 1 }}>Category</Box>
                 <Box sx={{ flex: 1 }}>Location</Box>
-                <Box sx={{ flex: 1 }}>Date Listed</Box>
               </Box>
               {/* Table Rows */}
               {filteredJobs.length === 0 ? (
@@ -207,8 +206,6 @@ const JobManager = () => {
                     <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{job.category}</Box>
                     {/* Location */}
                     <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}</Box>
-                    {/* Date Listed */}
-                    <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{new Date(job.dateListed).toLocaleDateString()}</Box>
                   </Box>
                 ))
               )}
