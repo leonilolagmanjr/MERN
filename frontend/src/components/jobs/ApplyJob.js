@@ -112,7 +112,7 @@ const ApplyJob = ({ job, onApplySuccess }) => {
         disabled={isButtonDisabled}
         sx={{
           mt: 2,
-          width: '100%',
+          width: '200px',
           minHeight: '56px', // Better touch target
           background: 'linear-gradient(45deg, var(--color-primary), var(--color-accent))',
           color: 'var(--color-bg)',
@@ -124,7 +124,6 @@ const ApplyJob = ({ job, onApplySuccess }) => {
           '&:hover': {
             background: 'linear-gradient(45deg, var(--color-accent), var(--color-primary))',
             boxShadow: '0 6px 20px rgba(102, 192, 244, 0.4)',
-            transform: 'translateY(-2px)',
           },
           '&:disabled': {
             background: 'var(--color-text-gray)',
@@ -138,7 +137,7 @@ const ApplyJob = ({ job, onApplySuccess }) => {
         {loading ? (
           <CircularProgress size={24} sx={{ color: 'var(--color-bg)' }} />
         ) : (
-          '🚀 Apply to Job'
+          'Apply to Job'
         )}
       </Button>
       

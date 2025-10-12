@@ -81,8 +81,8 @@ const JobDetail = () => {
 
   // Get location display text
   const getLocationText = (location) => {
-    if (!location) return 'Remote';
-    return location.type === 'physical' ? location.address : 'Remote';
+    if (!location) return 'Remote Work';
+    return location.type === 'physical' ? `${location.address}` : 'Remote Work';
   };
 
   if (loading) {
@@ -178,6 +178,7 @@ const JobDetail = () => {
                   icon={<LocationOn />}
                   label={getLocationText(job.location)}
                   variant="outlined"
+                  sx={{ fontWeight: 'bold', color: 'var(--color-text)' }}
                 />
               </Stack>
             </Box>
@@ -272,7 +273,7 @@ const JobDetail = () => {
                     <LocationOn sx={{ fontSize: 16, mr: 0.5 }} />
                     LOCATION
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'var(--color-text)' }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text)', fontWeight: 'bold' }}>
                     {getLocationText(job.location)}
                   </Typography>
                 </Box>
