@@ -315,8 +315,8 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#1b2838',
-    color: '#c7d5e0',
+    backgroundColor: 'var(--color-bg)',
+    color: 'var(--color-text)',
     padding: '20px',
     minHeight: '100vh',
   },
@@ -332,10 +332,10 @@ const styles = {
     width: '150px',
     height: '150px',
     borderRadius: '50%',
-    border: '3px solid #66c0f4',
+    border: '3px solid var(--color-accent)',
   },
   userInfo: {
-    color: '#ffffff',
+    color: 'var(--color-text)',
   },
   userName: {
     fontSize: '24px',
@@ -346,8 +346,8 @@ const styles = {
     marginBottom: '5px',
   },
   editButton: {
-    backgroundColor: '#66c0f4',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-accent)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',
@@ -405,7 +405,7 @@ const styles = {
   },
   rightColumn: {
     flex: 1,
-    backgroundColor: '#171a21',
+    backgroundColor: 'var(--color-card-bg)',
     padding: '20px',
     borderRadius: '10px',
     marginTop: '-250px',
@@ -416,7 +416,7 @@ const styles = {
   sectionHeading: {
     fontSize: '20px',
     marginBottom: '15px',
-    color: '#66c0f4',
+    color: 'var(--color-accent)',
   },
   replayStats: {
     display: 'flex',
@@ -424,7 +424,7 @@ const styles = {
   },
   statBox: {
     textAlign: 'center',
-    backgroundColor: '#2a475e',
+    backgroundColor: 'var(--color-button-bg)',
     padding: '20px',
     borderRadius: '10px',
     flex: 1,
@@ -432,11 +432,11 @@ const styles = {
   },
   statNumber: {
     fontSize: '24px',
-    color: '#ffffff',
+    color: 'var(--color-text)',
   },
   statLabel: {
     fontSize: '14px',
-    color: '#c7d5e0',
+    color: 'var(--color-text-gray)',
   },
   recentActivity: {
     marginBottom: '30px',
@@ -451,23 +451,23 @@ const styles = {
     gap: '20px',
   },
   activityItem: {
-    backgroundColor: '#2a475e',
+    backgroundColor: 'var(--color-button-bg)',
     padding: '15px',
     borderRadius: '10px',
   },
   activityTitle: {
     fontSize: '18px',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     marginBottom: '10px',
   },
   activityDetails: {
     fontSize: '14px',
-    color: '#c7d5e0',
+    color: 'var(--color-text-gray)',
     marginBottom: '10px',
   },
   activityMeta: {
     fontSize: '12px',
-    color: '#a9b7c6',
+    color: 'var(--color-text-lighter)',
   },
   levelBox: {
     textAlign: 'center',
@@ -475,18 +475,18 @@ const styles = {
   },
   levelTitle: {
     fontSize: '20px',
-    color: '#66c0f4',
+    color: 'var(--color-accent)',
   },
   xp: {
     fontSize: '14px',
-    color: '#c7d5e0',
+    color: 'var(--color-text-gray)',
   },
   badges: {
     marginBottom: '20px',
   },
   badgesTitle: {
     fontSize: '16px',
-    color: '#66c0f4',
+    color: 'var(--color-accent)',
     marginBottom: '10px',
   },
   sidebarSection: {
@@ -494,24 +494,24 @@ const styles = {
   },
   sidebarHeading: {
     fontSize: '16px',
-    color: '#66c0f4',
+    color: 'var(--color-accent)',
     marginBottom: '10px',
   },
   postBox: {
-    backgroundColor: '#171a21',
+    backgroundColor: 'var(--color-card-bg)',
     padding: '20px',
     borderRadius: '10px',
     marginTop: '30px',
-    color: '#c7d5e0',
+    color: 'var(--color-text-gray)',
   },
   postInput: {
     width: '100%',
     height: '100px',
-    backgroundColor: '#2a475e',
+    backgroundColor: 'var(--color-button-bg)',
     border: 'none',
     borderRadius: '5px',
     padding: '10px',
-    color: '#c7d5e0',
+    color: 'var(--color-text-gray)',
     fontSize: '14px',
     resize: 'none',
     boxSizing: 'border-box',
@@ -522,8 +522,8 @@ const styles = {
     justifyContent: 'flex-end',
   },
   postButton: {
-    backgroundColor: '#66c0f4',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-accent)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',
