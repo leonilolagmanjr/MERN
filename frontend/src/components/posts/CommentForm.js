@@ -21,14 +21,14 @@ const CommentForm = ({ onSubmit }) => {
         fullWidth
         size="small"
         sx={{
-          bgcolor: '#2a475e',
-          input: { color: '#c7d5e0' },
+          bgcolor: 'var(--color-card-bg)',
+          input: { color: 'var(--color-text)' },
           '& .MuiOutlinedInput-root': {
-            '& fieldset': { borderColor: '#66c0f4' },
+            '& fieldset': { borderColor: 'var(--color-primary)' },
           },
         }}
       />
-      <Button type="submit" variant="contained" size="small" sx={{ bgcolor: '#66c0f4', color: '#fff' }}>
+      <Button type="submit" variant="contained" size="small" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)' }}>
         Comment
       </Button>
     </Box>

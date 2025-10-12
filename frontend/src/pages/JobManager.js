@@ -82,26 +82,26 @@ const JobManager = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', p: 3 }}>
+    <Box sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text)', minHeight: '100vh', p: 3 }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
-        <Typography variant="h4" sx={{ color: '#ffffff', mb: 3, textAlign: 'center' }}>
+        <Typography variant="h4" sx={{ color: 'var(--color-text)', mb: 3, textAlign: 'center' }}>
           Browse Jobs
         </Typography>
-  
+
         {/* User Posted Jobs Action Buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setOpenCreate(true)}>
+          <Button variant="contained" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)', fontWeight: 'bold' }} onClick={() => setOpenCreate(true)}>
             Create Job
           </Button>
         </Box>
   
         {/* User Posted Jobs - Steam-style Table - MOVED TO TOP */}
-        <Box sx={{ bgcolor: '#23262e', borderRadius: 2, boxShadow: 3, mb: 4, p: 2 }}>
-          <Typography variant="h6" sx={{ color: '#ffffff', mb: 2 }}>
+        <Box sx={{ bgcolor: 'var(--color-card-bg)', borderRadius: 2, boxShadow: 3, mb: 4, p: 2 }}>
+          <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 2 }}>
             My Posted Jobs ({userJobs.length})
           </Typography>
           {/* Table Labels */}
-          <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: '#1b2838', borderRadius: 1, fontWeight: 'bold', color: '#c7d5e0', fontSize: 16 }}>
+          <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: 'var(--color-bg)', borderRadius: 1, fontWeight: 'bold', color: 'var(--color-text)', fontSize: 16 }}>
             <Box sx={{ flex: 2 }}>Name</Box>
             <Box sx={{ flex: 1 }}>Date Listed</Box>
             <Box sx={{ flex: 1 }}>Status</Box>
@@ -109,47 +109,47 @@ const JobManager = () => {
           </Box>
           {/* Table Rows */}
           {userJobs.length === 0 ? (
-            <Box sx={{ px: 2, py: 2, color: '#8f98a0' }}>
+            <Box sx={{ px: 2, py: 2, color: 'var(--color-text-gray)' }}>
               You are not selling any items on the Community Market. Sell items from your inventory, or click the "Create Job" button above.
             </Box>
           ) : (
             userJobs.map((job) => (
-              <Box key={job._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid #2a475e', ':last-child': { borderBottom: 'none' } }}>
+              <Box key={job._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid var(--color-accent)', ':last-child': { borderBottom: 'none' } }}>
                 {/* Name and description */}
                 <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
                   {/* If you have an image for the job, show it here. Otherwise, use a placeholder. */}
-                  <Box sx={{ width: 48, height: 48, bgcolor: '#1b2838', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
+                  <Box sx={{ width: 48, height: 48, bgcolor: 'var(--color-bg)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
                     {/* Placeholder icon or image */}
                     <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Job'} alt="job" style={{ width: 40, height: 40, borderRadius: 4 }} />
                   </Box>
                   <Box>
-                    <Typography variant="subtitle1" sx={{ color: '#66c0f4', fontWeight: 'bold' }}>{job.title}</Typography>
-                    <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
+                    <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>{job.title}</Typography>
+                    <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                   </Box>
                 </Box>
                 {/* Date Listed */}
-                <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
+                <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
                 {/* Status */}
-                <Box sx={{ flex: 1, color: '#66c0f4', fontWeight: 'bold' }}>Active</Box>
+                <Box sx={{ flex: 1, color: 'var(--color-primary)', fontWeight: 'bold' }}>Active</Box>
                 {/* Actions Buttons */}
                 <Box sx={{ flex: 1, textAlign: 'right', display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                   <Button
                     variant="text"
-                    sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
+                    sx={{ color: 'var(--color-primary)', fontWeight: 'bold', textTransform: 'none' }}
                     onClick={() => handleViewCandidates(job)}
                   >
                     View Candidates
                   </Button>
                   <Button
                     variant="text"
-                    sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
+                    sx={{ color: 'var(--color-primary)', fontWeight: 'bold', textTransform: 'none' }}
                     onClick={() => handleEdit(job)}
                   >
                     Edit
                   </Button>
                   <Button
                     variant="text"
-                    sx={{ color: '#ff4c4c', fontWeight: 'bold', textTransform: 'none' }}
+                    sx={{ color: 'var(--color-error)', fontWeight: 'bold', textTransform: 'none' }}
                     onClick={() => handleDelete(job)}
                   >
                     Remove
@@ -164,12 +164,12 @@ const JobManager = () => {
         <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 4, gap: 3 }}>
           {/* All Jobs table and label */}
           <Box sx={{ flex: 2 }}>
-            <Box sx={{ bgcolor: '#22384a', borderRadius: 2, boxShadow: 3, p: 2 }}>
-              <Typography variant="h6" sx={{ color: '#ffffff', mb: 2 }}>
+            <Box sx={{ bgcolor: 'var(--color-card-bg)', borderRadius: 2, boxShadow: 3, p: 2 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 2 }}>
                 All Jobs ({filteredJobs.length})
               </Typography>
               {/* Table Labels */}
-              <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: '#1b2838', borderRadius: 1, fontWeight: 'bold', color: '#c7d5e0', fontSize: 16 }}>
+              <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: 'var(--color-bg)', borderRadius: 1, fontWeight: 'bold', color: 'var(--color-text)', fontSize: 16 }}>
                 <Box sx={{ flex: 2 }}>Name</Box>
                 <Box sx={{ flex: 1 }}>Date Listed</Box>
                 <Box sx={{ flex: 1 }}>Price</Box>
@@ -179,44 +179,44 @@ const JobManager = () => {
               </Box>
               {/* Table Rows */}
               {filteredJobs.length === 0 ? (
-                <Box sx={{ px: 2, py: 2, color: '#8f98a0' }}>
+                <Box sx={{ px: 2, py: 2, color: 'var(--color-text-gray)' }}>
                   No jobs available.
                 </Box>
               ) : (
                 filteredJobs.map((job) => (
-                  <Box key={job._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid #2a475e', ':last-child': { borderBottom: 'none' }, bgcolor: '#263b50', borderRadius: 1, mb: 1 }}>
+                  <Box key={job._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid var(--color-accent)', ':last-child': { borderBottom: 'none' }, bgcolor: 'var(--color-card-bg)', borderRadius: 1, mb: 1 }}>
                     {/* Name and description */}
                     <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Box sx={{ width: 48, height: 48, bgcolor: '#1b2838', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
+                      <Box sx={{ width: 48, height: 48, bgcolor: 'var(--color-bg)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
                         <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Job'} alt="job" style={{ width: 40, height: 40, borderRadius: 4 }} />
                       </Box>
                       <Box>
-                        <Typography variant="subtitle1" sx={{ color: '#66c0f4', fontWeight: 'bold' }}>
-                          <Link to={`/job/${job._id}`} style={{ color: '#66c0f4', textDecoration: 'none' }}>
+                        <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>
+                          <Link to={`/job/${job._id}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>
                             {job.title}
                           </Link>
                         </Typography>
-                        <Typography variant="body2" sx={{ color: '#a9b7c6' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
+                        <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                       </Box>
                     </Box>
                     {/* Date Listed */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
+                    <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
                     {/* Price */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}</Box>
+                    <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}</Box>
                     {/* Category */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.category}</Box>
+                    <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{job.category}</Box>
                     {/* Location */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}</Box>
+                    <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}</Box>
                     {/* Date Listed */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.dateListed).toLocaleDateString()}</Box>
+                    <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{new Date(job.dateListed).toLocaleDateString()}</Box>
                   </Box>
                 ))
               )}
             </Box>
           </Box>
           {/* Search/filter box styled like Steam sidebar */}
-          <Box sx={{ flex: 1, bgcolor: '#23262e', borderRadius: 2, boxShadow: 3, p: 2, minWidth: 320 }}>
-            <Typography variant="subtitle1" sx={{ color: '#66c0f4', mb: 2, fontWeight: 'bold' }}>
+          <Box sx={{ flex: 1, bgcolor: 'var(--color-card-bg)', borderRadius: 2, boxShadow: 3, p: 2, minWidth: 320 }}>
+            <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', mb: 2, fontWeight: 'bold' }}>
               Search & Filter
             </Typography>
             <TextField
@@ -226,12 +226,12 @@ const JobManager = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               fullWidth
               sx={{
-                bgcolor: '#2a475e',
-                input: { color: '#c7d5e0' },
+                bgcolor: 'var(--color-card-bg)',
+                input: { color: 'var(--color-text)' },
                 mb: 2,
                 '& .MuiOutlinedInput-root': {
-                  '& fieldset': { borderColor: '#66c0f4' },
-                  '&:hover fieldset': { borderColor: '#66c0f4' },
+                  '& fieldset': { borderColor: 'var(--color-primary)' },
+                  '&:hover fieldset': { borderColor: 'var(--color-primary)' },
                 },
               }}
             />
@@ -239,8 +239,8 @@ const JobManager = () => {
               variant="contained"
               onClick={handleSearch}
               sx={{
-                bgcolor: '#66c0f4',
-                color: '#ffffff',
+                bgcolor: 'var(--color-primary)',
+                color: 'var(--color-bg)',
                 mb: 2,
                 width: '100%',
                 fontWeight: 'bold',
@@ -251,7 +251,7 @@ const JobManager = () => {
             </Button>
             {/* Filter options */}
             <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" sx={{ color: '#c7d5e0', mb: 1 }}>
+              <Typography variant="body2" sx={{ color: 'var(--color-text)', mb: 1 }}>
                 Filter by Price
               </Typography>
               <TextField
@@ -261,11 +261,11 @@ const JobManager = () => {
                 onChange={(e) => setFilterPrice(e.target.value)}
                 fullWidth
                 sx={{
-                  bgcolor: '#2a475e',
-                  input: { color: '#c7d5e0' },
+                  bgcolor: 'var(--color-card-bg)',
+                  input: { color: 'var(--color-text)' },
                   '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: '#66c0f4' },
-                    '&:hover fieldset': { borderColor: '#66c0f4' },
+                    '& fieldset': { borderColor: 'var(--color-primary)' },
+                    '&:hover fieldset': { borderColor: 'var(--color-primary)' },
                   },
                 }}
               />
@@ -274,23 +274,23 @@ const JobManager = () => {
         </Box>
   
         {/* Modals for Job Actions - Keep these at the bottom */}
-<Modal open={openCreate} onClose={() => setOpenCreate(false)}>
-  <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-    {/* Removed duplicate Create Job header */}
-    {/* <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Create Job</Typography> */}
-    <CreateJob onJobCreated={() => { setOpenCreate(false); triggerRefresh(); }} />
-    <Button onClick={() => setOpenCreate(false)} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
-  </Box>
-</Modal>
+        <Modal open={openCreate} onClose={() => setOpenCreate(false)}>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'var(--color-card-bg)', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
+            {/* Removed duplicate Create Job header */}
+            {/* <Typography variant="h6" sx={{ color: 'var(--color-primary)', mb: 2 }}>Create Job</Typography> */}
+            <CreateJob onJobCreated={() => { setOpenCreate(false); triggerRefresh(); }} />
+            <Button onClick={() => setOpenCreate(false)} sx={{ mt: 2, color: 'var(--color-bg)', bgcolor: 'var(--color-error)', textTransform: 'none' }}>Close</Button>
+          </Box>
+        </Modal>
         <Modal open={openUpdate} onClose={() => { setOpenUpdate(false); setSelectedJob(null); }}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
-            <Typography variant="h6" sx={{ color: '#66c0f4', mb: 2 }}>Update Job</Typography>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'var(--color-card-bg)', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
+            <Typography variant="h6" sx={{ color: 'var(--color-primary)', mb: 2 }}>Update Job</Typography>
             <UpdateJob job={selectedJob} onJobUpdated={() => { setOpenUpdate(false); setSelectedJob(null); triggerRefresh(); }} onClose={() => { setOpenUpdate(false); setSelectedJob(null); }} />
-            <Button onClick={() => { setOpenUpdate(false); setSelectedJob(null); }} sx={{ mt: 2, color: '#fff', bgcolor: '#ff4c4c', textTransform: 'none' }}>Close</Button>
+            <Button onClick={() => { setOpenUpdate(false); setSelectedJob(null); }} sx={{ mt: 2, color: 'var(--color-bg)', bgcolor: 'var(--color-error)', textTransform: 'none' }}>Close</Button>
           </Box>
         </Modal>
         <Modal open={openDelete} onClose={() => { setOpenDelete(false); setSelectedJob(null); }}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'var(--color-card-bg)', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
             <DeleteJob job={selectedJob} onJobDeleted={() => { setOpenDelete(false); setSelectedJob(null); triggerRefresh(); }} onClose={() => { setOpenDelete(false); setSelectedJob(null); }} />
           </Box>
         </Modal>

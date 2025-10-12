@@ -30,7 +30,7 @@ const ReadJob = ({ refresh }) => {
 
   return (
     <Box sx={{ mb: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2, color: '#ffffff' }}>
+      <Typography variant="h5" sx={{ mb: 2, color: 'var(--color-text)' }}>
         My Posted Jobs
       </Typography>
       <Grid container spacing={3}>
@@ -39,29 +39,28 @@ const ReadJob = ({ refresh }) => {
             <Grid item xs={12} sm={6} md={4} key={job._id}>
               <Card
                 sx={{
-                  bgcolor: '#2a475e',
-                  color: '#c7d5e0',
-                  borderRadius: 2,
+                  bgcolor: 'var(--color-card-bg)',
+                  color: 'var(--color-text)',
+                  borderRadius: 'var(--radius)',
                   boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
                   position: 'relative',
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" sx={{ color: '#ffffff', mb: 1 }}>
+                  <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 1 }}>
                     {job.title}
                   </Typography>
                   <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
-                  <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', textShadow: '0 0 10px #ffffff' }}>
                     Price: {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
                     Status: {job.status}
                   </Typography>
                   <Button
                     variant="contained"
-                    color="error"
+                    sx={{ bgcolor: 'var(--color-error)', color: 'var(--color-bg)', position: 'absolute', top: 10, right: 10 }}
                     size="small"
-                    sx={{ position: 'absolute', top: 10, right: 10 }}
                     onClick={() => handleDelete(job._id)}
                   >
                     Remove
@@ -71,7 +70,7 @@ const ReadJob = ({ refresh }) => {
             </Grid>
           ))
         ) : (
-          <Typography variant="body1" sx={{ color: '#c7d5e0' }}>
+          <Typography variant="body1" sx={{ color: 'var(--color-text)' }}>
             No jobs available.
           </Typography>
         )}

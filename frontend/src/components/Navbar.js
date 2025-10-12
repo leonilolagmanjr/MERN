@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Notification from './Notification';
 import UserLink from './UserLink';
+import ThemeSwitcher from './ThemeSwitcher';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
@@ -69,17 +70,17 @@ const Navbar = () => {
   );
 
   return (
-    <AppBar position="static" sx={{ bgcolor: '#171a21', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)' }}>
+    <AppBar position="static" sx={{ bgcolor: 'var(--color-header-bg)', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {/* Left Section */}
         <Box display="flex" alignItems="center" gap={2}>
-          <Typography variant="h6" component={Link} to="/" sx={{ fontWeight: 'bold', color: '#ffffff', textDecoration: 'none' }}>
+          <Typography variant="h6" component={Link} to="/" sx={{ fontWeight: 'bold', color: 'var(--color-text)', textDecoration: 'none' }}>
             PBuild
           </Typography>
           {!isMobile && (
             <Box display="flex" gap={2}>
               {menuItems.map((item) => (
-                <Button component={Link} to={item.to} sx={{ color: '#c7d5e0' }} key={item.text}>
+                <Button component={Link} to={item.to} sx={{ color: 'var(--color-text)' }} key={item.text}>
                   {item.text}
                 </Button>
               ))}
@@ -89,6 +90,7 @@ const Navbar = () => {
 
         {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
+          <ThemeSwitcher />
           {isMobile ? (
             <>
               <IconButton
@@ -115,13 +117,13 @@ const Navbar = () => {
                   <UserLink userId={user?.id} name={user?.name} sx={{ textTransform: 'none' }} />
                   <Button
                     onClick={handleLogout}
-                    sx={{ color: '#ff4c4c', textTransform: 'none' }}
+                    sx={{ color: 'var(--color-error)', textTransform: 'none' }}
                   >
                     Logout
                   </Button>
                 </>
               ) : (
-                <Button component={Link} to="/auth" sx={{ color: '#66c0f4' }}>
+                <Button component={Link} to="/auth" sx={{ color: 'var(--color-primary)' }}>
                   Login
                 </Button>
               )}

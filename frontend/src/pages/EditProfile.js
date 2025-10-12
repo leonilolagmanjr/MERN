@@ -76,21 +76,21 @@ const EditProfile = () => {
   return (
     <Box sx={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1b2838 0%, #171a21 100%)',
-      color: '#c7d5e0',
+      bgcolor: 'var(--color-bg)',
+      color: 'var(--color-text)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'flex-start',
       py: 6,
     }}>
-      <Card sx={{ width: 900, bgcolor: '#23262e', boxShadow: 6, display: 'flex', minHeight: 600 }}>
+      <Card sx={{ width: 900, bgcolor: 'var(--color-card-bg)', boxShadow: 6, display: 'flex', minHeight: 600 }}>
         {/* Sidebar */}
-        <Box sx={{ width: 220, bgcolor: '#23262e', borderRight: '1px solid #2a475e', p: 2 }}>
+        <Box sx={{ width: 220, bgcolor: 'var(--color-card-bg)', borderRight: `1px solid var(--color-border)`, p: 2 }}>
           <Avatar src={user?.avatarUrl} sx={{ width: 64, height: 64, mb: 2, mx: 'auto' }} />
-          <Typography variant="h6" align="center" sx={{ color: '#ffffff', mb: 2 }}>
+          <Typography variant="h6" align="center" sx={{ color: 'var(--color-text)', mb: 2 }}>
             {user?.name}
           </Typography>
-          <Divider sx={{ mb: 2, bgcolor: '#2a475e' }} />
+          <Divider sx={{ mb: 2, bgcolor: 'var(--color-border)' }} />
           <List>
             {sidebarItems.map((item) => (
               <ListItem key={item} disablePadding>
@@ -110,14 +110,14 @@ const EditProfile = () => {
         </Box>
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4 }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ color: '#ffffff', mb: 1 }}>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: 'var(--color-text)', mb: 1 }}>
             About
           </Typography>
-          <Typography sx={{ color: '#c7d5e0', mb: 2 }}>
+          <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>
             Set your profile name and details. Providing additional information like your real name can help friends find you on the Steam Community.<br />
-            Your profile name and avatar represent you throughout Steam, and must be appropriate for all audiences. Please see the <span style={{ color: '#66c0f4', textDecoration: 'underline', cursor: 'pointer' }}>FAQ</span> for more details.
+            Your profile name and avatar represent you throughout Steam, and must be appropriate for all audiences. Please see the <span style={{ color: 'var(--color-primary)', textDecoration: 'underline', cursor: 'pointer' }}>FAQ</span> for more details.
           </Typography>
-          <Divider sx={{ mb: 3, bgcolor: '#2a475e' }} />
+          <Divider sx={{ mb: 3, bgcolor: 'var(--color-border)' }} />
           {/* General Section */}
           {selectedSection === 'General' && (
             <Box>
@@ -197,10 +197,10 @@ const EditProfile = () => {
           )}
           {/* Other sections can be added similarly */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
-            <Button onClick={handleCancel} variant="contained" sx={{ bgcolor: '#ff4c4c', color: '#fff', textTransform: 'none' }}>
+            <Button onClick={handleCancel} variant="contained" sx={{ bgcolor: 'var(--color-error)', color: 'var(--color-bg)', textTransform: 'none' }}>
               Cancel
             </Button>
-            <Button onClick={handleSave} variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', textTransform: 'none' }}>
+            <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)', textTransform: 'none' }}>
               Save
             </Button>
           </Box>

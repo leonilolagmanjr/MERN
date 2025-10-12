@@ -1,0 +1,59 @@
+:root {
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-primary: #000000;
+  --color-secondary: #333333;
+  --color-accent: #666666;
+  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+  --radius: 12px;
+  --color-button-bg: #e9ecef;
+  --color-header-bg: #f8f9fa;
+  --color-border: #dee2e6;
+  --color-app-bg: #ffffff;
+  --color-link: #000000;
+  --color-card-bg: #f8f9fa;
+  --color-text-gray: #666666;
+  --color-text-lighter: #999999;
+  --color-error: #cc0000;
+}
+
+[data-theme="dark"] {
+  --color-bg: #000000;
+  --color-text: #ffffff;
+  --color-primary: #ffffff;
+  --color-secondary: #cccccc;
+  --color-accent: #999999;
+  --color-button-bg: #2c2c2c;
+  --color-header-bg: #1a1a1a;
+  --color-border: #404040;
+  --color-app-bg: #000000;
+  --color-link: #ffffff;
+  --color-card-bg: #1a1a1a;
+  --color-text-gray: #cccccc;
+  --color-text-lighter: #ffffff;
+  --color-error: #ff6666;
+}
+
+/* Modern Effects */
+* {
+  transition: all 0.2s ease;
+}
+
+button, [role="button"] {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+button:active, [role="button"]:active {
+  box-shadow: 0 0 15px var(--color-primary);
+  transform: scale(0.98);
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.MuiButton-root:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

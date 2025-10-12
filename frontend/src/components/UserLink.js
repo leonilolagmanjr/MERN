@@ -12,7 +12,7 @@ const UserLink = ({ userId, name, sx = {} }) => {
     return (
       <Typography
         component="span"
-        sx={{ color: '#66c0f4', display: 'inline', ...sx }}
+        sx={{ color: 'var(--color-primary)', display: 'inline', ...sx }}
       >
         {displayName}
       </Typography>
@@ -27,7 +27,7 @@ const UserLink = ({ userId, name, sx = {} }) => {
       <Typography
         component="span"
         sx={{
-          color: '#66c0f4',
+          color: 'var(--color-primary)',
           display: 'inline',
           '&:hover': { textDecoration: 'underline' },
           ...sx,

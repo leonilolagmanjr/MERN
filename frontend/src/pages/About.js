@@ -6,21 +6,21 @@ const About = () => {
   return React.createElement(Box, {
     sx: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1b2838 0%, #171a21 100%)',
-      color: '#c7d5e0',
+      bgcolor: 'var(--color-bg)',
+      color: 'var(--color-text)',
       py: 6,
     }
   },
     React.createElement(Container, { maxWidth: "md" },
       // Header
       React.createElement(Box, { sx: { display: 'flex', alignItems: 'center', mb: 4 } },
-        React.createElement(Avatar, { src: SteamLogo, sx: { width: 64, height: 64, mr: 2, bgcolor: '#171a21' } }),
-        React.createElement(Typography, { variant: "h3", fontWeight: "bold", color: "#66c0f4" }, "About the Platform")
+        React.createElement(Avatar, { src: SteamLogo, sx: { width: 64, height: 64, mr: 2, bgcolor: 'var(--color-header-bg)' } }),
+        React.createElement(Typography, { variant: "h3", fontWeight: "bold", color: 'var(--color-primary)' }, "About the Platform")
       ),
 
       // Developer Introduction
       React.createElement(Box, { sx: { mb: 6 } },
-        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: "#66c0f4", sx: { mb: 2 } }, "Developer Introduction"),
+        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: 'var(--color-primary)', sx: { mb: 2 } }, "Developer Introduction"),
         React.createElement(Typography, { variant: "body1", sx: { lineHeight: 1.6 } },
           "Hi, I’m Leonilo Lagman Jr, a passionate solo Full Stack Developer specializing in the MERN stack (MongoDB, Express.js, React.js, Node.js). I love building scalable platforms, modern web applications, and systems that solve real-world problems. This project is heavily inspired by Steam’s community features, reimagined for job connections, collaboration, and social interaction. As a solo developer, I handle everything from backend APIs to frontend UI/UX, ensuring a smooth, polished experience."
         )
@@ -28,7 +28,7 @@ const About = () => {
 
       // Project Overview
       React.createElement(Box, { sx: { mb: 6 } },
-        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: "#66c0f4", sx: { mb: 2 } }, "Project Overview"),
+        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: 'var(--color-primary)', sx: { mb: 2 } }, "Project Overview"),
         React.createElement(Typography, { variant: "body1", sx: { lineHeight: 1.6 } },
           "This MERN website is a job matching and social networking platform that blends the functionality of a job board with the interaction of a social community. It aims to connect freelancers, developers, and creators in a more social and engaging way than typical job boards. Users can post and accept jobs (remote or on-site), chat in real time, post in forums and social feeds, share videos, images, and updates, and customize their profiles like Steam (themes, avatars, backgrounds, showcases)."
         )
@@ -36,7 +36,7 @@ const About = () => {
 
       // Core Features
       React.createElement(Box, { sx: { mb: 6 } },
-        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: "#66c0f4", sx: { mb: 2 } }, "Core Features"),
+        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: 'var(--color-primary)', sx: { mb: 2 } }, "Core Features"),
         React.createElement(Typography, { variant: "body1", sx: { lineHeight: 1.6, mb: 2 } },
           "The platform offers a comprehensive set of features designed to foster community and facilitate job matching:"
         ),
@@ -53,7 +53,7 @@ const About = () => {
 
       // Technical Architecture
       React.createElement(Box, { sx: { mb: 6 } },
-        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: "#66c0f4", sx: { mb: 2 } }, "Technical Architecture"),
+        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: 'var(--color-primary)', sx: { mb: 2 } }, "Technical Architecture"),
         React.createElement(Typography, { variant: "body1", sx: { lineHeight: 1.6, mb: 2 } },
           "The platform is built using a robust MERN stack architecture:"
         ),
@@ -71,38 +71,38 @@ const About = () => {
 
       // Vision & Future Roadmap
       React.createElement(Box, { sx: { mb: 6 } },
-        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: "#66c0f4", sx: { mb: 2 } }, "Vision & Future Roadmap"),
+        React.createElement(Typography, { variant: "h4", fontWeight: "bold", color: 'var(--color-primary)', sx: { mb: 2 } }, "Vision & Future Roadmap"),
         React.createElement(Typography, { variant: "body1", sx: { lineHeight: 1.6 } },
           "The vision is to create a vibrant community where freelancers and creators can find meaningful work, collaborate on projects, and build lasting professional relationships. Future enhancements include advanced AI-powered job matching, expanded social features like groups and events, mobile app development, and integration with popular tools like GitHub and LinkedIn. The platform aims to evolve into a comprehensive ecosystem for creative professionals."
         )
       ),
 
-      React.createElement(Divider, { sx: { bgcolor: '#66c0f4', my: 4 } }),
+      React.createElement(Divider, { sx: { bgcolor: 'var(--color-primary)', my: 4 } }),
 
       // Developer Card
-      React.createElement(Card, { sx: { bgcolor: '#23262e', color: '#c7d5e0', boxShadow: 3, maxWidth: 400, mx: 'auto', mt: 4 } },
+      React.createElement(Card, { sx: { bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)', boxShadow: 3, maxWidth: 400, mx: 'auto', mt: 4 } },
         React.createElement(CardContent, { sx: { display: 'flex', flexDirection: 'column', alignItems: 'center' } },
           React.createElement(Avatar, {
             src: "https://github.com/leonilolagmanjr",
-            sx: { width: 100, height: 100, mb: 2, bgcolor: '#171a21' }
+            sx: { width: 100, height: 100, mb: 2, bgcolor: 'var(--color-bg)' }
           }),
-          React.createElement(Typography, { variant: "h5", color: "#66c0f4", fontWeight: "bold" }, "Leonilo Lagman Jr"),
-          React.createElement(Typography, { variant: "body2", color: "#c7d5e0", sx: { mb: 1 } }, "Solo Full Stack Developer"),
-          React.createElement(Typography, { variant: "body2", color: "#8f98a0", sx: { textAlign: 'center', mb: 2 } },
+          React.createElement(Typography, { variant: "h5", color: 'var(--color-primary)', fontWeight: "bold" }, "Leonilo Lagman Jr"),
+          React.createElement(Typography, { variant: "body2", color: 'var(--color-text)', sx: { mb: 1 } }, "Solo Full Stack Developer"),
+          React.createElement(Typography, { variant: "body2", color: 'var(--color-text-gray)', sx: { textAlign: 'center', mb: 2 } },
             "Experienced in building full-featured platforms and web apps. I specialize in handling projects end-to-end — from backend systems to frontend UI/UX."
           ),
           React.createElement(Button, {
             variant: "contained",
             href: "https://github.com/leonilolagmanjr",
             target: "_blank",
-            sx: { bgcolor: '#66c0f4', color: '#23262e', mt: 1, textTransform: 'none', fontWeight: 'bold' }
+            sx: { bgcolor: 'var(--color-primary)', color: 'var(--color-bg)', mt: 1, textTransform: 'none', fontWeight: 'bold' }
           }, "View Portfolio")
         )
       ),
 
       // Footer
       React.createElement(Box, { sx: { mt: 6, textAlign: 'center' } },
-        React.createElement(Typography, { variant: "body1", color: "#8f98a0" },
+        React.createElement(Typography, { variant: "body1", color: 'var(--color-text-gray)' },
           `© ${new Date().getFullYear()} Built by Leonilo Lagman Jr — All rights reserved.`
         )
       )

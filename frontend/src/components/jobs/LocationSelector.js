@@ -67,19 +67,19 @@ const LocationSelector = ({ location, onLocationChange }) => {
 
 const styles = {
   container: { marginBottom: '20px' },
-  label: { display: 'block', color: '#c7d5e0', marginBottom: '10px' },
+  label: { display: 'block', color: 'var(--color-text)', marginBottom: '10px' },
   radioGroup: { display: 'flex', gap: '20px', marginBottom: '10px' },
-  radioLabel: { color: '#c7d5e0', cursor: 'pointer' },
+  radioLabel: { color: 'var(--color-text)', cursor: 'pointer' },
   physicalContainer: { marginTop: '10px' },
   button: {
-    backgroundColor: '#66c0f4',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-primary)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
-    borderRadius: '5px',
+    borderRadius: 'var(--radius)',
     cursor: 'pointer',
   },
-  selectedLocation: { color: '#66c0f4', marginTop: '10px' },
+  selectedLocation: { color: 'var(--color-primary)', marginTop: '10px' },
 };
 
 export default LocationSelector;

@@ -85,13 +85,13 @@ const PostItem = ({ post, onPostUpdated }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#23262e', borderRadius: 2, p: 2, mb: 3, position: 'relative' }}>
+    <Box sx={{ bgcolor: 'var(--color-card-bg)', borderRadius: 'var(--radius)', p: 2, mb: 3, position: 'relative' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Box>
           <UserLink userId={post.createdBy?._id} name={post.createdBy?.name} />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>
+          <Typography sx={{ color: 'var(--color-text-gray)', fontSize: '0.8rem' }}>
             {dayjs(post.createdAt).format('h:mm A · MMM D, YYYY')}
           </Typography>
           {user?.id === post.createdBy?._id && (
@@ -103,7 +103,7 @@ const PostItem = ({ post, onPostUpdated }) => {
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleMenuClick}
                 size="small"
-                sx={{ color: '#c7d5e0' }}
+                sx={{ color: 'var(--color-text)' }}
               >
                 <MoreVertIcon />
               </IconButton>
@@ -128,7 +128,7 @@ const PostItem = ({ post, onPostUpdated }) => {
           )}
         </Box>
       </Box>
-      <Typography sx={{ color: '#c7d5e0', mb: 2 }}>{post.content}</Typography>
+      <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>{post.content}</Typography>
       {post.media && post.media.length > 0 && (
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
           {post.media.map((url, idx) => {
@@ -136,30 +136,30 @@ const PostItem = ({ post, onPostUpdated }) => {
             return isVideo ? (
               <video key={idx} src={`http://${window.location.hostname}:5000/api/posts/stream/${url.split('/').pop()}`} controls width="200" />
             ) : (
-              <img key={idx} src={`http://${window.location.hostname}:5000${url}`} alt="post media" style={{ maxWidth: 200, borderRadius: 4 }} />
+              <img key={idx} src={`http://${window.location.hostname}:5000${url}`} alt="post media" style={{ maxWidth: 200, borderRadius: 'var(--radius)' }} />
             );
           })}
         </Box>
       )}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-        <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>
+        <Typography sx={{ color: 'var(--color-text-gray)', fontSize: '0.8rem' }}>
           {likesCount} Likes
         </Typography>
-        <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>
+        <Typography sx={{ color: 'var(--color-text-gray)', fontSize: '0.8rem' }}>
           {shareCount} Shares
         </Typography>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 1 }}>
-        <IconButton onClick={() => setShowCommentForm(!showCommentForm)} sx={{ color: '#c7d5e0' }}>
+        <IconButton onClick={() => setShowCommentForm(!showCommentForm)} sx={{ color: 'var(--color-text)' }}>
           <ChatBubbleOutlineIcon />
         </IconButton>
-        <IconButton onClick={handleShare} sx={{ color: '#c7d5e0' }}>
+        <IconButton onClick={handleShare} sx={{ color: 'var(--color-text)' }}>
           <RepeatIcon />
         </IconButton>
-        <IconButton onClick={handleLike} sx={{ color: liked ? '#ff4c4c' : '#c7d5e0' }}>
+        <IconButton onClick={handleLike} sx={{ color: liked ? 'var(--color-error)' : 'var(--color-text)' }}>
           {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
-        <IconButton sx={{ color: '#c7d5e0' }}>
+        <IconButton sx={{ color: 'var(--color-text)' }}>
           <BookmarkBorderIcon />
         </IconButton>
       </Box>

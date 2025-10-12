@@ -108,21 +108,37 @@ const ApplyJob = ({ job, onApplySuccess }) => {
     <Box sx={{ width: '100%' }}>
       <Button
         variant="contained"
-        color="primary"
         onClick={handleApply}
         disabled={isButtonDisabled}
-        sx={{ 
+        sx={{
           mt: 2,
           width: '100%',
-          minHeight: '48px' // Better touch target
+          minHeight: '56px', // Better touch target
+          background: 'linear-gradient(45deg, var(--color-primary), var(--color-accent))',
+          color: 'var(--color-bg)',
+          fontSize: '1.1rem',
+          fontWeight: 'bold',
+          borderRadius: 'var(--radius)',
+          boxShadow: '0 4px 15px rgba(102, 192, 244, 0.3)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            background: 'linear-gradient(45deg, var(--color-accent), var(--color-primary))',
+            boxShadow: '0 6px 20px rgba(102, 192, 244, 0.4)',
+            transform: 'translateY(-2px)',
+          },
+          '&:disabled': {
+            background: 'var(--color-text-gray)',
+            color: 'var(--color-bg)',
+            boxShadow: 'none',
+          }
         }}
         aria-label={loading ? 'Applying to job' : 'Apply to job'}
         aria-live="polite"
       >
         {loading ? (
-          <CircularProgress size={24} sx={{ color: 'inherit' }} />
+          <CircularProgress size={24} sx={{ color: 'var(--color-bg)' }} />
         ) : (
-          'Apply to Job'
+          '🚀 Apply to Job'
         )}
       </Button>
       

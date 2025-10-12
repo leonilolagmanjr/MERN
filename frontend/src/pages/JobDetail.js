@@ -87,16 +87,16 @@ const JobDetail = () => {
 
   if (loading) {
     return (
-      <Container sx={{ 
-        display: 'flex', 
+      <Container sx={{
+        display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center', 
+        alignItems: 'center',
         justifyContent: 'center',
         minHeight: '60vh',
-        mt: 5 
+        mt: 5
       }}>
         <CircularProgress color="primary" size={60} />
-        <Typography variant="h6" sx={{ mt: 3, color: '#c7d5e0' }}>
+        <Typography variant="h6" sx={{ mt: 3, color: 'var(--color-text)' }}>
           Loading job details...
         </Typography>
       </Container>
@@ -136,47 +136,47 @@ const JobDetail = () => {
   }
 
   return (
-    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', py: 5 }}>
+    <Box sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text)', minHeight: '100vh', py: 5 }}>
       <Container maxWidth="lg">
         {/* Header Section */}
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            p: 4, 
-            mb: 4, 
-            bgcolor: '#2a475e',
-            border: '1px solid #3c6382'
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            mb: 4,
+            bgcolor: 'var(--color-card-bg)',
+            border: '1px solid var(--color-accent)'
           }}
         >
           <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
             <Box sx={{ flex: 1 }}>
-              <Typography 
-                variant="h3" 
-                sx={{ 
-                  color: '#ffffff', 
+              <Typography
+                variant="h3"
+                sx={{
+                  color: 'var(--color-text)',
                   mb: 2,
                   fontSize: { xs: '2rem', md: '2.5rem' }
                 }}
               >
                 {job.title}
               </Typography>
-              
+
               <Stack direction="row" spacing={2} flexWrap="wrap" useFlexGap>
-                <Chip 
+                <Chip
                   icon={<WorkOutline />}
-                  label={job.status} 
+                  label={job.status}
                   color={JOB_STATUS_COLORS[job.status] || 'default'}
                   variant="outlined"
                 />
-                <Chip 
+                <Chip
                   icon={<Category />}
-                  label={job.category} 
+                  label={job.category}
                   variant="outlined"
-                  sx={{ color: '#66c0f4' }}
+                  sx={{ color: 'var(--color-primary)' }}
                 />
-                <Chip 
+                <Chip
                   icon={<LocationOn />}
-                  label={getLocationText(job.location)} 
+                  label={getLocationText(job.location)}
                   variant="outlined"
                 />
               </Stack>
@@ -195,21 +195,21 @@ const JobDetail = () => {
         <Stack spacing={4} direction={{ xs: 'column', lg: 'row' }}>
           {/* Job Details */}
           <Box sx={{ flex: 2 }}>
-            <Paper 
-              elevation={2} 
-              sx={{ 
-                p: 4, 
-                bgcolor: '#2a475e',
-                border: '1px solid #3c6382'
+            <Paper
+              elevation={2}
+              sx={{
+                p: 4,
+                bgcolor: 'var(--color-card-bg)',
+                border: '1px solid var(--color-accent)'
               }}
             >
-              <Typography variant="h5" sx={{ color: '#ffffff', mb: 3 }}>
+              <Typography variant="h5" sx={{ color: 'var(--color-text)', mb: 3 }}>
                 Job Description
               </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  color: '#c7d5e0', 
+              <Typography
+                variant="body1"
+                sx={{
+                  color: 'var(--color-text)',
                   lineHeight: 1.8,
                   whiteSpace: 'pre-wrap'
                 }}
@@ -221,96 +221,107 @@ const JobDetail = () => {
 
           {/* Sidebar with Additional Info */}
           <Box sx={{ flex: 1 }}>
-            <Paper 
-              elevation={2} 
-              sx={{ 
-                p: 3, 
-                bgcolor: '#2a475e',
-                border: '1px solid #3c6382'
+            <Paper
+              elevation={2}
+              sx={{
+                p: 3,
+                bgcolor: 'var(--color-card-bg)',
+                border: '1px solid var(--color-accent)'
               }}
             >
-              <Typography variant="h6" sx={{ color: '#ffffff', mb: 3 }}>
+              <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 3 }}>
                 Job Details
               </Typography>
-              
+
               <Stack spacing={2}>
                 {/* Price */}
                 <Box>
                   <Typography
                     variant="caption"
-                    sx={{ color: '#8f98a0', display: 'block', mb: 0.5 }}
+                    sx={{ color: 'var(--color-text-gray)', display: 'block', mb: 0.5 }}
                   >
                     PRICE
                   </Typography>
-                  <Chip
-                    label={`${(job.currency || 'USD') === 'USD' ? '$' : '₱'}${(job.price || 0).toFixed(2)}`}
-                    color="primary"
-                    variant="filled"
-                    size="small"
-                  />
+                  <Typography
+                    variant="h5"
+                    sx={{
+                      color: 'var(--color-primary)',
+                      fontWeight: 'bold',
+                      textShadow: '0 0 15px var(--color-primary)',
+                      fontSize: '1.8rem',
+                      display: 'inline-block',
+                      background: 'linear-gradient(45deg, var(--color-primary), var(--color-accent))',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      filter: 'drop-shadow(0 0 8px var(--color-primary))'
+                    }}
+                  >
+                    {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
+                  </Typography>
                 </Box>
 
-                <Divider sx={{ borderColor: '#3c6382' }} />
+                <Divider sx={{ borderColor: 'var(--color-accent)' }} />
 
                 {/* Location */}
                 <Box>
-                  <Typography 
-                    variant="caption" 
-                    sx={{ color: '#8f98a0', display: 'block', mb: 0.5 }}
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'var(--color-text-gray)', display: 'block', mb: 0.5 }}
                   >
                     <LocationOn sx={{ fontSize: 16, mr: 0.5 }} />
                     LOCATION
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#c7d5e0' }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text)' }}>
                     {getLocationText(job.location)}
                   </Typography>
                 </Box>
 
-                <Divider sx={{ borderColor: '#3c6382' }} />
+                <Divider sx={{ borderColor: 'var(--color-accent)' }} />
 
                 {/* Date Listed */}
                 <Box>
                   <Typography
                     variant="caption"
-                    sx={{ color: '#8f98a0', display: 'block', mb: 0.5 }}
+                    sx={{ color: 'var(--color-text-gray)', display: 'block', mb: 0.5 }}
                   >
                     <Event sx={{ fontSize: 16, mr: 0.5 }} />
                     DATE LISTED
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#c7d5e0' }}>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text)' }}>
                     {formatDate(job.dateListed)}
                   </Typography>
                 </Box>
 
-                <Divider sx={{ borderColor: '#3c6382' }} />
+                <Divider sx={{ borderColor: 'var(--color-accent)' }} />
 
                 {/* Posted By */}
                 <Box>
-                  <Typography 
-                    variant="caption" 
-                    sx={{ color: '#8f98a0', display: 'block', mb: 0.5 }}
+                  <Typography
+                    variant="caption"
+                    sx={{ color: 'var(--color-text-gray)', display: 'block', mb: 0.5 }}
                   >
                     <Person sx={{ fontSize: 16, mr: 0.5 }} />
                     POSTED BY
                   </Typography>
-                  <UserLink 
-                    userId={job.createdBy._id} 
-                    name={job.createdBy.name} 
+                  <UserLink
+                    userId={job.createdBy._id}
+                    name={job.createdBy.name}
                   />
                 </Box>
 
                 {/* Candidates Count */}
                 {job.candidates && (
                   <>
-                    <Divider sx={{ borderColor: '#3c6382' }} />
+                    <Divider sx={{ borderColor: 'var(--color-accent)' }} />
                     <Box>
-                      <Typography 
-                        variant="caption" 
-                        sx={{ color: '#8f98a0', display: 'block', mb: 0.5 }}
+                      <Typography
+                        variant="caption"
+                        sx={{ color: 'var(--color-text-gray)', display: 'block', mb: 0.5 }}
                       >
                         APPLICATIONS
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#c7d5e0' }}>
+                      <Typography variant="body2" sx={{ color: 'var(--color-text)' }}>
                         {job.candidates.length} candidate{job.candidates.length !== 1 ? 's' : ''}
                       </Typography>
                     </Box>

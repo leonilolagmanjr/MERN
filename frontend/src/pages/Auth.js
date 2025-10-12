@@ -49,21 +49,21 @@ const Auth = () => {
       justifyContent="center"
       alignItems="center"
       minHeight="100vh"
-      bgcolor="#1b2838"
+      sx={{ bgcolor: 'var(--color-bg)' }}
     >
       <Paper
         elevation={3}
         sx={{
           padding: { xs: 2, sm: 4 },
-          borderRadius: 2,
+          borderRadius: 'var(--radius)',
           width: { xs: '90%', sm: 400 },
           maxWidth: 400,
           textAlign: 'center',
-          backgroundColor: '#2a475e',
-          color: '#c7d5e0',
+          bgcolor: 'var(--color-card-bg)',
+          color: 'var(--color-text)',
         }}
       >
-        <Typography variant="h4" gutterBottom sx={{ color: '#ffffff' }}>
+        <Typography variant="h4" gutterBottom sx={{ color: 'var(--color-text)' }}>
           {isLogin ? 'Login' : 'Register'}
         </Typography>
         {message && (
@@ -84,10 +84,10 @@ const Auth = () => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               InputProps={{
-                style: { backgroundColor: '#1b2838', color: '#c7d5e0' },
+                style: { backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)' },
               }}
               InputLabelProps={{
-                style: { color: '#c7d5e0' },
+                style: { color: 'var(--color-text)' },
               }}
             />
           )}
@@ -99,10 +99,10 @@ const Auth = () => {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             InputProps={{
-              style: { backgroundColor: '#1b2838', color: '#c7d5e0' },
+              style: { backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)' },
             }}
             InputLabelProps={{
-              style: { color: '#c7d5e0' },
+              style: { color: 'var(--color-text)' },
             }}
           />
           <TextField
@@ -113,10 +113,10 @@ const Auth = () => {
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             InputProps={{
-              style: { backgroundColor: '#1b2838', color: '#c7d5e0' },
+              style: { backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)' },
             }}
             InputLabelProps={{
-              style: { color: '#c7d5e0' },
+              style: { color: 'var(--color-text)' },
             }}
           />
           <Button
@@ -124,20 +124,20 @@ const Auth = () => {
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: '#66c0f4',
-              color: '#ffffff',
-              '&:hover': { backgroundColor: '#5aafde' },
+              bgcolor: 'var(--color-primary)',
+              color: 'var(--color-bg)',
+              '&:hover': { bgcolor: 'var(--color-accent)' },
             }}
           >
             {isLogin ? 'Login' : 'Register'}
           </Button>
         </Box>
-        <Typography variant="body2" sx={{ marginTop: 2, color: '#c7d5e0' }}>
+        <Typography variant="body2" sx={{ marginTop: 2, color: 'var(--color-text)' }}>
           {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
           <Link
             component="button"
             onClick={toggleForm}
-            sx={{ color: '#66c0f4', textDecoration: 'underline' }}
+            sx={{ color: 'var(--color-primary)', textDecoration: 'underline' }}
           >
             {isLogin ? 'Register' : 'Login'}
           </Link>

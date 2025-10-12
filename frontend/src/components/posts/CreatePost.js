@@ -50,10 +50,10 @@ const CreatePost = ({ onPostCreated, type = 'post', category, groupId }) => {
         onChange={(e) => setContent(e.target.value)}
         fullWidth
         sx={{
-          bgcolor: '#2a475e',
-          input: { color: '#c7d5e0' },
+          bgcolor: 'var(--color-card-bg)',
+          input: { color: 'var(--color-text)' },
           '& .MuiOutlinedInput-root': {
-            '& fieldset': { borderColor: '#66c0f4' },
+            '& fieldset': { borderColor: 'var(--color-primary)' },
           },
         }}
       />
@@ -62,12 +62,12 @@ const CreatePost = ({ onPostCreated, type = 'post', category, groupId }) => {
         multiple
         accept="image/*,video/*"
         onChange={handleFileChange}
-        style={{ color: '#c7d5e0' }}
+        style={{ color: 'var(--color-text)' }}
       />
       <Button
         type="submit"
         variant="contained"
-        sx={{ bgcolor: '#66c0f4', color: '#fff' }}
+        sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)' }}
         disabled={loading || !content.trim()}
       >
         {loading ? 'Posting...' : 'Post'}

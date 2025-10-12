@@ -1,24 +1,10 @@
-:root {
-  --primary-bg: #1b2838;
-  --text-light: #c7d5e0;
-  --accent-blue: #66c0f4;
-  --white: #ffffff;
-  --button-bg: #2a475e;
-  --header-bg: #171a21;
-  --border-color: #3a3f4b;
-  --app-bg: #282c34;
-  --link-color: #61dafb;
-  --card-bg: #23262e;
-  --text-gray: #8f98a0;
-  --text-lighter: #a9b7c6;
-  --error-red: #ff4c4c;
-}
+@import './theme.css';
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--primary-bg); /* Steam's dark background */
-  color: var(--text-light); /* Light text color */
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   font-size: 16px;
 }
 
@@ -28,7 +14,7 @@ code {
 }
 
 a {
-  color: var(--accent-blue); /* Steam's blue accent color */
+  color: var(--color-link);
   text-decoration: none;
 }
 
@@ -37,22 +23,23 @@ a:hover {
 }
 
 h1, h2, h3 {
-  color: var(--white); /* White text for headings */
+  color: var(--color-text);
+  font-family: var(--font-heading);
 }
 
 button {
-  background-color: var(--button-bg); /* Steam's button background */
-  color: var(--text-light);
-  border: none;
+  background-color: var(--color-button-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   padding: 10px 20px;
-  border-radius: 5px;
+  border-radius: var(--radius);
   cursor: pointer;
   font-size: 16px;
 }
 
 button:hover {
-  background-color: var(--accent-blue); /* Blue hover effect */
-  color: var(--white);
+  background-color: var(--color-primary);
+  color: var(--color-bg);
 }
 
 /* Responsive styles */
@@ -103,9 +90,9 @@ button:hover {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: var(--primary-bg);
-  color: var(--accent-blue);
-  border: none;
+  background-color: var(--color-button-bg);
+  color: var(--color-primary);
+  border: 1px solid var(--color-border);
   padding: 12px 16px;
   border-radius: 50%;
   font-size: 16px;
@@ -121,9 +108,9 @@ button:hover {
   right: 20px;
   width: 450px;
   height: 550px;
-  background-color: var(--header-bg);
-  border: 2px solid var(--border-color);
-  border-radius: 10px;
+  background-color: var(--color-card-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius);
   display: flex;
   flex-direction: row;
   box-shadow: 0 0 15px rgba(0,0,0,0.6);

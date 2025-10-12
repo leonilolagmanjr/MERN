@@ -38,11 +38,11 @@ const styles = {
     marginBottom: '20px',
   },
   heading: {
-    color: '#ffffff',
+    color: 'var(--color-text)',
     marginBottom: '10px',
   },
   message: {
-    color: '#66c0f4',
+    color: 'var(--color-primary)',
     marginBottom: '10px',
   },
   buttonContainer: {
@@ -51,19 +51,19 @@ const styles = {
     justifyContent: 'flex-end',
   },
   cancelButton: {
-    backgroundColor: '#666',
-    color: '#ffffff',
-    border: 'none',
+    backgroundColor: 'var(--color-button-bg)',
+    color: 'var(--color-text)',
+    border: '1px solid var(--color-primary)',
     padding: '10px 20px',
-    borderRadius: '5px',
+    borderRadius: 'var(--radius)',
     cursor: 'pointer',
   },
   deleteButton: {
-    backgroundColor: '#ff4c4c',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-error)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
-    borderRadius: '5px',
+    borderRadius: 'var(--radius)',
     cursor: 'pointer',
   },
 };
