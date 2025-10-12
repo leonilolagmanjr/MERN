@@ -11,6 +11,7 @@ import {
   Container,
   Link,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { fetchPostedJobs } from '../services/api';
 
 const Home = () => {
@@ -73,20 +74,36 @@ const Home = () => {
             {featuredJobs.length > 0 ? (
               featuredJobs.map((job) => (
                 <Grid item xs={12} sm={6} md={3} key={job._id}>
-                  <Card sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)', textAlign: 'center' }}>
-                    <CardContent>
-                      <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 1 }}>
-                        {job.title}
-                      </Typography>
-                      <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
-                      <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', fontWeight: 'bold' }}>
-                        {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
-                        Status: {job.status}
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                  <RouterLink
+                    to={`/job/${job._id}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Card
+                      sx={{
+                        bgcolor: 'var(--color-card-bg)',
+                        color: 'var(--color-text)',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          boxShadow: '0 6px 10px rgba(0, 0, 0, 0.3), 0 0 20px var(--color-primary)',
+                          outline: '2px solid var(--color-primary)',
+                        },
+                      }}
+                    >
+                      <CardContent>
+                        <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 1 }}>
+                          {job.title}
+                        </Typography>
+                        <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
+                        <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', fontWeight: 'bold' }}>
+                          {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
+                          Status: {job.status}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </RouterLink>
                 </Grid>
               ))
             ) : (
