@@ -51,8 +51,8 @@ const ReadJob = ({ refresh }) => {
                     {job.title}
                   </Typography>
                   <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
-                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', textShadow: '0 0 10px #ffffff' }}>
-                    Price: {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', fontWeight: 'bold' }}>
+                    {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
                     Status: {job.status}

@@ -238,24 +238,12 @@ const JobDetail = () => {
                 {/* Price */}
                 <Box>
                   <Typography
-                    variant="caption"
-                    sx={{ color: 'var(--color-text-gray)', display: 'block', mb: 0.5 }}
-                  >
-                    PRICE
-                  </Typography>
-                  <Typography
                     variant="h5"
                     sx={{
                       color: 'var(--color-primary)',
                       fontWeight: 'bold',
-                      textShadow: '0 0 15px var(--color-primary)',
                       fontSize: '1.8rem',
-                      display: 'inline-block',
-                      background: 'linear-gradient(45deg, var(--color-primary), var(--color-accent))',
-                      backgroundClip: 'text',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      filter: 'drop-shadow(0 0 8px var(--color-primary))'
+                      display: 'inline-block'
                     }}
                   >
                     {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
