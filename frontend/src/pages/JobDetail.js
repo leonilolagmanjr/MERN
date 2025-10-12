@@ -234,16 +234,16 @@ const JobDetail = () => {
               </Typography>
               
               <Stack spacing={2}>
-                {/* Difficulty */}
+                {/* Price */}
                 <Box>
-                  <Typography 
-                    variant="caption" 
+                  <Typography
+                    variant="caption"
                     sx={{ color: '#8f98a0', display: 'block', mb: 0.5 }}
                   >
-                    DIFFICULTY
+                    PRICE
                   </Typography>
-                  <Chip 
-                    label={job.difficulty} 
+                  <Chip
+                    label={`${(job.currency || 'USD') === 'USD' ? '$' : '₱'}${(job.price || 0).toFixed(2)}`}
                     color="primary"
                     variant="filled"
                     size="small"

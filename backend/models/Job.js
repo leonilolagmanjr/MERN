@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const jobSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
-  difficulty: { type: String, required: true },
+  price: { type: Number, required: true },
+  currency: { type: String, default: 'USD' },
   category: { type: String, required: true },
   location: {
     type: { type: String, enum: ['remote', 'physical'] },

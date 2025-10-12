@@ -3,10 +3,10 @@ const Job = require('../models/Job');
 
 // Post Job
 const postJob = async (req, res) => {
-  const { title, description, difficulty, category, location } = req.body;
+  const { title, description, price, currency, category, location } = req.body;
 
   try {
-    const job = await jobService.createJob(title, description, difficulty, category, location, req.user.id);
+    const job = await jobService.createJob(title, description, price, currency, category, location, req.user.id);
     res.status(201).json(job);
   } catch (err) {
     console.error('Error in postJob:', err.message); // Debugging log
@@ -27,9 +27,9 @@ const acceptJob = async (req, res) => {
 
 // Get All Jobs
 const getAllJobs = async (req, res) => {
-  const { difficulty } = req.query;
+  const { price } = req.query;
   try {
-    const jobs = await jobService.getAllJobs(difficulty);
+    const jobs = await jobService.getAllJobs(price);
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });
@@ -78,7 +78,7 @@ const completeJob = async (req, res) => {
 
 // Edit Job
 const editJob = async (req, res) => {
-  const { title, description, difficulty, category, location } = req.body;
+  const { title, description, price, currency, category, location } = req.body;
   console.log('Edit Job Request:', {
     jobId: req.params.jobId,
     userId: req.user.id,
@@ -89,7 +89,8 @@ const editJob = async (req, res) => {
       req.params.jobId,
       title,
       description,
-      difficulty,
+      price,
+      currency,
       category,
       location,
       req.user.id

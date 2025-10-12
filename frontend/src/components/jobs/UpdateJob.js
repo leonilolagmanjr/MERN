@@ -6,11 +6,27 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    difficulty: '',
+    price: '',
+    currency: 'USD',
     category: '',
     location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
   });
   const [message, setMessage] = useState('');
+
+  const currencies = ['USD', 'PHP'];
+
+  const formatPrice = (value, currency) => {
+    const num = parseFloat(value.replace(/[^\d.]/g, ''));
+    if (isNaN(num)) return '';
+    const symbol = currency === 'USD' ? '$' : '₱';
+    return `${symbol}${num.toFixed(2)}`;
+  };
+
+  const handleCurrencyChange = (e) => {
+    const newCurrency = e.target.value;
+    const formattedPrice = formatPrice(formData.price, newCurrency);
+    setFormData({ ...formData, currency: newCurrency, price: formattedPrice });
+  };
 
   useEffect(() => {
     if (job) {
@@ -21,10 +37,13 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
       } else if (job.location) {
         location = job.location;
       }
+      const currency = job.currency || 'USD';
+      const formattedPrice = formatPrice(job.price || '', currency);
       setFormData({
         title: job.title || '',
         description: job.description || '',
-        difficulty: job.difficulty || '',
+        price: formattedPrice,
+        currency,
         category: job.category || '',
         location,
       });
@@ -35,7 +54,8 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await editJob(job._id, formData, token);
+      const priceNum = parseFloat(formData.price.replace(/[^\d.]/g, ''));
+      await editJob(job._id, { ...formData, price: priceNum }, token);
       setMessage('Job updated successfully!');
       onJobUpdated();
       onClose();
@@ -68,14 +88,26 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
         />
         <input
           type="text"
-          placeholder="Difficulty"
-          value={formData.difficulty}
-          onChange={(e) =>
-            setFormData({ ...formData, difficulty: e.target.value })
-          }
+          placeholder="Price"
+          value={formData.price}
+          onChange={(e) => setFormData({ ...formData, price: formatPrice(e.target.value, formData.currency) })}
           style={styles.input}
           required
         />
+
+        {/* Currency Selection */}
+        <select
+          value={formData.currency}
+          onChange={handleCurrencyChange}
+          style={styles.input}
+          required
+        >
+          <option value="" disabled>Select Currency</option>
+          {currencies.map((curr) => (
+            <option key={curr} value={curr}>{curr}</option>
+          ))}
+        </select>
+
         <input
           type="text"
           placeholder="Category"

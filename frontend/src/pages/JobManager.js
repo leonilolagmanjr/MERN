@@ -20,7 +20,7 @@ const JobManager = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredJobs, setFilteredJobs] = useState([]);
   const [userJobs, setUserJobs] = useState([]);
-  const [filterDifficulty, setFilterDifficulty] = useState('');
+  const [filterPrice, setFilterPrice] = useState('');
 
   const triggerRefresh = () => {
     setRefreshJobs(!refreshJobs);
@@ -75,8 +75,8 @@ const JobManager = () => {
     let filtered = allJobs.filter((job) =>
       job.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    if (filterDifficulty) {
-      filtered = filtered.filter((job) => job.difficulty === filterDifficulty);
+    if (filterPrice) {
+      filtered = filtered.filter((job) => job.price.toString().includes(filterPrice));
     }
     setFilteredJobs(filtered);
   };
@@ -172,7 +172,7 @@ const JobManager = () => {
               <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: '#1b2838', borderRadius: 1, fontWeight: 'bold', color: '#c7d5e0', fontSize: 16 }}>
                 <Box sx={{ flex: 2 }}>Name</Box>
                 <Box sx={{ flex: 1 }}>Date Listed</Box>
-                <Box sx={{ flex: 1 }}>Difficulty</Box>
+                <Box sx={{ flex: 1 }}>Price</Box>
                 <Box sx={{ flex: 1 }}>Category</Box>
                 <Box sx={{ flex: 1 }}>Location</Box>
                 <Box sx={{ flex: 1 }}>Date Listed</Box>
@@ -201,8 +201,8 @@ const JobManager = () => {
                     </Box>
                     {/* Date Listed */}
                     <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</Box>
-                    {/* Difficulty */}
-                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.difficulty}</Box>
+                    {/* Price */}
+                    <Box sx={{ flex: 1, color: '#c7d5e0' }}>{(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}</Box>
                     {/* Category */}
                     <Box sx={{ flex: 1, color: '#c7d5e0' }}>{job.category}</Box>
                     {/* Location */}
@@ -252,28 +252,23 @@ const JobManager = () => {
             {/* Filter options */}
             <Box sx={{ mt: 2 }}>
               <Typography variant="body2" sx={{ color: '#c7d5e0', mb: 1 }}>
-                Filter by Difficulty
+                Filter by Price
               </Typography>
               <TextField
-                select
-                value={filterDifficulty || ''}
-                onChange={(e) => setFilterDifficulty(e.target.value)}
                 variant="outlined"
+                placeholder="Enter price (e.g., 100)"
+                value={filterPrice}
+                onChange={(e) => setFilterPrice(e.target.value)}
                 fullWidth
                 sx={{
                   bgcolor: '#2a475e',
-                  color: '#c7d5e0',
+                  input: { color: '#c7d5e0' },
                   '& .MuiOutlinedInput-root': {
                     '& fieldset': { borderColor: '#66c0f4' },
                     '&:hover fieldset': { borderColor: '#66c0f4' },
                   },
                 }}
-              >
-                <option value="">All</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-              </TextField>
+              />
             </Box>
           </Box>
         </Box>

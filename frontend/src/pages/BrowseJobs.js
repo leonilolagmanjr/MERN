@@ -118,7 +118,7 @@ const BrowseJobs = () => {
                 </Typography>
                 <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
-                  Difficulty: {job.difficulty}
+                  Price: {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
                   Category: {job.category}

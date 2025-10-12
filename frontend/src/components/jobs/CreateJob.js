@@ -6,7 +6,8 @@ const CreateJob = ({ onJobCreated }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    difficulty: '',
+    price: '',
+    currency: 'USD',
     category: '',
     location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
   });
@@ -25,6 +26,21 @@ const CreateJob = ({ onJobCreated }) => {
     'Custom',
   ];
 
+  const currencies = ['USD', 'PHP'];
+
+  const formatPrice = (value, currency) => {
+    const num = parseFloat(value.replace(/[^\d.]/g, ''));
+    if (isNaN(num)) return '';
+    const symbol = currency === 'USD' ? '$' : '₱';
+    return `${symbol}${num.toFixed(2)}`;
+  };
+
+  const handleCurrencyChange = (e) => {
+    const newCurrency = e.target.value;
+    const formattedPrice = formatPrice(formData.price, newCurrency);
+    setFormData({ ...formData, currency: newCurrency, price: formattedPrice });
+  };
+
   const handleCategoryChange = (e) => {
     const selected = e.target.value;
     if (selected === 'Custom') {
@@ -40,12 +56,14 @@ const CreateJob = ({ onJobCreated }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      await postJob(formData, token);
+      const priceNum = parseFloat(formData.price.replace(/[^\d.]/g, ''));
+      await postJob({ ...formData, price: priceNum }, token);
       setMessage('Job created successfully!');
       setFormData({
         title: '',
         description: '',
-        difficulty: '',
+        price: '',
+        currency: 'USD',
         category: '',
         location: { type: 'remote', address: '', coordinates: { lat: 0, lng: 0 } },
       });
@@ -81,12 +99,25 @@ const CreateJob = ({ onJobCreated }) => {
 
         <input
           type="text"
-          placeholder="Difficulty"
-          value={formData.difficulty}
-          onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
+          placeholder="Price"
+          value={formData.price}
+          onChange={(e) => setFormData({ ...formData, price: formatPrice(e.target.value, formData.currency) })}
           style={styles.input}
           required
         />
+
+        {/* Currency Selection */}
+        <select
+          value={formData.currency}
+          onChange={handleCurrencyChange}
+          style={styles.input}
+          required
+        >
+          <option value="" disabled>Select Currency</option>
+          {currencies.map((curr) => (
+            <option key={curr} value={curr}>{curr}</option>
+          ))}
+        </select>
 
         {/* Category Selection */}
         <select

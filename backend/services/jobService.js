@@ -1,7 +1,7 @@
 const Job = require('../models/Job');
 
 // Create Job
-const createJob = async (title, description, difficulty, category, locationData, createdBy) => {
+const createJob = async (title, description, price, currency, category, locationData, createdBy) => {
   try {
     // Check for duplicate jobs
     const existingJob = await Job.findOne({ title, description, createdBy });
@@ -22,7 +22,8 @@ const createJob = async (title, description, difficulty, category, locationData,
     const job = new Job({
       title,
       description,
-      difficulty,
+      price,
+      currency,
       category,
       location,
       createdBy,
@@ -51,9 +52,9 @@ const acceptJob = async (jobId, assignedTo) => {
 };
 
 // Get All Jobs
-const getAllJobs = async (difficulty) => {
+const getAllJobs = async (price) => {
   try {
-    const filter = difficulty ? { difficulty } : {};
+    const filter = price ? { price } : {};
     const jobs = await Job.find(filter).populate('createdBy', 'name');
     return jobs;
   } catch (err) {
@@ -103,7 +104,7 @@ const completeJob = async (jobId, assignedTo) => {
 };
 
 // Edit Job
-const editJob = async (jobId, title, description, difficulty, category, locationData, userId) => {
+const editJob = async (jobId, title, description, price, currency, category, locationData, userId) => {
   try {
     console.log('Edit Job Service Input:', { jobId, userId }); // Debugging log
     const job = await Job.findById(jobId);
@@ -122,7 +123,8 @@ const editJob = async (jobId, title, description, difficulty, category, location
 
     job.title = title || job.title;
     job.description = description || job.description;
-    job.difficulty = difficulty || job.difficulty;
+    job.price = price || job.price;
+    job.currency = currency || job.currency;
     job.category = category || job.category;
     job.location = location;
     await job.save();
