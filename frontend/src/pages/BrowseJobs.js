@@ -96,41 +96,46 @@ const BrowseJobs = () => {
       <Grid container spacing={3}>
         {filteredJobs.map((job) => (
           <Grid item xs={12} sm={6} md={4} key={job._id}>
-            <Card
-              sx={{
-                bgcolor: 'var(--color-card-bg)',
-                color: 'var(--color-text)',
-                borderRadius: 'var(--radius)',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
-              }}
+            <Link
+              to={`/job/${job._id}`}
+              style={{ textDecoration: 'none' }}
             >
-              <CardContent>
-                <Typography
-                  variant="h6"
-                  sx={{ color: 'var(--color-text)', mb: 1 }}
-                >
-                  <Link
-                    to={`/job/${job._id}`}
-                    style={{ color: 'var(--color-primary)', textDecoration: 'none' }}
+              <Card
+                sx={{
+                  bgcolor: 'var(--color-card-bg)',
+                  color: 'var(--color-text)',
+                  borderRadius: 'var(--radius)',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    boxShadow: '0 6px 10px rgba(0, 0, 0, 0.3), 0 0 20px var(--color-primary)',
+                    outline: '2px solid var(--color-primary)',
+                  },
+                }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h6"
+                    sx={{ color: 'var(--color-text)', mb: 1 }}
                   >
                     {job.title}
-                  </Link>
-                </Typography>
-                <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
-                <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', fontWeight: 'bold' }}>
-                  {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
-                  Category: {job.category}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
-                  Location: {job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
-                  Date Listed: {new Date(job.dateListed).toLocaleDateString()}
-                </Typography>
-              </CardContent>
-            </Card>
+                  </Typography>
+                  <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', fontWeight: 'bold' }}>
+                    {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
+                    Category: {job.category}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
+                    Location: {job.location ? (job.location.type === 'physical' ? job.location.address : 'Remote') : 'Remote'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>
+                    Date Listed: {new Date(job.dateListed).toLocaleDateString()}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Link>
           </Grid>
         ))}
       </Grid>
