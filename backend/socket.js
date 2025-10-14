@@ -6,7 +6,7 @@ const initSocket = (server) => {
     io = new Server(server, {
         cors: {
             // Keep your origins
-            origin: ['http://localhost:3000', 'http://100.123.122.74:3000'],
+            origin: ['https://socket-production-384e.up.railway.app/', 'http://localhost:3000', 'http://100.123.122.74:3000'],
             methods: ['GET', 'POST'],
         },
     });
