@@ -23,7 +23,7 @@ app.use(express.json({
     }
   }
 }));
-app.use('/uploads', express.static('uploads'));
+// Note: Static serving of /uploads removed as files are now served from Cloudinary
 
 // Routes
 const jobRoutes = require('./routes/jobRoutes');

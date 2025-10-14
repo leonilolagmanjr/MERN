@@ -8,7 +8,10 @@ const commentSchema = new mongoose.Schema({
 
 const postSchema = new mongoose.Schema({
   content: { type: String, required: true },
-  media: [{ type: String }], // Array of URLs to uploaded media files
+  media: [{
+    url: { type: String, required: true },
+    public_id: { type: String, required: true }
+  }], // Array of objects with Cloudinary URL and public_id
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of user IDs who liked the post
   comments: [commentSchema], // Sub-document array for comments
   shareCount: { type: Number, default: 0 }, // Number of shares

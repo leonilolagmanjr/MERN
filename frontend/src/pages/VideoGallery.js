@@ -96,7 +96,7 @@ const VideoGallery = () => {
                   >
                     <CardContent sx={{ flexGrow: 1 }}>
                       <img
-                        src={video.thumbnailUrl ? `http://${window.location.hostname}:5000${video.thumbnailUrl}` : "https://via.placeholder.com/320x180?text=Video+Thumbnail"}
+                        src={video.thumbnailUrl || "https://via.placeholder.com/320x180?text=Video+Thumbnail"}
                         alt={video.title}
                         style={{
                           width: '100%',

@@ -3,15 +3,16 @@ const router = express.Router();
 const videoController = require('../controllers/videoController');
 const authenticate = require('../middleware/authenticate');
 const multer = require('multer');
-const path = require('path');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads/videos'));
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'videos',
+    resource_type: 'video',
+    eager: [{ width: 320, height: 180, crop: 'crop', gravity: 'auto' }],
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
 });
 
 const upload = multer({ storage });
@@ -22,6 +23,5 @@ router.get('/my-videos', authenticate(), videoController.getUserVideos);
 router.get('/:id', videoController.getVideo);
 router.patch('/:id', authenticate(), videoController.updateVideo);
 router.delete('/:id', authenticate(), videoController.deleteVideo);
-router.get('/stream/:filename', videoController.streamVideo);
 
 module.exports = router;

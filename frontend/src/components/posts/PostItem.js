@@ -131,12 +131,12 @@ const PostItem = ({ post, onPostUpdated }) => {
       <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>{post.content}</Typography>
       {post.media && post.media.length > 0 && (
         <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-          {post.media.map((url, idx) => {
-            const isVideo = url.match(/\.(mp4|webm|ogg)$/i);
+          {post.media.map((media, idx) => {
+            const isVideo = media.url.match(/\.(mp4|webm|ogg)$/i);
             return isVideo ? (
-              <video key={idx} src={`http://${window.location.hostname}:5000/api/posts/stream/${url.split('/').pop()}`} controls width="200" />
+              <video key={idx} src={media.url} controls width="200" />
             ) : (
-              <img key={idx} src={`http://${window.location.hostname}:5000${url}`} alt="post media" style={{ maxWidth: 200, borderRadius: 'var(--radius)' }} />
+              <img key={idx} src={media.url} alt="post media" style={{ maxWidth: 200, borderRadius: 'var(--radius)' }} />
             );
           })}
         </Box>

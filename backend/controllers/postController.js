@@ -1,16 +1,16 @@
 const postService = require('../services/postService');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-// Multer setup for multiple file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads/posts'));
+// Multer setup for multiple file uploads with Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'mern/posts',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'mp4', 'webm', 'ogg'],
+    resource_type: 'auto', // Allow both images and videos
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
 });
 const upload = multer({ storage }).array('media', 10); // max 10 files
 
@@ -21,10 +21,10 @@ const createPost = (req, res) => {
       return res.status(400).json({ msg: 'Error uploading files' });
     }
     try {
-      const mediaUrls = req.files ? req.files.map(file => `/uploads/posts/${file.filename}`) : [];
+      const media = req.files ? req.files.map(file => ({ url: file.path, public_id: file.filename })) : [];
       const { content, type, category, groupId, pinned } = req.body;
       const createdBy = req.user.id;
-      const post = await postService.createPost(content, mediaUrls, createdBy, type, category, groupId, pinned);
+      const post = await postService.createPost(content, media, createdBy, type, category, groupId, pinned);
       res.status(201).json(post);
     } catch (error) {
       res.status(500).json({ msg: 'Server error creating post' });
@@ -135,40 +135,7 @@ const sharePost = async (req, res) => {
   }
 };
 
-// Stream media for posts (videos)
-const streamMedia = (req, res) => {
-  const mediaPath = path.join(__dirname, '../uploads/posts', req.params.filename);
-  fs.stat(mediaPath, (err, stats) => {
-    if (err) {
-      console.error('Media not found:', err);
-      return res.status(404).send('Media not found');
-    }
-
-    const range = req.headers.range;
-    if (!range) {
-      // 416 Wrong range
-      return res.status(416).send('Requires Range header');
-    }
-
-    const mediaSize = stats.size;
-    const CHUNK_SIZE = 10 ** 6; // 1MB chunk size
-    const start = Number(range.replace(/\D/g, ''));
-    const end = Math.min(start + CHUNK_SIZE, mediaSize - 1);
-
-    const contentLength = end - start + 1;
-    const headers = {
-      'Content-Range': `bytes ${start}-${end}/${mediaSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': contentLength,
-      'Content-Type': 'video/mp4', // Assuming videos are mp4, can be enhanced to detect type
-    };
-
-    res.writeHead(206, headers);
-
-    const mediaStream = fs.createReadStream(mediaPath, { start, end });
-    mediaStream.pipe(res);
-  });
-};
+// Note: streamMedia function removed as videos are now served directly from Cloudinary
 
 module.exports = {
   createPost,
@@ -180,6 +147,5 @@ module.exports = {
   likePost,
   addComment,
   sharePost,
-  streamMedia,
   upload, // export multer upload middleware if needed
 };

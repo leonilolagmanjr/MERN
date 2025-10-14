@@ -60,7 +60,8 @@ const DisplayVideo = ({ videoId }) => {
           width="100%"
           height="auto"
           controls
-          src={`http://${window.location.hostname}:5000/api/videos/stream/${video.videoUrl.split('/').pop()}`}
+          src={video.videoUrl}
+          poster={video.thumbnailUrl}
           style={{ maxHeight: '400px', borderRadius: 4 }}
         />
       </Box>

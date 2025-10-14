@@ -5,7 +5,7 @@ const createPost = async (content, media, createdBy, type = 'post', category, gr
   try {
     const post = new Post({
       content,
-      media,
+      media, // Now an array of {url, public_id} objects
       createdBy,
       type,
       category,
@@ -63,6 +63,14 @@ const deletePost = async (postId, userId) => {
     const post = await Post.findById(postId);
     if (!post) throw new Error('Post not found');
     if (String(post.createdBy) !== String(userId)) throw new Error('Not authorized to delete this post');
+
+    // Delete associated media from Cloudinary
+    if (post.media && post.media.length > 0) {
+      const cloudinary = require('../config/cloudinary');
+      const publicIds = post.media.map(media => media.public_id);
+      await cloudinary.api.delete_resources(publicIds);
+    }
+
     await Post.findByIdAndDelete(postId);
     return post;
   } catch (err) {

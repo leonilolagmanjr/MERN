@@ -22,6 +22,18 @@ const updateVideo = async (videoId, updateData) => {
 };
 
 const deleteVideo = async (videoId) => {
+  const video = await Video.findById(videoId);
+  if (!video) return null;
+
+  // Delete associated files from Cloudinary
+  const cloudinary = require('../config/cloudinary');
+  const publicIds = [];
+  if (video.videoPublicId) publicIds.push(video.videoPublicId);
+  if (video.thumbnailPublicId) publicIds.push(video.thumbnailPublicId);
+  if (publicIds.length > 0) {
+    await cloudinary.api.delete_resources(publicIds);
+  }
+
   return await Video.findByIdAndDelete(videoId);
 };
 

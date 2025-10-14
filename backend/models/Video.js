@@ -8,8 +8,10 @@ const videoSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  videoUrl: { type: String, required: true }, // Path to the uploaded video file
-  thumbnailUrl: { type: String }, // Optional thumbnail
+  videoUrl: { type: String, required: true }, // Cloudinary URL for video
+  thumbnailUrl: { type: String }, // Cloudinary URL for thumbnail
+  videoPublicId: { type: String, required: true }, // Cloudinary public_id for video
+  thumbnailPublicId: { type: String }, // Cloudinary public_id for thumbnail
   views: { type: Number, default: 0 },
   likes: { type: Number, default: 0 },
   tags: [String]

@@ -1,10 +1,24 @@
 const videoService = require('../services/videoService');
-const path = require('path');
-const fs = require('fs');
-const ffmpeg = require('fluent-ffmpeg');
-const ffmpegStatic = require('ffmpeg-static');
+const multer = require('multer');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 
-ffmpeg.setFfmpegPath(ffmpegStatic);
+// Multer setup for video upload with Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
+    const isVideo = file.mimetype.startsWith('video/');
+    return {
+      folder: 'mern/videos',
+      allowed_formats: isVideo ? ['mp4', 'webm', 'ogg', 'avi', 'mov'] : ['jpg', 'png', 'jpeg'],
+      resource_type: isVideo ? 'video' : 'image',
+      // For videos, Cloudinary can auto-generate thumbnails
+      eager: isVideo ? [{ width: 320, height: 180, crop: 'fill', format: 'jpg' }] : undefined,
+    };
+  },
+});
+
+const upload = multer({ storage });
 
 const uploadVideo = async (req, res) => {
   try {
@@ -12,21 +26,25 @@ const uploadVideo = async (req, res) => {
       return res.status(400).json({ msg: 'No video file uploaded' });
     }
     const { title, description } = req.body;
-    const videoUrl = `/uploads/videos/${req.file.filename}`;
+
+    // Cloudinary returns eager transformations for thumbnails
+    const videoUrl = req.file.path;
+    const videoPublicId = req.file.filename;
+    const thumbnailUrl = req.file.eager ? req.file.eager[0].secure_url : null;
+    const thumbnailPublicId = req.file.eager ? req.file.eager[0].public_id : null;
 
     const videoData = {
       title,
       description,
       uploader: req.user.id,
       videoUrl,
+      videoPublicId,
+      thumbnailUrl,
+      thumbnailPublicId,
     };
 
     const video = await videoService.createVideo(videoData);
     res.status(201).json(video);
-
-    // Generate thumbnail asynchronously
-    const videoPath = path.join(__dirname, '../uploads/videos', req.file.filename);
-    generateThumbnail(video._id, videoPath);
   } catch (err) {
     console.error('Upload Video Error:', err);
     res.status(500).json({ msg: 'Server error during video upload' });
@@ -99,64 +117,7 @@ const getVideo = async (req, res) => {
   }
 };
 
-const streamVideo = (req, res) => {
-  const videoPath = path.join(__dirname, '../uploads/videos', req.params.filename);
-  fs.stat(videoPath, (err, stats) => {
-    if (err) {
-      console.error('Video not found:', err);
-      return res.status(404).send('Video not found');
-    }
-
-    const range = req.headers.range;
-    if (!range) {
-      // 416 Wrong range
-      return res.status(416).send('Requires Range header');
-    }
-
-    const videoSize = stats.size;
-    const CHUNK_SIZE = 10 ** 6; // 1MB chunk size
-    const start = Number(range.replace(/\D/g, ''));
-    const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-
-    const contentLength = end - start + 1;
-    const headers = {
-      'Content-Range': `bytes ${start}-${end}/${videoSize}`,
-      'Accept-Ranges': 'bytes',
-      'Content-Length': contentLength,
-      'Content-Type': 'video/mp4',
-    };
-
-    res.writeHead(206, headers);
-
-    const videoStream = fs.createReadStream(videoPath, { start, end });
-    videoStream.pipe(res);
-  });
-};
-
-const generateThumbnail = (videoId, videoPath) => {
-  const thumbnailFilename = path.parse(path.basename(videoPath)).name + '.jpg';
-  const thumbnailPath = path.join(__dirname, '../uploads/thumbnails', thumbnailFilename);
-
-  ffmpeg(videoPath)
-    .screenshots({
-      timestamps: [5], // At 5 seconds into the video
-      filename: thumbnailFilename,
-      folder: path.join(__dirname, '../uploads/thumbnails'),
-      size: '320x180', // Standard thumbnail size
-    })
-    .on('end', async () => {
-      try {
-        const thumbnailUrl = `/uploads/thumbnails/${thumbnailFilename}`;
-        await videoService.updateVideo(videoId, { thumbnailUrl });
-        console.log(`Thumbnail generated for video ${videoId}`);
-      } catch (err) {
-        console.error('Error updating video with thumbnail:', err);
-      }
-    })
-    .on('error', (err) => {
-      console.error('Error generating thumbnail:', err);
-    });
-};
+// Note: streamVideo and generateThumbnail functions removed as videos and thumbnails are now served directly from Cloudinary
 
 module.exports = {
   uploadVideo,
@@ -165,5 +126,4 @@ module.exports = {
   updateVideo,
   deleteVideo,
   getVideo,
-  streamVideo,
 };

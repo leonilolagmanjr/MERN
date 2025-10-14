@@ -57,7 +57,8 @@ const VideoPage = () => {
               width="100%"
               height="auto"
               controls
-              src={`http://${window.location.hostname}:5000/api/videos/stream/${video.videoUrl.split('/').pop()}`}
+              src={video.videoUrl}
+              poster={video.thumbnailUrl}
               style={{ maxHeight: '500px', aspectRatio: '16/9' }}
             />
             <Typography variant="h4" sx={{ mt: 2 }}>
