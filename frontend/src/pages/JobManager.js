@@ -120,7 +120,7 @@ const JobManager = () => {
                   {/* If you have an image for the job, show it here. Otherwise, use a placeholder. */}
                   <Box sx={{ width: 48, height: 48, bgcolor: 'var(--color-bg)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
                     {/* Placeholder icon or image */}
-                    <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Job'} alt="job" style={{ width: 40, height: 40, borderRadius: 4 }} />
+                    <img src={job.imageUrl || '/android-chrome-192x192.png'} alt="job" style={{ width: 40, height: 40, borderRadius: 4 }} />
                   </Box>
                   <Box>
                     <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>{job.title}</Typography>
@@ -187,7 +187,7 @@ const JobManager = () => {
                     {/* Name and description */}
                     <Box sx={{ flex: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
                       <Box sx={{ width: 48, height: 48, bgcolor: 'var(--color-bg)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', mr: 2 }}>
-                        <img src={job.imageUrl || 'https://via.placeholder.com/48x48?text=Job'} alt="job" style={{ width: 40, height: 40, borderRadius: 4 }} />
+                      <img src={job.imageUrl || '/android-chrome-192x192.png'} alt="job" style={{ width: 40, height: 40, borderRadius: 4 }} />
                       </Box>
                       <Box>
                         <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>
