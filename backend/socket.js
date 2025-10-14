@@ -6,7 +6,7 @@ const initSocket = (server) => {
     io = new Server(server, {
         cors: {
             // Keep your origins
-            origin: ['https://mern-r43v.onrender.com:3000/', 'http://localhost:3000', 'http://100.123.122.74:3000'],
+            origin: ['http://100.123.122.74:3000'],
             methods: ['GET', 'POST'],
         },
     });

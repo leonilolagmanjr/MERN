@@ -12,7 +12,7 @@ import { FriendContext } from '../context/FriendContext';
 import UserLink from './UserLink';
 
 // --- Socket Setup ---
-const socket = io('https://mern-r43v.onrender.com:5000/', 'http://localhost:5000', 'http://100.123.122.74:5000', {
+const socket = io(['http://100.123.122.74:5000'], {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
@@ -177,10 +177,20 @@ const ChatWidget = () => {
         e.preventDefault();
 
         if (!newMessage.trim() || !selectedChat || !user || isLoading) return;
-        
+
         const content = newMessage.trim();
         setNewMessage('');
         setChatError('');
+
+        // Optimistically add the message to the UI immediately
+        const optimisticMessage = {
+            _id: `temp-${Date.now()}`, // Temporary ID
+            content: content,
+            sender: { _id: user.id, name: user.name },
+            createdAt: new Date().toISOString(),
+            chat: selectedChat._id,
+        };
+        setMessages((prev) => [...prev, optimisticMessage]);
 
         try {
             const isGlobal = isGlobalChat(selectedChat);
@@ -189,29 +199,30 @@ const ChatWidget = () => {
 
             await apiSendMessage({
                 chatId: selectedChat._id,
-                receiverId: receiverId, 
+                receiverId: receiverId,
                 content: content,
             });
-            
+
             // Update the chat list summary immediately
             setChats(prevChats => {
-                 const updatedChats = prevChats.map(chat => 
+                 const updatedChats = prevChats.map(chat =>
                     chat._id === selectedChat._id ? { ...chat, lastMessage: content, lastUpdated: new Date().toISOString() } : chat
                 );
-                
+
                 const globalChat = updatedChats.find(isGlobalChat);
                 const privateChats = updatedChats
                     .filter(chat => !isGlobalChat(chat))
                     .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-                    
+
                 return globalChat ? [globalChat, ...privateChats] : privateChats;
             });
-
 
         } catch (err) {
             console.error('Failed to send message', err);
             setChatError(err.response?.data?.msg || 'Failed to send message.');
             setNewMessage(content);
+            // Remove the optimistic message on failure
+            setMessages((prev) => prev.filter(msg => msg._id !== optimisticMessage._id));
         }
     };
 
