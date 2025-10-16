@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { registerUser, loginUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import SliderCaptcha from '../components/SliderCaptcha';
 import {
   Box,
   Button,
@@ -16,6 +17,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [message, setMessage] = useState('');
+  const [captchaVerified, setCaptchaVerified] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -41,6 +43,7 @@ const Auth = () => {
   const toggleForm = () => {
     setIsLogin(!isLogin);
     setMessage('');
+    setCaptchaVerified(false);
   };
 
   return (
@@ -119,10 +122,14 @@ const Auth = () => {
               style: { color: 'var(--color-text)' },
             }}
           />
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <SliderCaptcha onPass={() => setCaptchaVerified(true)} />
+          </Box>
           <Button
             type="submit"
             variant="contained"
             fullWidth
+            disabled={!captchaVerified}
             sx={{
               bgcolor: 'var(--color-primary)',
               color: 'var(--color-bg)',
