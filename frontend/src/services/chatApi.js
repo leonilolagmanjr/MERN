@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://mern-r43v.onrender.com/api/chat', // adjust if needed
+  baseURL: `${process.env.REACT_APP_API_URL}/chat`, // adjust if needed
 });
 
 // Add token to requests

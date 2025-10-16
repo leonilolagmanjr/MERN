@@ -6,7 +6,7 @@ const initSocket = (server) => {
     io = new Server(server, {
         cors: {
             // Keep your origins
-            origin: ['https://mern-snowy-theta.vercel.app/'],
+            origin: process.env.WEBSOCKET_ORIGINS,
             methods: ['GET', 'POST'],
         },
     });

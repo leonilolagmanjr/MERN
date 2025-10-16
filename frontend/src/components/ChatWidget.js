@@ -12,7 +12,7 @@ import { FriendContext } from '../context/FriendContext';
 import UserLink from './UserLink';
 
 // --- Socket Setup ---
-const socket = io(['https://mern-r43v.onrender.com/'], {
+const socket = io([process.env.REACT_APP_SOCKET_URL], {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
