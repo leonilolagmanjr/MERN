@@ -101,7 +101,8 @@ const CreateJob = ({ onJobCreated }) => {
           type="text"
           placeholder="Price"
           value={formData.price}
-          onChange={(e) => setFormData({ ...formData, price: formatPrice(e.target.value, formData.currency) })}
+          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+          onBlur={() => setFormData({ ...formData, price: formatPrice(formData.price, formData.currency) })}
           style={styles.input}
           required
         />
