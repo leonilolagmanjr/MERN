@@ -34,7 +34,7 @@ const VideoPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="h6">Loading...</Typography>
       </Box>
     );
@@ -42,16 +42,16 @@ const VideoPage = () => {
 
   if (error) {
     return (
-      <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography variant="h6">{error}</Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', py: 5 }}>
+    <Box sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text)', minHeight: '100vh', py: 5 }}>
       <Container maxWidth="md">
-        <Card sx={{ bgcolor: '#2a475e', color: '#c7d5e0' }}>
+        <Card sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)' }}>
           <CardContent>
             <video
               width="100%"

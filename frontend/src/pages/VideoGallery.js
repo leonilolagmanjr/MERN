@@ -38,9 +38,9 @@ const VideoGallery = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh' }}>
+    <Box sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text)', minHeight: '100vh' }}>
       {/* Top Bar */}
-      <AppBar position="static" sx={{ bgcolor: '#2a475e' }}>
+      <AppBar position="static" sx={{ bgcolor: 'var(--color-header-bg)' }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Videos
@@ -50,15 +50,15 @@ const VideoGallery = () => {
             placeholder="Search videos..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            sx={{ mr: 2, bgcolor: '#ffffff', borderRadius: 1 }}
+            sx={{ mr: 2, bgcolor: 'var(--color-bg)', borderRadius: 1, input: { color: 'var(--color-text)' } }}
             size="small"
           />
           {user && (
             <button
               onClick={() => navigate('/videomanager')}
               style={{
-                backgroundColor: '#66c0f4',
-                color: '#fff',
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-bg)',
                 border: 'none',
                 borderRadius: '4px',
                 padding: '8px 16px',
@@ -80,14 +80,14 @@ const VideoGallery = () => {
                 <Grid item xs={12} sm={6} md={4} lg={3} key={video._id}>
                   <Card
                     sx={{
-                      bgcolor: '#2a475e',
-                      color: '#c7d5e0',
+                      bgcolor: 'var(--color-card-bg)',
+                      color: 'var(--color-text)',
                       height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
                       cursor: 'pointer',
                       '&:hover': {
-                        bgcolor: '#3a586e',
+                        bgcolor: 'var(--color-accent)',
                         transform: 'scale(1.02)',
                         transition: 'all 0.2s ease-in-out',
                       },
@@ -117,7 +117,7 @@ const VideoGallery = () => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1" sx={{ color: '#c7d5e0', width: '100%', textAlign: 'center', mt: 2 }}>
+              <Typography variant="body1" sx={{ color: 'var(--color-text)', width: '100%', textAlign: 'center', mt: 2 }}>
                 No videos found.
               </Typography>
             )}

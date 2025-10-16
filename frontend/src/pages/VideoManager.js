@@ -79,26 +79,26 @@ const VideoManager = () => {
   };
 
   return (
-    <Box sx={{ bgcolor: '#1b2838', color: '#c7d5e0', minHeight: '100vh', p: 3 }}>
+    <Box sx={{ bgcolor: 'var(--color-bg)', color: 'var(--color-text)', minHeight: '100vh', p: 3 }}>
       <Box sx={{ maxWidth: '1400px', mx: 'auto' }}>
-        <Typography variant="h4" sx={{ color: '#ffffff', mb: 3, textAlign: 'center' }}>
+        <Typography variant="h4" sx={{ color: 'var(--color-text)', mb: 3, textAlign: 'center' }}>
           Video Manager
         </Typography>
 
         {/* Action Buttons */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-          <Button variant="contained" sx={{ bgcolor: '#66c0f4', color: '#fff', fontWeight: 'bold' }} onClick={() => setUploadOpen(true)}>
+          <Button variant="contained" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)', fontWeight: 'bold' }} onClick={() => setUploadOpen(true)}>
             Upload Video
           </Button>
         </Box>
 
         {/* User Videos Table */}
-        <Box sx={{ bgcolor: '#23262e', borderRadius: 2, boxShadow: 3, mb: 4, p: 2 }}>
-          <Typography variant="h6" sx={{ color: '#ffffff', mb: 2 }}>
+        <Box sx={{ bgcolor: 'var(--color-card-bg)', borderRadius: 2, boxShadow: 3, mb: 4, p: 2 }}>
+          <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 2 }}>
             My Videos ({userVideos.length})
           </Typography>
           {/* Table Labels */}
-          <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: '#1b2838', borderRadius: 1, fontWeight: 'bold', color: '#c7d5e0', fontSize: 16 }}>
+          <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: 'var(--color-bg)', borderRadius: 1, fontWeight: 'bold', color: 'var(--color-text)', fontSize: 16 }}>
             <Box sx={{ flex: 2 }}>Title</Box>
             <Box sx={{ flex: 3 }}>Description</Box>
             <Box sx={{ flex: 1 }}>Upload Date</Box>
@@ -106,32 +106,32 @@ const VideoManager = () => {
           </Box>
           {/* Table Rows */}
           {userVideos.length === 0 ? (
-            <Box sx={{ px: 2, py: 2, color: '#8f98a0' }}>
+            <Box sx={{ px: 2, py: 2, color: 'var(--color-text-gray)' }}>
               You have not uploaded any videos yet.
             </Box>
           ) : (
             userVideos.map((video) => (
-              <Box key={video._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid #2a475e', ':last-child': { borderBottom: 'none' } }}>
-                <Box sx={{ flex: 2, color: '#66c0f4', fontWeight: 'bold' }}>{video.title}</Box>
-                <Box sx={{ flex: 3, color: '#c7d5e0' }}>
+              <Box key={video._id} sx={{ display: 'flex', alignItems: 'center', px: 2, py: 2, borderBottom: '1px solid var(--color-accent)', ':last-child': { borderBottom: 'none' } }}>
+                <Box sx={{ flex: 2, color: 'var(--color-primary)', fontWeight: 'bold' }}>{video.title}</Box>
+                <Box sx={{ flex: 3, color: 'var(--color-text)' }}>
                   {video.description ? (
                     <CollapsibleText text={video.description} limit={100} />
                   ) : (
                     'No description'
                   )}
                 </Box>
-                <Box sx={{ flex: 1, color: '#c7d5e0' }}>{new Date(video.createdAt).toLocaleDateString()}</Box>
+                <Box sx={{ flex: 1, color: 'var(--color-text)' }}>{new Date(video.createdAt).toLocaleDateString()}</Box>
                 <Box sx={{ flex: 1, textAlign: 'right', display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                   <Button
                     variant="text"
-                    sx={{ color: '#66c0f4', fontWeight: 'bold', textTransform: 'none' }}
+                    sx={{ color: 'var(--color-primary)', fontWeight: 'bold', textTransform: 'none' }}
                     onClick={() => handleEdit(video)}
                   >
                     Edit
                   </Button>
                   <Button
                     variant="text"
-                    sx={{ color: '#ff4c4c', fontWeight: 'bold', textTransform: 'none' }}
+                    sx={{ color: 'var(--color-error)', fontWeight: 'bold', textTransform: 'none' }}
                     onClick={() => handleDelete(video)}
                   >
                     Delete
@@ -178,14 +178,14 @@ const VideoManager = () => {
 
         {/* Edit Modal */}
         <Modal open={openEdit} onClose={() => setOpenEdit(false)}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'var(--color-card-bg)', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
             {selectedVideo && <EditVideo video={selectedVideo} onVideoUpdated={triggerRefresh} onClose={() => setOpenEdit(false)} />}
           </Box>
         </Modal>
 
         {/* Delete Modal */}
         <Modal open={openDelete} onClose={() => setOpenDelete(false)}>
-          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: '#23262e', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
+          <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'var(--color-card-bg)', p: 4, borderRadius: 2, boxShadow: 24, minWidth: 400 }}>
             {selectedVideo && <DeleteVideo video={selectedVideo} onVideoDeleted={triggerRefresh} onClose={() => setOpenDelete(false)} />}
           </Box>
         </Modal>

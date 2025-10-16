@@ -356,8 +356,8 @@ const styles = {
     marginRight: '10px',
   },
   paymentButton: {
-    backgroundColor: '#4CAF50',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-success)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',
@@ -366,8 +366,8 @@ const styles = {
     marginRight: '10px',
   },
   historyButton: {
-    backgroundColor: '#FF9800',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-warning)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',
@@ -376,8 +376,8 @@ const styles = {
     marginRight: '10px',
   },
   tradeButton: {
-    backgroundColor: '#9C27B0',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-secondary)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',
@@ -386,8 +386,8 @@ const styles = {
     marginRight: '10px',
   },
   addFriendButton: {
-    backgroundColor: '#4CAF50',
-    color: '#ffffff',
+    backgroundColor: 'var(--color-success)',
+    color: 'var(--color-bg)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '5px',

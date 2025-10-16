@@ -230,7 +230,7 @@ const ChatWidget = () => {
     const renderChatContent = () => {
         if (!selectedChat) {
              return (
-                <div style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#2a2a2a', color: '#66c0f4', padding: 20 }}>
+                <div style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--color-bg)', color: 'var(--color-primary)', padding: 20 }}>
                     Select a chat from the list to start messaging.
                 </div>
             );
@@ -242,9 +242,9 @@ const ChatWidget = () => {
             : '🌐 Global Chat';
 
         return (
-            <div style={{ flex: 2, display: 'flex', flexDirection: 'column', backgroundColor: '#2a2a2a', color: '#fff', padding: 10 }}>
+            <div style={{ flex: 2, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)', padding: 10 }}>
                 {/* Chat Header */}
-                <div style={{ padding: '8px 0', borderBottom: '1px solid #3a3f4b', marginBottom: 10, fontWeight: 'bold', color: '#66c0f4' }}>
+                <div style={{ padding: '8px 0', borderBottom: '1px solid var(--color-accent)', marginBottom: 10, fontWeight: 'bold', color: 'var(--color-primary)' }}>
                     {chatHeader}
                 </div>
 
@@ -258,7 +258,7 @@ const ChatWidget = () => {
                                 key={msg._id || msg.createdAt}
                                 style={{
                                     margin: '6px 0',
-                                    backgroundColor: msg.sender?._id === user?.id ? '#2a475e' : '#4b4b4b',
+                                    backgroundColor: msg.sender?._id === user?.id ? 'var(--color-card-bg)' : 'var(--color-button-bg)',
                                     padding: '8px 12px',
                                     borderRadius: 10,
                                     alignSelf: msg.sender?._id === user?.id ? 'flex-end' : 'flex-start',
@@ -266,19 +266,19 @@ const ChatWidget = () => {
                                     lineHeight: '1.4',
                                 }}
                             >
-                                <b style={{ color: '#c7d5e0' }}>
+                                <b style={{ color: 'var(--color-text-secondary)' }}>
                                     {msg.sender?._id === user?.id ? (
                                         'You'
                                     ) : (
                                         <UserLink
                                             userId={msg.sender?._id}
                                             name={msg.sender?.name || 'Unknown'}
-                                            sx={{ color: '#66c0f4', textDecoration: 'none' }}
+                                            sx={{ color: 'var(--color-primary)', textDecoration: 'none' }}
                                         />
                                     )}
                                 </b>
                                 <span style={{ display: 'block', wordWrap: 'break-word' }}>{msg.content}</span>
-                                <small style={{ fontSize: '10px', color: '#999', marginTop: '4px', display: 'block' }}>
+                                <small style={{ fontSize: '10px', color: 'var(--color-text-secondary)', marginTop: '4px', display: 'block' }}>
                                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </small>
                             </div>
@@ -298,10 +298,10 @@ const ChatWidget = () => {
                         style={{
                             flex: 1,
                             padding: 10,
-                            backgroundColor: '#1b2838',
-                            border: '1px solid #3a3f4b',
+                            backgroundColor: 'var(--color-card-bg)',
+                            border: '1px solid var(--color-accent)',
                             borderRadius: 5,
-                            color: '#fff',
+                            color: 'var(--color-text)',
                             marginRight: 5,
                         }}
                     />
@@ -310,8 +310,8 @@ const ChatWidget = () => {
                         disabled={!user || !selectedChat || isLoading || !newMessage.trim()}
                         style={{
                             padding: '10px 16px',
-                            backgroundColor: (user && selectedChat && !isLoading && newMessage.trim()) ? '#66c0f4' : '#3a3f4b',
-                            color: (user && selectedChat && !isLoading && newMessage.trim()) ? '#1b2838' : '#6c757d',
+                            backgroundColor: (user && selectedChat && !isLoading && newMessage.trim()) ? 'var(--color-primary)' : 'var(--color-button-bg)',
+                            color: (user && selectedChat && !isLoading && newMessage.trim()) ? 'var(--color-bg)' : 'var(--color-text-secondary)',
                             fontWeight: 'bold',
                             border: 'none',
                             borderRadius: 5,
@@ -350,13 +350,13 @@ const ChatWidget = () => {
                     {/* Chat List (Sidebar) */}
                     <div
                         style={{
-                            flex: 1.2, borderRight: '1px solid #3a3f4b', padding: 10,
-                            backgroundColor: '#1b2838', color: '#c7d5e0', overflowY: 'auto',
+                            flex: 1.2, borderRight: '1px solid var(--color-accent)', padding: 10,
+                            backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)', overflowY: 'auto',
                         }}
                     >
                         {/* FIX: Map all chats now, but the fetching logic ensures Global Chat is first. */}
-                        
-                        {isLoading && !chats.length && <div style={{color: '#999'}}>Loading Chats...</div>}
+
+                        {isLoading && !chats.length && <div style={{color: 'var(--color-text-secondary)'}}>Loading Chats...</div>}
 
                         {chats.map((chat) => {
                             const isCurrentGlobal = isGlobalChat(chat);
@@ -365,32 +365,31 @@ const ChatWidget = () => {
                                 <React.Fragment key={chat._id}>
                                     {/* FIX: Render the Global Chat entry here */}
                                     {isCurrentGlobal && (
-                                        <div 
-                                            style={{ 
+                                        <div
+                                            style={{
                                                 // Global Chat header style to match original
-                                                color: '#66c0f4', 
-                                                marginBottom: 10, 
-                                                paddingTop: 0, 
+                                                color: 'var(--color-primary)',
+                                                marginBottom: 10,
+                                                paddingTop: 0,
                                                 fontWeight: 'bold',
                                                 // Make the whole block clickable
                                                 cursor: 'pointer',
-                                                backgroundColor: selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
+                                                backgroundColor: selectedChat?._id === chat._id ? 'var(--color-accent)' : 'transparent',
                                                 padding: '8px',
                                                 borderRadius: 5,
-                                                borderBottom: '1px solid #3a3f4b',
+                                                borderBottom: '1px solid var(--color-accent)',
                                             }}
                                             onClick={() => handleSelectChat(chat)}
                                         >
                                             <div style={{fontWeight: 'bold'}}>🌐 Global Chat</div>
-                                            <small style={{color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
-                                                {chat.lastMessage || 'Start a global conversation.'}
+                                            <small style={{color: 'var(--color-text-secondary)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
                                             </small>
                                         </div>
                                     )}
 
                                     {/* FIX: Render the Private Chats header after Global Chat, but only once */}
-                                    {isCurrentGlobal && <h4 style={{ color: '#66c0f4', marginBottom: 10, marginTop: 10 }}>Private Chats</h4>}
-                                    
+                                    {isCurrentGlobal && <h4 style={{ color: 'var(--color-primary)', marginBottom: 10, marginTop: 10 }}>Private Chats</h4>}
+
                                     {/* Render private chat items */}
                                     {!isCurrentGlobal && (() => {
                                         const partner = chat.participants.find(p => p._id !== user?.id);
@@ -402,16 +401,16 @@ const ChatWidget = () => {
                                                     marginBottom: 6,
                                                     cursor: 'pointer',
                                                     borderRadius: 5,
-                                                    backgroundColor: selectedChat?._id === chat._id ? '#2a475e' : 'transparent',
+                                                    backgroundColor: selectedChat?._id === chat._id ? 'var(--color-accent)' : 'transparent',
                                                     transition: '0.2s',
                                                     border: '1px solid transparent',
-                                                    ':hover': { borderColor: '#66c0f4' }
+                                                    ':hover': { borderColor: 'var(--color-primary)' }
                                                 }}
                                             >
                                                 <div style={{fontWeight: 'bold'}}>
                                                     <UserLink userId={partner?._id} name={partner?.name} />
                                                 </div>
-                                                <small style={{color: '#999', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
+                                                <small style={{color: 'var(--color-text-secondary)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block'}}>
                                                     {chat.lastMessage || 'Start a conversation.'}
                                                 </small>
                                             </div>
