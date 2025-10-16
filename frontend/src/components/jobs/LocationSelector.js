@@ -228,7 +228,7 @@ const styles = {
   radioLabel: { color: 'var(--color-text)', cursor: 'pointer' },
   physicalContainer: { marginTop: '10px' },
   mapContainer: {
-    height: '500px',
+    height: '200px',
     marginBottom: '20px',
     position: 'relative',
     zIndex: 1,
