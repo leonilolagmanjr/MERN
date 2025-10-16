@@ -8,8 +8,8 @@ export default function SliderCaptcha({ onPass }) {
   const [msg, setMsg] = useState("");
 
   const randomize = () => {
-    const start = Math.floor(Math.random() * 60) + 10;
-    const width = 10 + Math.floor(Math.random() * 10);
+    const width = 10; // fixed size
+    const start = Math.floor(Math.random() * (100 - width));
     setTarget({ min: start, max: start + width });
     setValue(0);
     setVerified(false);
@@ -21,10 +21,8 @@ export default function SliderCaptcha({ onPass }) {
   const handleVerify = () => {
     if (value >= target.min && value <= target.max) {
       setVerified(true);
-      setMsg("✅ Verified!");
       onPass && onPass();
     } else {
-      setMsg("❌ Try again!");
       randomize();
     }
   };
@@ -43,16 +41,17 @@ export default function SliderCaptcha({ onPass }) {
             height: 8,
             top: "50%",
             transform: "translateY(-50%)",
-            backgroundColor: verified ? "success.main" : "primary.light",
+            backgroundColor: verified ? "success.main" : "warning.main",
             borderRadius: 1,
-            opacity: 0.5,
+            opacity: 0.7,
           }}
         />
         <Slider
           value={value}
-          onChange={(e, val) => setValue(val)}
+          onChange={(e, val) => !verified && setValue(val)}
           min={0}
           max={100}
+          disabled={verified}
           sx={{ color: verified ? "success.main" : "primary.main", height: 8 }}
         />
       </Box>
