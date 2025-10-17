@@ -64,10 +64,13 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('MongoDB Connection Error:', err.message));
 
 
-  // Dummy route
+// Dummy route
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
+
+// Health check route
+app.get('/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
 // Create HTTP server
 const server = http.createServer(app); 
@@ -78,4 +81,23 @@ initSocket(server);
 // Start Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+
+// Automated ping system to keep Render backend awake
+const https = require('https');
+setInterval(async () => {
+  try {
+    const url = `${process.env.BACKEND_URL}/health`;
+    https.get(url, (res) => {
+      if (res.statusCode === 200) {
+        console.log('Ping sent ✅');
+      } else {
+        console.error('Ping failed ❌ - Status:', res.statusCode);
+      }
+    }).on('error', (err) => {
+      console.error('Ping failed ❌', err.message);
+    });
+  } catch (err) {
+    console.error('Ping failed ❌', err.message);
+  }
+}, 10 * 60 * 1000); // every 10 minutes
 
