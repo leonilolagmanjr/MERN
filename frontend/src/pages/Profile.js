@@ -190,28 +190,6 @@ const Profile = () => {
 
       <div style={styles.mainContent}>
         <div style={styles.leftColumn}>
-          {isCurrentUser && friendRequests.length > 0 && (
-            <div style={styles.friendRequestsSection}>
-              <h2 style={styles.sectionHeading}>Friend Requests</h2>
-              {friendRequests.map((req) => (
-                <div key={req._id} style={styles.friendRequestItem}>
-                  <p><UserLink userId={req._id} name={req.name} /> ({req.email})</p>
-                  <button
-                    style={styles.acceptButton}
-                    onClick={() => handleAcceptRequest(req._id)}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    style={styles.denyButton}
-                    onClick={() => handleDenyRequest(req._id)}
-                  >
-                    Deny
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
           {isCurrentUser && profile.connections && profile.connections.length > 0 && (
             <div style={styles.friendListSection}>
               <h2 style={styles.sectionHeading}>Friend List</h2>

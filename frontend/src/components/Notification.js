@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { getFriendRequests, acceptFriendRequest, denyFriendRequest } from '../services/api';
+import React, { useState, useContext } from 'react';
+import { acceptFriendRequest, denyFriendRequest } from '../services/api';
 import { FriendContext } from '../context/FriendContext';
 import {
   IconButton,
@@ -14,29 +14,13 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import UserLink from './UserLink';
 
 const Notification = () => {
-  const [friendRequests, setFriendRequests] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const { notifyFriendListUpdated } = useContext(FriendContext);
-
-  useEffect(() => {
-    fetchFriendRequests();
-  }, []);
-
-  const fetchFriendRequests = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const requests = await getFriendRequests(token);
-      setFriendRequests(requests);
-    } catch (err) {
-      console.error('Error fetching friend requests:', err);
-    }
-  };
+  const { friendRequests, notifyFriendListUpdated } = useContext(FriendContext);
 
   const handleAccept = async (requesterId) => {
     try {
       const token = localStorage.getItem('token');
       await acceptFriendRequest(requesterId, token);
-      setFriendRequests((prev) => prev.filter((req) => req._id !== requesterId));
       notifyFriendListUpdated();
     } catch (err) {
       console.error('Error accepting friend request:', err);
@@ -47,7 +31,7 @@ const Notification = () => {
     try {
       const token = localStorage.getItem('token');
       await denyFriendRequest(requesterId, token);
-      setFriendRequests((prev) => prev.filter((req) => req._id !== requesterId));
+      notifyFriendListUpdated();
     } catch (err) {
       console.error('Error denying friend request:', err);
     }

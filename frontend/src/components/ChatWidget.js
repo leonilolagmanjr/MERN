@@ -12,7 +12,7 @@ import { FriendContext } from '../context/FriendContext';
 import UserLink from './UserLink';
 
 // --- Socket Setup ---
-const socket = io([process.env.REACT_APP_SOCKET_URL], {
+const socket = io(process.env.REACT_APP_SOCKET_URL, {
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
@@ -37,6 +37,56 @@ const ChatWidget = () => {
     const [chatError, setChatError] = useState('');
     
     const bottomRef = useRef(null);
+    const refreshIntervalRef = useRef(null);
+
+    // --- Auto-Refresh Functionality ---
+    const refreshMessages = useCallback(async () => {
+        if (!selectedChat?._id || !user) return;
+        
+        try {
+            const res = await getMessages(selectedChat._id);
+            setMessages(res.data);
+        } catch (err) {
+            console.error('Failed to refresh messages', err);
+            // Don't show error for auto-refresh to avoid spam
+        }
+    }, [selectedChat?._id, user]);
+
+    const refreshChatList = useCallback(async () => {
+        if (!user) return;
+        
+        try {
+            const res = await getChats();
+            const globalChat = res.data.find(isGlobalChat);
+            const privateChats = res.data
+                .filter(chat => !isGlobalChat(chat))
+                .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
+
+            setChats(globalChat ? [globalChat, ...privateChats] : privateChats);
+        } catch (err) {
+            console.error('Failed to refresh chat list', err);
+        }
+    }, [user]);
+
+    // Setup auto-refresh interval
+    useEffect(() => {
+        if (isOpen) {
+            // Refresh every second (1000ms)
+            refreshIntervalRef.current = setInterval(() => {
+                if (selectedChat) {
+                    refreshMessages();
+                }
+                refreshChatList();
+            }, 1000);
+        }
+
+        return () => {
+            if (refreshIntervalRef.current) {
+                clearInterval(refreshIntervalRef.current);
+                refreshIntervalRef.current = null;
+            }
+        };
+    }, [isOpen, selectedChat, refreshMessages, refreshChatList]);
 
     // --- Utility Functions ---
     const scrollToBottom = () => {
@@ -117,7 +167,6 @@ const ChatWidget = () => {
             setIsLoading(false);
         }
     }, [user, fetchChats, fetchMessages]);
-
 
     // --- Socket Effects ---
     useEffect(() => {
@@ -244,11 +293,17 @@ const ChatWidget = () => {
         return (
             <div style={{ flex: 2, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)', padding: 10 }}>
                 {/* Chat Header */}
-                <div style={{ padding: '8px 0', borderBottom: '1px solid var(--color-accent)', marginBottom: 10, fontWeight: 'bold', color: 'var(--color-primary)' }}>
+                <div style={{ 
+                    padding: '8px 0', 
+                    borderBottom: '1px solid var(--color-accent)', 
+                    marginBottom: 10, 
+                    fontWeight: 'bold', 
+                    color: 'var(--color-primary)' 
+                }}>
                     {chatHeader}
                 </div>
 
-                {/* Messages Area (Omitted for brevity) */}
+                {/* Messages Area */}
                 <div style={{ flex: 1, overflowY: 'auto', paddingRight: 8, display: 'flex', flexDirection: 'column' }}>
                     {isLoading && messages.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: '20px' }}>Loading Messages...</div>
@@ -287,7 +342,7 @@ const ChatWidget = () => {
                     <div ref={bottomRef} />
                 </div>
 
-                {/* Input Area (Omitted for brevity) */}
+                {/* Input Area */}
                 <form onSubmit={handleSendMessage} style={{ display: 'flex', marginTop: 10 }}>
                     <input
                         type="text"
@@ -329,12 +384,11 @@ const ChatWidget = () => {
         );
     };
 
-
     // --- Main Render ---
     if (!user) return null;
     return (
         <div className="chat-widget">
-            {/* Floating Toggle Button (Omitted for brevity) */}
+            {/* Floating Toggle Button */}
             <button
                 onClick={() => setIsOpen((prev) => !prev)}
                 className="chat-widget-toggle"
@@ -344,9 +398,7 @@ const ChatWidget = () => {
 
             {/* Chat Window */}
             {isOpen && (
-                <div
-                    className="chat-widget-window"
-                >
+                <div className="chat-widget-window">
                     {/* Chat List (Sidebar) */}
                     <div
                         style={{
@@ -354,8 +406,6 @@ const ChatWidget = () => {
                             backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)', overflowY: 'auto',
                         }}
                     >
-                        {/* FIX: Map all chats now, but the fetching logic ensures Global Chat is first. */}
-
                         {isLoading && !chats.length && <div style={{color: 'var(--color-text-secondary)'}}>Loading Chats...</div>}
 
                         {chats.map((chat) => {
@@ -363,16 +413,14 @@ const ChatWidget = () => {
 
                             return (
                                 <React.Fragment key={chat._id}>
-                                    {/* FIX: Render the Global Chat entry here */}
+                                    {/* Global Chat entry */}
                                     {isCurrentGlobal && (
                                         <div
                                             style={{
-                                                // Global Chat header style to match original
                                                 color: 'var(--color-primary)',
                                                 marginBottom: 10,
                                                 paddingTop: 0,
                                                 fontWeight: 'bold',
-                                                // Make the whole block clickable
                                                 cursor: 'pointer',
                                                 backgroundColor: selectedChat?._id === chat._id ? 'var(--color-accent)' : 'transparent',
                                                 padding: '8px',
@@ -387,10 +435,10 @@ const ChatWidget = () => {
                                         </div>
                                     )}
 
-                                    {/* FIX: Render the Private Chats header after Global Chat, but only once */}
+                                    {/* Private Chats header */}
                                     {isCurrentGlobal && <h4 style={{ color: 'var(--color-primary)', marginBottom: 10, marginTop: 10 }}>Private Chats</h4>}
 
-                                    {/* Render private chat items */}
+                                    {/* Private chat items */}
                                     {!isCurrentGlobal && (() => {
                                         const partner = chat.participants.find(p => p._id !== user?.id);
                                         return (
@@ -404,7 +452,6 @@ const ChatWidget = () => {
                                                     backgroundColor: selectedChat?._id === chat._id ? 'var(--color-accent)' : 'transparent',
                                                     transition: '0.2s',
                                                     border: '1px solid transparent',
-                                                    ':hover': { borderColor: 'var(--color-primary)' }
                                                 }}
                                             >
                                                 <div style={{fontWeight: 'bold'}}>
@@ -423,7 +470,6 @@ const ChatWidget = () => {
 
                     {/* Messages Content */}
                     {renderChatContent()}
-
                 </div>
             )}
         </div>
