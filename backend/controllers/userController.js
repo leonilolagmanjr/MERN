@@ -12,9 +12,8 @@ const getUserProfile = async (req, res) => {
 
 // Route to Update User Profile
 const updateUserProfile = async (req, res) => {
-  const { name, email } = req.body;
   try {
-    const updatedUser = await userService.updateUserProfile(req.user, name, email);
+    const updatedUser = await userService.updateUserProfile(req.user.id, req.body);
     res.json(updatedUser);
   } catch (err) {
     res.status(500).json({ msg: 'Server error' });

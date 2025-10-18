@@ -44,11 +44,21 @@ const checkRelationshipStatus = async (userId1, userId2) => {
 };
 
 // Function to Update User Profile
-const updateUserProfile = async (userId, name, email) => {
+const updateUserProfile = async (userId, updateData) => {
   try {
+    const { name, email, phone, location, remoteAvailability, skills, languages, certifications } = updateData;
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { name, email },
+      {
+        ...(name && { name }),
+        ...(email && { email }),
+        ...(phone !== undefined && { phone }),
+        ...(location !== undefined && { location }),
+        ...(remoteAvailability !== undefined && { remoteAvailability }),
+        ...(skills && { skills }),
+        ...(languages && { languages }),
+        ...(certifications && { certifications })
+      },
       { new: true }
     );
     if (!updatedUser) {

@@ -4,11 +4,17 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   email: { type: String, required: false, unique: true },
   password: { type: String, required: true },
+  phone: { type: String },
+  location: { type: String },
+  remoteAvailability: { type: Boolean, default: false },
+  skills: [{ type: String }],
+  languages: [{ type: String }],
+  certifications: [{ type: String }],
   xp: { type: Number, default: 0 },
-  role: { 
-    type: String, 
-    enum: ['user', 'admin'], 
-    default: 'user' 
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
   },
   info: {
     type: mongoose.Schema.Types.ObjectId,
