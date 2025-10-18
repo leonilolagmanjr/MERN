@@ -89,6 +89,7 @@ const EditProfile = () => {
       const token = localStorage.getItem('token');
       const updateData = {
         name: formData.name,
+        email: formData.email,
         phone: formData.phone,
         location: formData.location,
         remoteAvailability: formData.remoteAvailability,
@@ -194,18 +195,17 @@ const EditProfile = () => {
                 label="Email Address"
                 name="email"
                 value={formData.email}
-                disabled
+                onChange={handleInputChange}
                 fullWidth
                 sx={{ mb: 2 }}
-                InputProps={{ 
-                  style: { 
-                    color: 'var(--color-text-gray)', 
+                InputProps={{
+                  style: {
+                    color: 'var(--color-text)',
                     backgroundColor: 'var(--color-button-bg)',
                     border: '1px solid var(--color-border)'
-                  } 
+                  }
                 }}
                 InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
-                helperText="Email cannot be changed"
               />
 
               <TextField
