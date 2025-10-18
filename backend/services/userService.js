@@ -201,6 +201,28 @@ const cancelFriendRequest = async (userId, targetUserId) => {
   return { message: 'Friend request canceled' };
 };
 
+// Remove Friend (Unfriend)
+const removeFriend = async (userId, friendId) => {
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
+  if (!user || !friend) throw new Error('User not found');
+
+  // Remove friendId from user's connections
+  user.connections = user.connections.filter(
+    (id) => id.toString() !== friendId.toString()
+  );
+
+  // Remove userId from friend's connections
+  friend.connections = friend.connections.filter(
+    (id) => id.toString() !== userId.toString()
+  );
+
+  await user.save();
+  await friend.save();
+
+  return { message: 'Friend removed' };
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
@@ -212,5 +234,6 @@ module.exports = {
   acceptFriendRequest,
   denyFriendRequest,
   cancelFriendRequest,
-  checkRelationshipStatus
+  checkRelationshipStatus,
+  removeFriend
 };

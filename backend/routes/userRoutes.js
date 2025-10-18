@@ -43,4 +43,7 @@ router.post('/friend-request/cancel', authenticate(), userController.cancelFrien
 // New route to check friend relationship status
 router.get('/friend-relationship-status', authenticate(), userController.checkFriendRelationshipStatus);
 
+// Route to remove friend
+router.post('/friend/remove', authenticate(), userController.removeFriend);
+
 module.exports = router;

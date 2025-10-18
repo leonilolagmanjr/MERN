@@ -254,6 +254,24 @@ export const checkFriendRelationshipStatus = async (userId1, userId2, token) => 
   }
 };
 
+export const removeFriend = async (friendId, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/user/friend/remove`,
+      { friendId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error removing friend:', error);
+    throw error;
+  }
+};
+
 // Video APIs
 export const fetchVideos = async (search = '') => {
   const response = await axios.get(`${API_URL}/videos?search=${search}`);

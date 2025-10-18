@@ -130,6 +130,17 @@ const checkFriendRelationshipStatus = async (req, res) => {
   }
 };
 
+// Remove Friend
+const removeFriend = async (req, res) => {
+  const { friendId } = req.body;
+  try {
+    const result = await userService.removeFriend(req.user.id, friendId);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
@@ -142,5 +153,6 @@ module.exports = {
   acceptFriendRequest,
   denyFriendRequest,
   cancelFriendRequest,
-  checkFriendRelationshipStatus
+  checkFriendRelationshipStatus,
+  removeFriend
 };

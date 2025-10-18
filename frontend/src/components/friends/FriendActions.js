@@ -4,7 +4,8 @@ import {
   acceptFriendRequest,
   denyFriendRequest,
   cancelFriendRequest,
-  getFriendRequests
+  getFriendRequests,
+  removeFriend
 } from '../../services/api';
 import UserLink from '../UserLink';
 
@@ -80,6 +81,20 @@ const FriendActions = ({
     }
   };
 
+  const handleRemoveFriend = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      await removeFriend(userId, token);
+      notifyFriendListUpdated();
+      await updateFriendStatus();
+    } catch (err) {
+      console.error('Error removing friend:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // UI for current user: show incoming friend requests
   if (isCurrentUser) {
     return (
@@ -118,12 +133,21 @@ const FriendActions = ({
   }
   if (isFriend) {
     return (
-      <button
-        style={styles.addFriendButton}
-        onClick={() => openChatWithUser(userId)}
-      >
-        Message
-      </button>
+      <>
+        <button
+          style={styles.addFriendButton}
+          onClick={() => openChatWithUser(userId)}
+        >
+          Message
+        </button>
+        <button
+          style={{ ...styles.addFriendButton, marginLeft: '10px', backgroundColor: '#f44336' }}
+          onClick={handleRemoveFriend}
+          disabled={loading}
+        >
+          Remove Friend
+        </button>
+      </>
     );
   }
   if (requestSent) {
