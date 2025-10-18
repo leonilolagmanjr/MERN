@@ -6,7 +6,7 @@ const Info = require('../models/Info');
 // Service to register a user
 const registerUser = async ({ name, email, password }) => {
   // Check if user already exists
-  const userExists = await User.findOne({ email });
+  const userExists = await User.findOne({ name });
   if (userExists) throw new Error('User already exists');
 
   // Hash the password
@@ -39,9 +39,9 @@ const registerUser = async ({ name, email, password }) => {
 };
 
 // Service to login a user
-const loginUser = async ({ email, password }) => {
+const loginUser = async ({ name, password }) => {
   // Find user
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ name });
   if (!user) throw new Error('Invalid credentials');
 
   // Check password match

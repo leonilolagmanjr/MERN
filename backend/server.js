@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: '*', // ⚠️ Use http://localhost:3000 for development or specific Tailscale IP/URL for security
+  origin: process.env.FRONTEND_URL, // ⚠️ Use http://localhost:3000 for development or specific Tailscale IP/URL for security
   credentials: true
 }));
 
