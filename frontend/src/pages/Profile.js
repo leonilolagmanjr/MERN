@@ -394,6 +394,15 @@ const styles = {
     cursor: 'pointer',
     fontSize: '16px',
   },
+  messageButton: {
+    backgroundColor: 'var(--color-accent)',
+    color: 'var(--color-bg)',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+  },
   mainContent: {
     display: 'flex',
     justifyContent: 'space-between',

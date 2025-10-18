@@ -4,6 +4,8 @@
   --color-primary: #000000;
   --color-secondary: #333333;
   --color-accent: #666666;
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
   --font-body: 'Inter', sans-serif;
   --font-heading: 'Poppins', sans-serif;
   --radius: 12px;
@@ -24,6 +26,8 @@
   --color-primary: #ffffff;
   --color-secondary: #cccccc;
   --color-accent: #999999;
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
   --color-button-bg: #2c2c2c;
   --color-header-bg: #1a1a1a;
   --color-border: #404040;

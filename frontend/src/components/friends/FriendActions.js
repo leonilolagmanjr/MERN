@@ -133,21 +133,21 @@ const FriendActions = ({
   }
   if (isFriend) {
     return (
-      <>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <button
-          style={styles.addFriendButton}
+          style={styles.messageButton}
           onClick={() => openChatWithUser(userId)}
         >
           Message
         </button>
         <button
-          style={{ ...styles.addFriendButton, marginLeft: '10px', backgroundColor: '#f44336' }}
+          style={{ ...styles.addFriendButton, backgroundColor: '#f44336' }}
           onClick={handleRemoveFriend}
           disabled={loading}
         >
           Remove Friend
         </button>
-      </>
+      </div>
     );
   }
   if (requestSent) {
