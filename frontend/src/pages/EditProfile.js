@@ -1,71 +1,108 @@
 import React, { useState, useEffect } from 'react';
-import { updateUserProfile, fetchInfo, updateInfo } from '../services/api';
+import { updateUserProfile, getUserProfile, updateInfo } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Box, Card, CardContent, Typography, Avatar, Button, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Select, MenuItem } from '@mui/material';
+import { Box, Card, CardContent, Typography, Avatar, Button, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Select, MenuItem, Chip, FormControlLabel, Checkbox } from '@mui/material';
 
 const sidebarItems = [
-  'General',
+  'Basic Information',
+  'Skills & Certifications',
+  'Preferences',
   'Avatar',
   'Profile Background',
-  'Mini Profile',
-  'Theme',
-  'Featured Badge',
-  'Privacy Settings',
 ];
 
 const EditProfile = () => {
   const { user } = useAuth();
+  const [profile, setProfile] = useState({});
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    name: '',
+    email: '',
+    phone: '',
     location: '',
-    summary: '',
-    avatar: null,
-    profileBackground: '',
-    featuredBadges: [],
-    featuredGroup: '',
-    featuredShowcase: '',
+    remoteAvailability: false,
+    skills: [],
+    languages: [],
+    certifications: [],
+    newSkill: '',
+    newLanguage: '',
+    newCertification: '',
   });
-  const [selectedSection, setSelectedSection] = useState('General');
+  const [selectedSection, setSelectedSection] = useState('Basic Information');
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
+    const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const userInfo = await fetchInfo(token);
-        setFormData((prevData) => ({
-          ...prevData,
-          profileBackground: userInfo.workPortfolio?.portfolioLink || '',
-        }));
+        const userProfile = await getUserProfile(user?.id, token);
+        setProfile(userProfile);
+        setFormData({
+          name: userProfile.name || '',
+          email: userProfile.email || '',
+          phone: userProfile.phone || '',
+          location: userProfile.location || '',
+          remoteAvailability: userProfile.remoteAvailability || false,
+          skills: userProfile.skills || [],
+          languages: userProfile.languages || [],
+          certifications: userProfile.certifications || [],
+          newSkill: '',
+          newLanguage: '',
+          newCertification: '',
+        });
       } catch (err) {
-        console.error('Error fetching user info:', err);
+        console.error('Error fetching user profile:', err);
       }
     };
 
-    fetchUserInfo();
-  }, []);
+    if (user?.id) {
+      fetchUserProfile();
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, avatar: e.target.files[0] });
+  const handleAddItem = (field) => {
+    const newItem = formData[`new${field.charAt(0).toUpperCase() + field.slice(1)}`];
+    if (newItem && !formData[field].includes(newItem)) {
+      setFormData(prev => ({
+        ...prev,
+        [field]: [...prev[field], newItem],
+        [`new${field.charAt(0).toUpperCase() + field.slice(1)}`]: ''
+      }));
+    }
+  };
+
+  const handleRemoveItem = (field, index) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index)
+    }));
   };
 
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (selectedSection === 'General') {
-        await updateUserProfile(formData, token);
-      } else if (selectedSection === 'Profile Background') {
-        await updateInfo(token, {
-          workPortfolio: { portfolioLink: formData.profileBackground },
-        });
-      }
+      const updateData = {
+        name: formData.name,
+        phone: formData.phone,
+        location: formData.location,
+        remoteAvailability: formData.remoteAvailability,
+        skills: formData.skills,
+        languages: formData.languages,
+        certifications: formData.certifications,
+      };
+      
+      await updateUserProfile(updateData, token);
       alert('Profile updated successfully!');
+      window.location.href = '/profile';
     } catch (err) {
       console.error('Error updating profile:', err);
+      alert('Error updating profile. Please try again.');
     }
   };
 
@@ -83,12 +120,18 @@ const EditProfile = () => {
       alignItems: 'flex-start',
       py: 6,
     }}>
-      <Card sx={{ width: 900, bgcolor: 'var(--color-card-bg)', boxShadow: 6, display: 'flex', minHeight: 600 }}>
+      <Card sx={{ width: 1000, bgcolor: 'var(--color-card-bg)', boxShadow: 6, display: 'flex', minHeight: 600 }}>
         {/* Sidebar */}
         <Box sx={{ width: 220, bgcolor: 'var(--color-card-bg)', borderRight: `1px solid var(--color-border)`, p: 2 }}>
-          <Avatar src={user?.avatarUrl} sx={{ width: 64, height: 64, mb: 2, mx: 'auto' }} />
+          <Avatar 
+            src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'} 
+            sx={{ width: 64, height: 64, mb: 2, mx: 'auto' }} 
+          />
           <Typography variant="h6" align="center" sx={{ color: 'var(--color-text)', mb: 2 }}>
-            {user?.name}
+            {profile.name}
+          </Typography>
+          <Typography variant="body2" align="center" sx={{ color: 'var(--color-text-gray)', mb: 2 }}>
+            Level {profile.level || 1} • {profile.experience || 0} XP
           </Typography>
           <Divider sx={{ mb: 2, bgcolor: 'var(--color-border)' }} />
           <List>
@@ -97,111 +140,358 @@ const EditProfile = () => {
                 <ListItemButton
                   selected={selectedSection === item}
                   onClick={() => setSelectedSection(item)}
-                  sx={{ borderRadius: 1, color: selectedSection === item ? '#66c0f4' : '#c7d5e0', mb: 1 }}
+                  sx={{ 
+                    borderRadius: 1, 
+                    color: selectedSection === item ? 'var(--color-accent)' : 'var(--color-text-gray)', 
+                    mb: 1,
+                    '&.Mui-selected': {
+                      backgroundColor: 'var(--color-button-bg)',
+                    }
+                  }}
                 >
                   <ListItemText primary={item} />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
-          <Button variant="outlined" sx={{ mt: 2, color: '#66c0f4', borderColor: '#66c0f4' }}>
-            Steam Points Shop
-          </Button>
         </Box>
+
         {/* Main Content */}
         <Box sx={{ flex: 1, p: 4 }}>
           <Typography variant="h4" fontWeight="bold" sx={{ color: 'var(--color-text)', mb: 1 }}>
-            About
+            Edit Profile
           </Typography>
-          <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>
-            Set your profile name and details. Providing additional information like your real name can help friends find you on the Steam Community.<br />
-            Your profile name and avatar represent you throughout Steam, and must be appropriate for all audiences. Please see the <span style={{ color: 'var(--color-primary)', textDecoration: 'underline', cursor: 'pointer' }}>FAQ</span> for more details.
+          <Typography sx={{ color: 'var(--color-text-gray)', mb: 2 }}>
+            Update your profile information to help others learn more about your skills and preferences.
           </Typography>
           <Divider sx={{ mb: 3, bgcolor: 'var(--color-border)' }} />
-          {/* General Section */}
-          {selectedSection === 'General' && (
+
+          {/* Basic Information Section */}
+          {selectedSection === 'Basic Information' && (
             <Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: '#c7d5e0', mb: 2 }}>
-                GENERAL
+              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
+                BASIC INFORMATION
               </Typography>
+              
               <TextField
-                label="Profile Name"
+                label="Full Name"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 fullWidth
                 sx={{ mb: 2 }}
-                InputProps={{ style: { color: '#c7d5e0', backgroundColor: '#2a475e' } }}
-                InputLabelProps={{ style: { color: '#66c0f4' } }}
+                InputProps={{ 
+                  style: { 
+                    color: 'var(--color-text)', 
+                    backgroundColor: 'var(--color-button-bg)',
+                    border: '1px solid var(--color-border)'
+                  } 
+                }}
+                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
               />
+
               <TextField
-                label="Real Name"
-                name="realName"
-                value={formData.realName || ''}
+                label="Email Address"
+                name="email"
+                value={formData.email}
+                disabled
+                fullWidth
+                sx={{ mb: 2 }}
+                InputProps={{ 
+                  style: { 
+                    color: 'var(--color-text-gray)', 
+                    backgroundColor: 'var(--color-button-bg)',
+                    border: '1px solid var(--color-border)'
+                  } 
+                }}
+                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
+                helperText="Email cannot be changed"
+              />
+
+              <TextField
+                label="Phone Number"
+                name="phone"
+                value={formData.phone}
                 onChange={handleInputChange}
                 fullWidth
                 sx={{ mb: 2 }}
-                InputProps={{ style: { color: '#c7d5e0', backgroundColor: '#2a475e' } }}
-                InputLabelProps={{ style: { color: '#66c0f4' } }}
-                helperText={<span style={{ color: '#8f98a0' }}>Optional</span>}
+                InputProps={{ 
+                  style: { 
+                    color: 'var(--color-text)', 
+                    backgroundColor: 'var(--color-button-bg)',
+                    border: '1px solid var(--color-border)'
+                  } 
+                }}
+                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
               />
+
               <TextField
-                label="Custom URL"
-                name="customUrl"
-                value={formData.customUrl || ''}
-                onChange={handleInputChange}
-                fullWidth
-                sx={{ mb: 1 }}
-                InputProps={{ style: { color: '#c7d5e0', backgroundColor: '#2a475e' } }}
-                InputLabelProps={{ style: { color: '#66c0f4' } }}
-                helperText={<span style={{ color: '#8f98a0' }}>Your profile will be available at: https://steamcommunity.com/profiles/76561198868415243/</span>}
-              />
-              <Typography variant="h6" fontWeight="bold" sx={{ color: '#c7d5e0', mt: 3, mb: 2 }}>
-                LOCATION
-              </Typography>
-              <Select
-                label="Country"
+                label="Location"
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
                 fullWidth
-                sx={{ mb: 2, color: '#c7d5e0', backgroundColor: '#2a475e' }}
-                MenuProps={{ PaperProps: { style: { backgroundColor: '#23262e', color: '#c7d5e0' } } }}
-              >
-                <MenuItem value="">Select a country</MenuItem>
-                <MenuItem value="United States">United States</MenuItem>
-                <MenuItem value="Canada">Canada</MenuItem>
-                <MenuItem value="United Kingdom">United Kingdom</MenuItem>
-                <MenuItem value="Taiwan">Taiwan</MenuItem>
-                {/* Add more countries as needed */}
-              </Select>
-            </Box>
-          )}
-          {/* Profile Background Section */}
-          {selectedSection === 'Profile Background' && (
-            <Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: '#c7d5e0', mb: 2 }}>
-                PROFILE BACKGROUND
-              </Typography>
-              <TextField
-                label="Profile Background"
-                name="profileBackground"
-                value={formData.profileBackground}
-                onChange={handleInputChange}
-                fullWidth
                 sx={{ mb: 2 }}
-                InputProps={{ style: { color: '#c7d5e0', backgroundColor: '#2a475e' } }}
-                InputLabelProps={{ style: { color: '#66c0f4' } }}
+                InputProps={{ 
+                  style: { 
+                    color: 'var(--color-text)', 
+                    backgroundColor: 'var(--color-button-bg)',
+                    border: '1px solid var(--color-border)'
+                  } 
+                }}
+                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
+              />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.remoteAvailability}
+                    onChange={handleInputChange}
+                    name="remoteAvailability"
+                    sx={{
+                      color: 'var(--color-accent)',
+                      '&.Mui-checked': {
+                        color: 'var(--color-accent)',
+                      },
+                    }}
+                  />
+                }
+                label="Available for Remote Work"
+                sx={{ color: 'var(--color-text)' }}
               />
             </Box>
           )}
-          {/* Other sections can be added similarly */}
+
+          {/* Skills & Certifications Section */}
+          {selectedSection === 'Skills & Certifications' && (
+            <Box>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
+                SKILLS & CERTIFICATIONS
+              </Typography>
+
+              {/* Skills */}
+              <Typography variant="subtitle1" sx={{ color: 'var(--color-text)', mb: 2 }}>
+                Skills
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+                <TextField
+                  label="Add Skill"
+                  name="newSkill"
+                  value={formData.newSkill}
+                  onChange={handleInputChange}
+                  sx={{ flex: 1 }}
+                  InputProps={{ 
+                    style: { 
+                      color: 'var(--color-text)', 
+                      backgroundColor: 'var(--color-button-bg)',
+                      border: '1px solid var(--color-border)'
+                    } 
+                  }}
+                  InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
+                />
+                <Button 
+                  variant="contained" 
+                  onClick={() => handleAddItem('skills')}
+                  sx={{ 
+                    bgcolor: 'var(--color-accent)', 
+                    color: 'var(--color-bg)',
+                    '&:hover': {
+                      bgcolor: 'var(--color-accent-dark)',
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </Box>
+              <Box sx={{ mb: 3 }}>
+                {formData.skills.map((skill, index) => (
+                  <Chip
+                    key={index}
+                    label={skill}
+                    onDelete={() => handleRemoveItem('skills', index)}
+                    sx={{ 
+                      m: 0.5, 
+                      bgcolor: 'var(--color-button-bg)', 
+                      color: 'var(--color-text)',
+                      '& .MuiChip-deleteIcon': {
+                        color: 'var(--color-text-gray)',
+                      }
+                    }}
+                  />
+                ))}
+              </Box>
+
+              {/* Languages */}
+              <Typography variant="subtitle1" sx={{ color: 'var(--color-text)', mb: 2 }}>
+                Languages
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+                <TextField
+                  label="Add Language"
+                  name="newLanguage"
+                  value={formData.newLanguage}
+                  onChange={handleInputChange}
+                  sx={{ flex: 1 }}
+                  InputProps={{ 
+                    style: { 
+                      color: 'var(--color-text)', 
+                      backgroundColor: 'var(--color-button-bg)',
+                      border: '1px solid var(--color-border)'
+                    } 
+                  }}
+                  InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
+                />
+                <Button 
+                  variant="contained" 
+                  onClick={() => handleAddItem('languages')}
+                  sx={{ 
+                    bgcolor: 'var(--color-accent)', 
+                    color: 'var(--color-bg)',
+                    '&:hover': {
+                      bgcolor: 'var(--color-accent-dark)',
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </Box>
+              <Box sx={{ mb: 3 }}>
+                {formData.languages.map((language, index) => (
+                  <Chip
+                    key={index}
+                    label={language}
+                    onDelete={() => handleRemoveItem('languages', index)}
+                    sx={{ 
+                      m: 0.5, 
+                      bgcolor: 'var(--color-button-bg)', 
+                      color: 'var(--color-text)',
+                      '& .MuiChip-deleteIcon': {
+                        color: 'var(--color-text-gray)',
+                      }
+                    }}
+                  />
+                ))}
+              </Box>
+
+              {/* Certifications */}
+              <Typography variant="subtitle1" sx={{ color: 'var(--color-text)', mb: 2 }}>
+                Certifications
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
+                <TextField
+                  label="Add Certification"
+                  name="newCertification"
+                  value={formData.newCertification}
+                  onChange={handleInputChange}
+                  sx={{ flex: 1 }}
+                  InputProps={{ 
+                    style: { 
+                      color: 'var(--color-text)', 
+                      backgroundColor: 'var(--color-button-bg)',
+                      border: '1px solid var(--color-border)'
+                    } 
+                  }}
+                  InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
+                />
+                <Button 
+                  variant="contained" 
+                  onClick={() => handleAddItem('certifications')}
+                  sx={{ 
+                    bgcolor: 'var(--color-accent)', 
+                    color: 'var(--color-bg)',
+                    '&:hover': {
+                      bgcolor: 'var(--color-accent-dark)',
+                    }
+                  }}
+                >
+                  Add
+                </Button>
+              </Box>
+              <Box sx={{ mb: 3 }}>
+                {formData.certifications.map((certification, index) => (
+                  <Chip
+                    key={index}
+                    label={certification}
+                    onDelete={() => handleRemoveItem('certifications', index)}
+                    sx={{ 
+                      m: 0.5, 
+                      bgcolor: 'var(--color-button-bg)', 
+                      color: 'var(--color-text)',
+                      '& .MuiChip-deleteIcon': {
+                        color: 'var(--color-text-gray)',
+                      }
+                    }}
+                  />
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          {/* Preferences Section */}
+          {selectedSection === 'Preferences' && (
+            <Box>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
+                PREFERENCES
+              </Typography>
+              <Typography sx={{ color: 'var(--color-text-gray)', mb: 3 }}>
+                Additional preference settings will be added here based on your application's requirements.
+              </Typography>
+            </Box>
+          )}
+
+          {/* Avatar Section */}
+          {selectedSection === 'Avatar' && (
+            <Box>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
+                AVATAR
+              </Typography>
+              <Typography sx={{ color: 'var(--color-text-gray)', mb: 3 }}>
+                Avatar upload functionality will be implemented here.
+              </Typography>
+            </Box>
+          )}
+
+          {/* Profile Background Section */}
+          {selectedSection === 'Profile Background' && (
+            <Box>
+              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
+                PROFILE BACKGROUND
+              </Typography>
+              <Typography sx={{ color: 'var(--color-text-gray)', mb: 3 }}>
+                Profile background customization will be implemented here.
+              </Typography>
+            </Box>
+          )}
+
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
-            <Button onClick={handleCancel} variant="contained" sx={{ bgcolor: 'var(--color-error)', color: 'var(--color-bg)', textTransform: 'none' }}>
+            <Button 
+              onClick={handleCancel} 
+              variant="outlined" 
+              sx={{ 
+                borderColor: 'var(--color-error)', 
+                color: 'var(--color-error)',
+                textTransform: 'none',
+                '&:hover': {
+                  borderColor: 'var(--color-error-dark)',
+                  backgroundColor: 'rgba(244, 67, 54, 0.04)',
+                }
+              }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleSave} variant="contained" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)', textTransform: 'none' }}>
-              Save
+            <Button 
+              onClick={handleSave} 
+              variant="contained" 
+              sx={{ 
+                bgcolor: 'var(--color-accent)', 
+                color: 'var(--color-bg)',
+                textTransform: 'none',
+                '&:hover': {
+                  bgcolor: 'var(--color-accent-dark)',
+                }
+              }}
+            >
+              Save Changes
             </Button>
           </Box>
         </Box>
@@ -209,6 +499,5 @@ const EditProfile = () => {
     </Box>
   );
 };
-
 
 export default EditProfile;

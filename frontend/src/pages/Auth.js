@@ -15,20 +15,39 @@ import {
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    password: '', 
+    confirmPassword: '' 
+  });
   const [message, setMessage] = useState('');
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate passwords match for registration
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      setMessage('Passwords do not match');
+      return;
+    }
+
     try {
       if (isLogin) {
-        const response = await loginUser({ email: formData.email, password: formData.password });
+        // Login with name instead of email
+        const response = await loginUser({ 
+          name: formData.name, 
+          password: formData.password 
+        });
         login(response.user, response.token);
         setMessage(`Login successful! Welcome, ${response.user.name}`);
       } else {
-        const response = await registerUser(formData);
+        // Register with name instead of email
+        const response = await registerUser({
+          name: formData.name,
+          password: formData.password
+        });
         login(response.user, response.token);
         setMessage(`Registration successful! Welcome, ${response.user.name}`);
       }
@@ -44,6 +63,8 @@ const Auth = () => {
     setIsLogin(!isLogin);
     setMessage('');
     setCaptchaVerified(false);
+    // Clear form data when toggling
+    setFormData({ name: '', password: '', confirmPassword: '' });
   };
 
   return (
@@ -70,7 +91,10 @@ const Auth = () => {
           {isLogin ? 'Login' : 'Register'}
         </Typography>
         {message && (
-          <Alert severity="info" sx={{ marginBottom: 2 }}>
+          <Alert 
+            severity={message.includes('successful') ? 'success' : 'error'} 
+            sx={{ marginBottom: 2 }}
+          >
             {message}
           </Alert>
         )}
@@ -79,28 +103,12 @@ const Auth = () => {
           onSubmit={handleSubmit}
           sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
         >
-          {!isLogin && (
-            <TextField
-              label="Name"
-              variant="outlined"
-              fullWidth
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              InputProps={{
-                style: { backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)' },
-              }}
-              InputLabelProps={{
-                style: { color: 'var(--color-text)' },
-              }}
-            />
-          )}
           <TextField
-            label="Email"
-            type="email"
+            label="Username"
             variant="outlined"
             fullWidth
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             InputProps={{
               style: { backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)' },
             }}
@@ -122,6 +130,28 @@ const Auth = () => {
               style: { color: 'var(--color-text)' },
             }}
           />
+          {!isLogin && (
+            <TextField
+              label="Confirm Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+              error={formData.confirmPassword !== '' && formData.password !== formData.confirmPassword}
+              helperText={
+                formData.confirmPassword !== '' && formData.password !== formData.confirmPassword 
+                  ? 'Passwords do not match' 
+                  : ''
+              }
+              InputProps={{
+                style: { backgroundColor: 'var(--color-card-bg)', color: 'var(--color-text)' },
+              }}
+              InputLabelProps={{
+                style: { color: 'var(--color-text)' },
+              }}
+            />
+          )}
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <SliderCaptcha onPass={() => setCaptchaVerified(true)} />
           </Box>

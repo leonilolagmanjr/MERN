@@ -281,24 +281,14 @@ const Profile = () => {
             <p>Location: {profile.location || 'N/A'}</p>
             <p>Remote Availability: {profile.remoteAvailability ? 'Yes' : 'No'}</p>
           </div>
-          <div style={styles.sidebarSection}>
-            <h3 style={styles.sidebarHeading}>Professional Details</h3>
-            <p>Job Title: {profile.jobTitle || 'N/A'}</p>
-            <p>Industry: {profile.industry || 'N/A'}</p>
-            <p>Years of Experience: {profile.experienceYears || 'N/A'}</p>
-            <p>Employment Type: {profile.employmentType || 'N/A'}</p>
-          </div>
+
           <div style={styles.sidebarSection}>
             <h3 style={styles.sidebarHeading}>Skills and Certifications</h3>
             <p>Skills: {profile.skills?.join(', ') || 'N/A'}</p>
             <p>Languages: {profile.languages?.join(', ') || 'N/A'}</p>
             <p>Certifications: {profile.certifications?.join(', ') || 'N/A'}</p>
           </div>
-          <div style={styles.sidebarSection}>
-            <h3 style={styles.sidebarHeading}>Work Portfolio</h3>
-            <p>Resume: <a href={profile.resumeLink || '#'} target="_blank" rel="noopener noreferrer">View</a></p>
-            <p>Portfolio: <a href={profile.portfolioLink || '#'} target="_blank" rel="noopener noreferrer">View</a></p>
-          </div>
+
           <div style={styles.sidebarSection}>
             <h3 style={styles.sidebarHeading}>Ratings and Performance</h3>
             <p>Average Rating: {profile.rating || 'N/A'}</p>
