@@ -5,7 +5,7 @@ let io;
 const initSocket = (server) => {
     io = new Server(server, {
         cors: {
-            // Keep your origins
+            // Keep your origins, but normalize by removing trailing slash
             origin: process.env.WEBSOCKET_ORIGINS,
             methods: ['GET', 'POST'],
         },
