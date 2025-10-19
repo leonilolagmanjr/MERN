@@ -4,7 +4,7 @@ const User = require('../models/User');
 const Info = require('../models/Info');
 
 // Service to register a user
-const registerUser = async ({ name, email, password }) => {
+const registerUser = async ({ name, password }) => {
   // Check if user already exists
   const userExists = await User.findOne({ name });
   if (userExists) throw new Error('User already exists');
@@ -16,7 +16,6 @@ const registerUser = async ({ name, email, password }) => {
   // Create the user
   const newUser = await User.create({
     name,
-    email,
     password: hashedPassword,
   });
 
@@ -32,7 +31,6 @@ const registerUser = async ({ name, email, password }) => {
     user: {
       id: newUser._id,
       name: newUser.name,
-      email: newUser.email,
       xp: newUser.xp,
     },
   };
@@ -56,7 +54,6 @@ const loginUser = async ({ name, password }) => {
     user: {
       id: user._id,
       name: user.name,
-      email: user.email,
       xp: user.xp,
     },
   };
