@@ -99,5 +99,5 @@ setInterval(async () => {
   } catch (err) {
     console.error('Ping failed ❌', err.message);
   }
-}, 10 * 60 * 1000); // every 10 minutes
+}, 5 * 60 * 1000); // every 10 minutes
 
