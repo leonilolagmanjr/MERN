@@ -80,11 +80,22 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      sx={{
+        '& .MuiDialog-paper': {
+          bgcolor: 'var(--color-card-bg)',
+          color: 'var(--color-text)',
+        },
+      }}
+    >
+      <DialogTitle sx={{ bgcolor: 'var(--color-header-bg)', color: 'var(--color-text)' }}>
         Candidates for "{jobTitle}"
       </DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)' }}>
         {loading ? (
           <Box display="flex" justifyContent="center" p={2}>
             <CircularProgress />
@@ -126,8 +137,8 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
           </List>
         )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
+      <DialogActions sx={{ bgcolor: 'var(--color-card-bg)' }}>
+        <Button onClick={onClose} sx={{ color: 'var(--color-text)' }}>Close</Button>
       </DialogActions>
     </Dialog>
   );
