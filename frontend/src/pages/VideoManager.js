@@ -143,8 +143,8 @@ const VideoManager = () => {
         </Box>
 
         {/* Upload Dialog */}
-        <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)}>
-          <DialogTitle>Upload Video</DialogTitle>
+        <Dialog open={uploadOpen} onClose={() => setUploadOpen(false)} sx={{ '& .MuiDialog-paper': { bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)' } }}>
+          <DialogTitle sx={{ color: 'var(--color-text)' }}>Upload Video</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
@@ -153,6 +153,7 @@ const VideoManager = () => {
               fullWidth
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              sx={{ '& .MuiInputBase-input': { color: 'var(--color-text)' }, '& .MuiInputLabel-root': { color: 'var(--color-text)' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'var(--color-border)' } } }}
             />
             <TextField
               margin="dense"
@@ -162,17 +163,18 @@ const VideoManager = () => {
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              sx={{ '& .MuiInputBase-input': { color: 'var(--color-text)' }, '& .MuiInputLabel-root': { color: 'var(--color-text)' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'var(--color-border)' } } }}
             />
             <input
               type="file"
               accept="video/*"
               onChange={(e) => setFile(e.target.files[0])}
-              style={{ marginTop: 16 }}
+              style={{ marginTop: 16, color: 'var(--color-text)' }}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setUploadOpen(false)}>Cancel</Button>
-            <Button onClick={handleUpload}>Upload</Button>
+            <Button onClick={() => setUploadOpen(false)} sx={{ color: 'var(--color-text)' }}>Cancel</Button>
+            <Button onClick={handleUpload} sx={{ color: 'var(--color-text)' }}>Upload</Button>
           </DialogActions>
         </Dialog>
 
