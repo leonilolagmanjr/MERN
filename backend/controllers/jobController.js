@@ -122,13 +122,20 @@ const deleteJob = async (req, res) => {
   }
 };
 
+const { awardXP } = require('../utils/gameEngine');
+const User = require('../models/User');
+
 // Add Candidate
 const addCandidate = async (req, res) => {
   const { candidateId } = req.body;
   const finalCandidateId = candidateId || req.user.id; // Allow self-apply if no candidateId provided
   try {
     const job = await jobService.addCandidate(req.params.jobId, finalCandidateId, req.user.id);
-    res.json({ msg: 'Candidate added successfully', job });
+    await awardXP(finalCandidateId, 'job_applied');
+    const user = await User.findById(finalCandidateId);
+    user.jobStats.jobsApplied += 1;
+    await user.save();
+    res.json({ msg: 'Candidate added successfully and XP awarded!', job });
   } catch (err) {
     res.status(400).json({ msg: err.message });
   }

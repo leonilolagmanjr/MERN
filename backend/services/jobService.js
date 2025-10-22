@@ -90,13 +90,20 @@ const getMyCompletedJobs = async (userId) => {
 };
 
 // Complete Job
-const completeJob = async (jobId, assignedTo) => {  
+const completeJob = async (jobId, assignedTo) => {
   try {
     const job = await Job.findById(jobId);
     if (!job) throw new Error('Job not found');
-    if (String(job.assignedTo) !== assignedTo) throw new Error('Not authorized to complete this job'); 
+    if (String(job.assignedTo) !== assignedTo) throw new Error('Not authorized to complete this job');
     job.status = 'completed';
     await job.save();
+
+    // Award XP to the worker who completed the job
+    await awardXP(assignedTo, 'job_completed');
+    const user = await User.findById(assignedTo);
+    user.jobStats.jobsCompleted += 1;
+    await user.save();
+
     return job;
   } catch (err) {
     throw new Error('Error completing job');
@@ -194,6 +201,9 @@ const removeCandidate = async (jobId, candidateId, currentUserId) => {
   }
 };
 
+const { awardXP } = require('../utils/gameEngine');
+const User = require('../models/User');
+
 // Accept Candidate
 const acceptCandidate = async (jobId, candidateId, currentUserId) => {
   try {
@@ -206,6 +216,13 @@ const acceptCandidate = async (jobId, candidateId, currentUserId) => {
     job.assignedTo = candidateId;
     job.status = 'in-progress';
     await job.save();
+
+    // Award XP to the hired candidate
+    await awardXP(candidateId, 'job_hired');
+    const user = await User.findById(candidateId);
+    user.jobStats.jobsHired += 1;
+    await user.save();
+
     return job;
   } catch (err) {
     throw new Error(err.message || 'Error accepting candidate');

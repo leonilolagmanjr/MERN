@@ -10,7 +10,24 @@ const userSchema = new mongoose.Schema({
   skills: [{ type: String }],
   languages: [{ type: String }],
   certifications: [{ type: String }],
+
+  // 🎮 Gamification System (Job-Based)
   xp: { type: Number, default: 0 },
+  level: { type: Number, default: 1 },
+  jobStats: {
+    jobsApplied: { type: Number, default: 0 },
+    jobsCompleted: { type: Number, default: 0 },
+    jobsHired: { type: Number, default: 0 },
+  },
+  communityStats: {
+    posts: { type: Number, default: 0 },
+    comments: { type: Number, default: 0 },
+  },
+  profileCompleted: { type: Boolean, default: false },
+  lastActiveAt: { type: Date, default: Date.now },
+  streakCount: { type: Number, default: 0 }, // daily login/activity streaks
+
+  // 🔒 Existing System
   role: {
     type: String,
     enum: ['user', 'admin'],
@@ -33,29 +50,20 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Wallet'
   },
-  // KYC/Verification status
+
+  // ✅ KYC / Verification
   kycStatus: {
     type: String,
     enum: ['unverified', 'pending', 'verified', 'rejected'],
     default: 'unverified'
   },
-  kycSubmittedAt: {
-    type: Date
-  },
-  kycVerifiedAt: {
-    type: Date
-  },
-  // Third-party verification data
-  verificationProvider: {
-    type: String, // 'jumio', 'onfido', 'stripe_identity', etc.
-  },
-  verificationId: {
-    type: String, // ID from the verification provider
-  },
-  // Document verification
+  kycSubmittedAt: { type: Date },
+  kycVerifiedAt: { type: Date },
+  verificationProvider: { type: String },
+  verificationId: { type: String },
   documents: [{
     type: {
-      type: String, // 'id_card', 'passport', 'selfie', 'proof_of_address'
+      type: String,
       required: true
     },
     url: {

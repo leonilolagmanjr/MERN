@@ -1,5 +1,8 @@
 const Post = require('../models/Post');
 
+const { awardXP } = require('../utils/gameEngine');
+const User = require('../models/User');
+
 // Create Post
 const createPost = async (content, media, createdBy, type = 'post', category, groupId, pinned = false) => {
   try {
@@ -13,6 +16,13 @@ const createPost = async (content, media, createdBy, type = 'post', category, gr
       pinned,
     });
     await post.save();
+
+    // Award XP for creating a post
+    await awardXP(createdBy, 'post_created');
+    const user = await User.findById(createdBy);
+    user.communityStats.posts += 1;
+    await user.save();
+
     return post;
   } catch (err) {
     throw new Error(err.message || 'Error creating post');
@@ -39,6 +49,15 @@ const getUserPosts = async (userId) => {
     return await Post.find({ createdBy: userId }).populate('createdBy', 'name').populate('comments.user', 'name').sort({ createdAt: -1 });
   } catch (err) {
     throw new Error('Error fetching user posts');
+  }
+};
+
+// Get Post by ID
+const getPostById = async (postId) => {
+  try {
+    return await Post.findById(postId).populate('createdBy', 'name').populate('comments.user', 'name');
+  } catch (err) {
+    throw new Error('Error fetching post');
   }
 };
 
@@ -107,6 +126,13 @@ const addComment = async (postId, userId, text) => {
     await post.save();
     // Populate the user in the newly added comment
     await post.populate('comments.user', 'name');
+
+    // Award XP for adding a comment
+    await awardXP(userId, 'comment_created');
+    const user = await User.findById(userId);
+    user.communityStats.comments += 1;
+    await user.save();
+
     return post;
   } catch (err) {
     throw new Error('Error adding comment');
@@ -117,6 +143,7 @@ module.exports = {
   createPost,
   getAllPosts,
   getUserPosts,
+  getPostById,
   updatePost,
   deletePost,
   likePost,

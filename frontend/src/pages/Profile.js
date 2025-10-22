@@ -16,6 +16,7 @@ import { useFriend } from '../context/FriendContext';
 import Posts from '../components/posts/Posts';
 import FriendActions from '../components/friends/FriendActions';
 import UserLink from '../components/UserLink';
+import LevelBar from '../components/LevelBar';
 
 const Profile = () => {
   const { userId } = useParams();
@@ -31,6 +32,7 @@ const Profile = () => {
   const [isFriend, setIsFriend] = useState(null);
   const [hasPendingRequest, setHasPendingRequest] = useState(null);
   const [loadingFriendStatus, setLoadingFriendStatus] = useState(true);
+  const [refreshProfile, setRefreshProfile] = useState(0);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -63,7 +65,7 @@ const Profile = () => {
     if (user?.id) {
       fetchProfileData();
     }
-  }, [userId, user, getFriendStatus]);
+  }, [userId, user, getFriendStatus, refreshProfile]);
 
   // New function to update friend status
   const updateFriendStatus = async () => {
@@ -153,6 +155,7 @@ const Profile = () => {
           <p style={styles.userDetails}>Email: {profile.email || 'Unknown'}</p>
           <p style={styles.userDetails}>ID: {profile.id || 'N/A'}</p>
           <p style={styles.userDetails}>Level: {profile.level || 1}</p>
+          <p style={styles.userDetails}>XP: {profile.xp || 0}</p>
           <p>  </p>
           {isCurrentUser ? (
             <>
@@ -218,8 +221,8 @@ const Profile = () => {
                 <p style={styles.statLabel}>Jobs Posted</p>
               </div>
               <div style={styles.statBox}>
-                <h3 style={styles.statNumber}>{profile.experience || 0}</h3>
-                <p style={styles.statLabel}>Earned Experience</p>
+                <h3 style={styles.statNumber}>{profile.xp || 0}</h3>
+                <p style={styles.statLabel}>Earned XP</p>
               </div>
             </div>
           </div>
@@ -238,15 +241,12 @@ const Profile = () => {
 
           <div style={styles.postsSection}>
             <h2 style={styles.sectionHeading}>Posts</h2>
-            <Posts userId={userId} />
+            <Posts userId={userId} onPostUpdate={() => setRefreshProfile(prev => prev + 1)} />
           </div>
         </div>
 
         <div style={styles.rightColumn}>
-          <div style={styles.levelBox}>
-            <h3 style={styles.levelTitle}>Level {profile.level || 1}</h3>
-            <p style={styles.xp}>{profile.experience || 0} XP</p>
-          </div>
+          <LevelBar xp={profile.xp || 0} level={profile.level || 1} />
           <div style={styles.badges}>
             <h3 style={styles.badgesTitle}>Badges</h3>
             <p>{profile.badges?.length || 0} Badges</p>

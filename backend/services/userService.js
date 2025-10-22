@@ -43,6 +43,13 @@ const checkRelationshipStatus = async (userId1, userId2) => {
   return 'none';
 };
 
+const { awardXP } = require('../utils/gameEngine');
+
+// Helper function to check if profile is complete
+function allFieldsFilled(user) {
+  return user.email && user.phone && user.skills.length > 0 && user.location;
+}
+
 // Function to Update User Profile
 const updateUserProfile = async (userId, updateData) => {
   try {
@@ -64,6 +71,14 @@ const updateUserProfile = async (userId, updateData) => {
     if (!updatedUser) {
       throw new Error('User not found');
     }
+
+    // Check if profile is now complete and award XP if not already done
+    if (!updatedUser.profileCompleted && allFieldsFilled(updatedUser)) {
+      updatedUser.profileCompleted = true;
+      await updatedUser.save();
+      await awardXP(userId, 'profile_completed');
+    }
+
     return updatedUser;
   } catch (err) {
     throw new Error('Server error');
