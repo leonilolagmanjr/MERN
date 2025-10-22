@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   skills: [{ type: String }],
   languages: [{ type: String }],
   certifications: [{ type: String }],
+  profileImage: { type: String }, // URL to the user's profile image
 
   // 🎮 Gamification System (Job-Based)
   xp: { type: Number, default: 0 },

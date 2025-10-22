@@ -46,4 +46,10 @@ router.get('/friend-relationship-status', authenticate(), userController.checkFr
 // Route to remove friend
 router.post('/friend/remove', authenticate(), userController.removeFriend);
 
+// Route to upload avatar
+router.post('/upload-avatar', authenticate(), userController.uploadAvatar);
+
+// Route to get leaderboard
+router.get('/leaderboard', userController.getLeaderboard);
+
 module.exports = router;

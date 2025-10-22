@@ -53,7 +53,7 @@ function allFieldsFilled(user) {
 // Function to Update User Profile
 const updateUserProfile = async (userId, updateData) => {
   try {
-    const { name, email, phone, location, remoteAvailability, skills, languages, certifications } = updateData;
+    const { name, email, phone, location, remoteAvailability, skills, languages, certifications, profileImage } = updateData;
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
@@ -64,7 +64,8 @@ const updateUserProfile = async (userId, updateData) => {
         ...(remoteAvailability !== undefined && { remoteAvailability }),
         ...(skills && { skills }),
         ...(languages && { languages }),
-        ...(certifications && { certifications })
+        ...(certifications && { certifications }),
+        ...(profileImage !== undefined && { profileImage })
       },
       { new: true }
     );
@@ -82,6 +83,23 @@ const updateUserProfile = async (userId, updateData) => {
     return updatedUser;
   } catch (err) {
     throw new Error('Server error');
+  }
+};
+
+// Function to Upload Avatar
+const uploadAvatar = async (userId, imageUrl) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { profileImage: imageUrl },
+      { new: true }
+    );
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
+    return updatedUser;
+  } catch (err) {
+    throw new Error('Error uploading avatar');
   }
 };
 
@@ -248,9 +266,23 @@ const removeFriend = async (userId, friendId) => {
   return { message: 'Friend removed' };
 };
 
+// Function to Get Leaderboard (Top users by XP)
+const getLeaderboard = async () => {
+  try {
+    const users = await User.find({})
+      .select('name xp level profileImage')
+      .sort({ xp: -1 })
+      .limit(10);
+    return users;
+  } catch (err) {
+    throw new Error('Error fetching leaderboard');
+  }
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
+  uploadAvatar,
   deleteUserProfile,
   changeUserRole,
   addConnection,
@@ -260,5 +292,6 @@ module.exports = {
   denyFriendRequest,
   cancelFriendRequest,
   checkRelationshipStatus,
-  removeFriend
+  removeFriend,
+  getLeaderboard
 };

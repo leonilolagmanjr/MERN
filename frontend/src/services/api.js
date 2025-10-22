@@ -373,3 +373,20 @@ export const createForumGroup = async (data, token) => {
   });
   return response.data;
 };
+
+// Upload Avatar API
+export const uploadAvatar = async (formData, token) => {
+  const response = await axios.post(`${API_URL}/user/upload-avatar`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+// Leaderboard API
+export const fetchLeaderboard = async () => {
+  const response = await axios.get(`${API_URL}/user/leaderboard`);
+  return response.data;
+};

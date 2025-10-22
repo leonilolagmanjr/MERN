@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { updateUserProfile, getUserProfile, updateInfo } from '../services/api';
+import { updateUserProfile, getUserProfile, updateInfo, uploadAvatar } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Box, Card, CardContent, Typography, Avatar, Button, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Select, MenuItem, Chip, FormControlLabel, Checkbox } from '@mui/material';
 
@@ -104,6 +104,36 @@ const EditProfile = () => {
     } catch (err) {
       console.error('Error updating profile:', err);
       alert('Error updating profile. Please try again.');
+    }
+  };
+
+  const handleAvatarUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size must be less than 5MB');
+      return;
+    }
+
+    // Validate file type
+    if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
+      alert('Only JPG and PNG files are allowed');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await uploadAvatar(formData, token);
+      setProfile(prev => ({ ...prev, profileImage: response.profileImage }));
+      alert('Avatar uploaded successfully!');
+    } catch (err) {
+      console.error('Error uploading avatar:', err);
+      alert('Error uploading avatar. Please try again.');
     }
   };
 
@@ -446,8 +476,42 @@ const EditProfile = () => {
                 AVATAR
               </Typography>
               <Typography sx={{ color: 'var(--color-text-gray)', mb: 3 }}>
-                Avatar upload functionality will be implemented here.
+                Upload a new profile picture. The image will be cropped to a square format.
               </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3 }}>
+                <Avatar
+                  src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'}
+                  sx={{ width: 120, height: 120, border: '3px solid var(--color-accent)' }}
+                />
+                <Box>
+                  <input
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    id="avatar-upload"
+                    type="file"
+                    onChange={handleAvatarUpload}
+                  />
+                  <label htmlFor="avatar-upload">
+                    <Button
+                      variant="contained"
+                      component="span"
+                      sx={{
+                        bgcolor: 'var(--color-accent)',
+                        color: 'var(--color-bg)',
+                        textTransform: 'none',
+                        '&:hover': {
+                          bgcolor: 'var(--color-accent-dark)',
+                        }
+                      }}
+                    >
+                      Upload New Avatar
+                    </Button>
+                  </label>
+                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', mt: 1 }}>
+                    JPG, PNG up to 5MB
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
           )}
 

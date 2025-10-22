@@ -140,6 +140,52 @@ const removeFriend = async (req, res) => {
   }
 };
 
+// Upload Avatar
+const uploadAvatar = async (req, res) => {
+  try {
+    const cloudinary = require('../config/cloudinary');
+    const multer = require('multer');
+    const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+    const storage = new CloudinaryStorage({
+      cloudinary: cloudinary,
+      params: {
+        folder: 'avatars',
+        allowed_formats: ['jpg', 'png', 'jpeg'],
+        transformation: [{ width: 200, height: 200, crop: 'fill' }], // Crop to square
+      },
+    });
+
+    const upload = multer({ storage }).single('avatar');
+
+    upload(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({ msg: 'Upload failed' });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ msg: 'No file uploaded' });
+      }
+
+      const imageUrl = req.file.path;
+      const updatedUser = await userService.uploadAvatar(req.user.id, imageUrl);
+      res.json({ msg: 'Avatar uploaded successfully', profileImage: updatedUser.profileImage });
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
+// Get Leaderboard
+const getLeaderboard = async (req, res) => {
+  try {
+    const leaderboard = await userService.getLeaderboard();
+    res.json(leaderboard);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
@@ -153,5 +199,7 @@ module.exports = {
   denyFriendRequest,
   cancelFriendRequest,
   checkFriendRelationshipStatus,
-  removeFriend
+  removeFriend,
+  uploadAvatar,
+  getLeaderboard
 };
