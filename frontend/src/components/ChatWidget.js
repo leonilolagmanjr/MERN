@@ -239,7 +239,7 @@ const ChatWidget = () => {
             createdAt: new Date().toISOString(),
             chat: selectedChat._id,
         };
-        setMessages((prev) => [...prev, optimisticMessage]);
+        setMessages((prev) => [...prev]);
 
         try {
             const isGlobal = isGlobalChat(selectedChat);

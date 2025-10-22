@@ -167,12 +167,13 @@ const JobDetail = () => {
                   label={job.status}
                   color={JOB_STATUS_COLORS[job.status] || 'default'}
                   variant="outlined"
+                  sx={{ fontWeight: 'bold', color: 'var(--color-text)' }}
                 />
                 <Chip
                   icon={<Category />}
                   label={job.category}
                   variant="outlined"
-                  sx={{ color: 'var(--color-primary)' }}
+                  sx={{ fontWeight: 'bold', color: 'var(--color-text)' }}
                 />
                 <Chip
                   icon={<LocationOn />}

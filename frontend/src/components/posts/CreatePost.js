@@ -53,9 +53,8 @@ const CreatePost = ({ onPostCreated, type = 'post', category, groupId }) => {
           bgcolor: 'var(--color-card-bg)',
           input: { color: 'var(--color-text)' },
           '& .MuiInputLabel-root': { color: 'var(--color-text)' },
-          '& .MuiOutlinedInput-root': {
+          '& .MuiOutlinedInput-root': { color: 'var(--color-text)'},
             '& fieldset': { borderColor: 'var(--color-primary)' },
-          },
         }}
       />
       <input
