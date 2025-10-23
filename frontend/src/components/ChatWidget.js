@@ -252,6 +252,9 @@ const ChatWidget = () => {
                 setLocalStream(null);
             }
             setRemoteStream(null);
+            // Clear video elements to prevent stale streams on subsequent calls
+            if (localVideoRef.current) localVideoRef.current.srcObject = null;
+            if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
             ringSound.pause();
             ringSound.currentTime = 0;
         };
