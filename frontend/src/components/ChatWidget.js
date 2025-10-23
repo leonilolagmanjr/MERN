@@ -319,6 +319,20 @@ const ChatWidget = () => {
         }
     }, [openChatUserId, clearOpenChatUser, handleGetOrCreateChat]);
 
+    // Ensure local video srcObject is set when stream is available and call is in progress
+    useEffect(() => {
+        if (callState === 'in-call' && localStream && localVideoRef.current) {
+            localVideoRef.current.srcObject = localStream;
+        }
+    }, [callState, localStream]);
+
+    // Ensure remote video srcObject is set when stream is available and call is in progress
+    useEffect(() => {
+        if (callState === 'in-call' && remoteStream && remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = remoteStream;
+        }
+    }, [callState, remoteStream]);
+
     // --- Video Call Logic ---
     const startCall = async () => {
         if (!selectedChat || isGlobalChat(selectedChat)) return;
