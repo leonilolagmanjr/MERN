@@ -11,6 +11,9 @@ import { Link } from 'react-router-dom';
 import { FriendContext } from '../context/FriendContext';
 import UserLink from './UserLink';
 
+// Ring sound for incoming calls
+const ringSound = new Audio('/ring.mp3'); // Add ring.mp3 to public folder
+
 // --- Socket Setup ---
 const socket = io(process.env.REACT_APP_SOCKET_URL, {
     reconnection: true,
@@ -35,6 +38,15 @@ const ChatWidget = () => {
     // New State: Loading and Error Handling
     const [isLoading, setIsLoading] = useState(false);
     const [chatError, setChatError] = useState('');
+
+    // Video Call State
+    const [isCalling, setIsCalling] = useState(false);
+    const [incomingCall, setIncomingCall] = useState(null);
+    const [localStream, setLocalStream] = useState(null);
+    const [remoteStream, setRemoteStream] = useState(null);
+    const [peerConnection, setPeerConnection] = useState(null);
+    const localVideoRef = useRef(null);
+    const remoteVideoRef = useRef(null);
     
     const bottomRef = useRef(null);
     const refreshIntervalRef = useRef(null);
@@ -171,38 +183,79 @@ const ChatWidget = () => {
     // --- Socket Effects ---
     useEffect(() => {
         if (!selectedChat?._id) return;
-        
+
         const chatId = selectedChat._id;
         socket.emit('joinChat', chatId);
 
         const handleReceiveMessage = (message) => {
             if (message.chat === chatId) {
                 setMessages((prev) => [...prev, message]);
-                
+
                 // Update chat list for last message/sort order
                 setChats(prevChats => {
-                    const updatedChats = prevChats.map(chat => 
+                    const updatedChats = prevChats.map(chat =>
                         chat._id === chatId ? { ...chat, lastMessage: message.content, lastUpdated: message.createdAt } : chat
                     );
-                    
+
                     // Re-sort, but keep Global Chat always at index 0 if present
                     const globalChat = updatedChats.find(isGlobalChat);
                     const privateChats = updatedChats
                         .filter(chat => !isGlobalChat(chat))
                         .sort((a, b) => new Date(b.lastUpdated) - new Date(a.lastUpdated));
-                        
+
                     return globalChat ? [globalChat, ...privateChats] : privateChats;
                 });
             }
         };
-        
+
+        const handleIncomingCall = ({ offer, callerId }) => {
+            setIncomingCall({ offer, callerId });
+            ringSound.loop = true;
+            ringSound.play().catch(err => console.error('Ring sound error:', err));
+            if (navigator.vibrate) navigator.vibrate(1000);
+        };
+
+        const handleCallAccepted = () => {
+            setIncomingCall(null);
+            ringSound.pause();
+            ringSound.currentTime = 0;
+        };
+
+        const handleCallRejected = () => {
+            setIncomingCall(null);
+            ringSound.pause();
+            ringSound.currentTime = 0;
+        };
+
+        const handleAnswer = async (answer) => {
+            if (peerConnection) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+            }
+        };
+
+        const handleIceCandidate = (candidate) => {
+            if (peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+            }
+        };
+
         socket.on('receiveMessage', handleReceiveMessage);
+        socket.on('incoming-call', handleIncomingCall);
+        socket.on('call-accepted', handleCallAccepted);
+        socket.on('call-rejected', handleCallRejected);
+        socket.on('answer', handleAnswer);
+        socket.on('ice-candidate', handleIceCandidate);
 
         return () => {
             socket.off('receiveMessage', handleReceiveMessage);
+            socket.off('incoming-call', handleIncomingCall);
+            socket.off('call-accepted', handleCallAccepted);
+            socket.off('call-rejected', handleCallRejected);
+            socket.off('answer', handleAnswer);
+            socket.off('ice-candidate', handleIceCandidate);
             socket.emit('leaveChat', chatId);
         };
-    }, [selectedChat?._id]);
+    }, [selectedChat?._id, peerConnection]);
 
     useEffect(() => {
         scrollToBottom();
@@ -220,6 +273,101 @@ const ChatWidget = () => {
             clearOpenChatUser();
         }
     }, [openChatUserId, clearOpenChatUser, handleGetOrCreateChat]);
+
+    // --- Video Call Logic ---
+    const startCall = async () => {
+        if (!selectedChat || isGlobalChat(selectedChat)) return;
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            setLocalStream(stream);
+            if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+
+            const pc = new RTCPeerConnection();
+            setPeerConnection(pc);
+
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+            pc.ontrack = event => {
+                setRemoteStream(event.streams[0]);
+                if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
+            };
+
+            pc.onicecandidate = event => {
+                if (event.candidate) {
+                    socket.emit('ice-candidate', { chatId: selectedChat._id, candidate: event.candidate });
+                }
+            };
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            socket.emit('call-user', { chatId: selectedChat._id, offer });
+            setIsCalling(true);
+        } catch (err) {
+            console.error('Error starting call:', err);
+            setChatError('Failed to start call. Check camera/microphone permissions.');
+        }
+    };
+
+    const acceptCall = async () => {
+        if (!incomingCall) return;
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            setLocalStream(stream);
+            if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+
+            const pc = new RTCPeerConnection();
+            setPeerConnection(pc);
+
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+            pc.ontrack = event => {
+                setRemoteStream(event.streams[0]);
+                if (remoteVideoRef.current) remoteVideoRef.current.srcObject = event.streams[0];
+            };
+
+            pc.onicecandidate = event => {
+                if (event.candidate) {
+                    socket.emit('ice-candidate', { chatId: selectedChat._id, candidate: event.candidate });
+                }
+            };
+
+            await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.offer));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            socket.emit('answer', { chatId: selectedChat._id, answer });
+            socket.emit('accept-call', { chatId: selectedChat._id });
+            setIncomingCall(null);
+            setIsCalling(true);
+        } catch (err) {
+            console.error('Error accepting call:', err);
+            setChatError('Failed to accept call.');
+        }
+    };
+
+    const rejectCall = () => {
+        socket.emit('reject-call', { chatId: selectedChat._id });
+        setIncomingCall(null);
+        ringSound.pause();
+        ringSound.currentTime = 0;
+    };
+
+    const hangUp = () => {
+        if (peerConnection) {
+            peerConnection.close();
+            setPeerConnection(null);
+        }
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            setLocalStream(null);
+        }
+        setRemoteStream(null);
+        setIsCalling(false);
+        setIncomingCall(null);
+        ringSound.pause();
+        ringSound.currentTime = 0;
+    };
 
     // --- Message Sending Logic ---
     const handleSendMessage = async (e) => {
@@ -293,15 +441,125 @@ const ChatWidget = () => {
         return (
             <div style={{ flex: 2, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)', padding: 10 }}>
                 {/* Chat Header */}
-                <div style={{ 
-                    padding: '8px 0', 
-                    borderBottom: '1px solid var(--color-accent)', 
-                    marginBottom: 10, 
-                    fontWeight: 'bold', 
-                    color: 'var(--color-primary)' 
+                <div style={{
+                    padding: '8px 0',
+                    borderBottom: '1px solid var(--color-accent)',
+                    marginBottom: 10,
+                    fontWeight: 'bold',
+                    color: 'var(--color-primary)',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
                 }}>
-                    {chatHeader}
+                    <span>{chatHeader}</span>
+                    {isPrivateChat && !isCalling && (
+                        <button
+                            onClick={startCall}
+                            style={{
+                                padding: '5px 10px',
+                                backgroundColor: 'var(--color-primary)',
+                                color: 'var(--color-bg)',
+                                border: 'none',
+                                borderRadius: 5,
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                            }}
+                        >
+                            📞 Call
+                        </button>
+                    )}
+                    {isCalling && (
+                        <button
+                            onClick={hangUp}
+                            style={{
+                                padding: '5px 10px',
+                                backgroundColor: 'red',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: 5,
+                                cursor: 'pointer',
+                                fontSize: '12px'
+                            }}
+                        >
+                            Hang Up
+                        </button>
+                    )}
                 </div>
+
+                {/* Incoming Call Notification */}
+                {incomingCall && (
+                    <div style={{
+                        padding: '10px',
+                        backgroundColor: 'var(--color-accent)',
+                        color: 'var(--color-bg)',
+                        borderRadius: 5,
+                        marginBottom: 10,
+                        textAlign: 'center'
+                    }}>
+                        <div>Incoming call from {getChatPartner(selectedChat)}</div>
+                        <div style={{ marginTop: 10 }}>
+                            <button
+                                onClick={acceptCall}
+                                style={{
+                                    padding: '5px 15px',
+                                    backgroundColor: 'green',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: 5,
+                                    cursor: 'pointer',
+                                    marginRight: 10
+                                }}
+                            >
+                                Accept
+                            </button>
+                            <button
+                                onClick={rejectCall}
+                                style={{
+                                    padding: '5px 15px',
+                                    backgroundColor: 'red',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: 5,
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Video Call Area */}
+                {isCalling && (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        marginBottom: 10,
+                        height: '200px'
+                    }}>
+                        <video
+                            ref={localVideoRef}
+                            autoPlay
+                            muted
+                            style={{
+                                width: '48%',
+                                height: '100%',
+                                borderRadius: 5,
+                                backgroundColor: 'black'
+                            }}
+                        />
+                        <video
+                            ref={remoteVideoRef}
+                            autoPlay
+                            style={{
+                                width: '48%',
+                                height: '100%',
+                                borderRadius: 5,
+                                backgroundColor: 'black'
+                            }}
+                        />
+                    </div>
+                )}
 
                 {/* Messages Area */}
                 <div style={{ flex: 1, overflowY: 'auto', paddingRight: 8, display: 'flex', flexDirection: 'column' }}>

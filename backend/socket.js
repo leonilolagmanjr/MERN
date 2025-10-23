@@ -29,6 +29,62 @@ const initSocket = (server) => {
         // CRITICAL: The 'sendMessage' listener is REMOVED.
         // Broadcasting is now handled reliably by the chatService after DB save.
 
+        // WebRTC Signaling for Video Calls
+        socket.on('call-user', ({ chatId, offer }) => {
+            const room = io.sockets.adapter.rooms.get(chatId);
+            if (room) {
+                const sockets = Array.from(room);
+                const otherSocketId = sockets.find(id => id !== socket.id);
+                if (otherSocketId) {
+                    io.to(otherSocketId).emit('incoming-call', { offer, callerId: socket.id });
+                }
+            }
+        });
+
+        socket.on('accept-call', ({ chatId }) => {
+            const room = io.sockets.adapter.rooms.get(chatId);
+            if (room) {
+                const sockets = Array.from(room);
+                const otherSocketId = sockets.find(id => id !== socket.id);
+                if (otherSocketId) {
+                    io.to(otherSocketId).emit('call-accepted');
+                }
+            }
+        });
+
+        socket.on('reject-call', ({ chatId }) => {
+            const room = io.sockets.adapter.rooms.get(chatId);
+            if (room) {
+                const sockets = Array.from(room);
+                const otherSocketId = sockets.find(id => id !== socket.id);
+                if (otherSocketId) {
+                    io.to(otherSocketId).emit('call-rejected');
+                }
+            }
+        });
+
+        socket.on('answer', ({ chatId, answer }) => {
+            const room = io.sockets.adapter.rooms.get(chatId);
+            if (room) {
+                const sockets = Array.from(room);
+                const otherSocketId = sockets.find(id => id !== socket.id);
+                if (otherSocketId) {
+                    io.to(otherSocketId).emit('answer', answer);
+                }
+            }
+        });
+
+        socket.on('ice-candidate', ({ chatId, candidate }) => {
+            const room = io.sockets.adapter.rooms.get(chatId);
+            if (room) {
+                const sockets = Array.from(room);
+                const otherSocketId = sockets.find(id => id !== socket.id);
+                if (otherSocketId) {
+                    io.to(otherSocketId).emit('ice-candidate', candidate);
+                }
+            }
+        });
+
         socket.on('disconnect', () => {
             //console.log('A user disconnected:', socket.id);
         });
