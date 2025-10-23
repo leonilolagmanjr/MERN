@@ -85,6 +85,21 @@ const initSocket = (server) => {
             }
         });
 
+        socket.on('call-busy', ({ targetId }) => {
+            io.to(targetId).emit('call-rejected', { reason: 'busy' });
+        });
+
+        socket.on('call-ended', ({ chatId }) => {
+            const room = io.sockets.adapter.rooms.get(chatId);
+            if (room) {
+                const sockets = Array.from(room);
+                const otherSocketId = sockets.find(id => id !== socket.id);
+                if (otherSocketId) {
+                    io.to(otherSocketId).emit('call-ended');
+                }
+            }
+        });
+
         socket.on('disconnect', () => {
             //console.log('A user disconnected:', socket.id);
         });

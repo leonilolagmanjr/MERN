@@ -40,11 +40,12 @@ const ChatWidget = () => {
     const [chatError, setChatError] = useState('');
 
     // Video Call State
-    const [isCalling, setIsCalling] = useState(false);
+    const [callState, setCallState] = useState('idle'); // 'idle' | 'calling' | 'ringing' | 'in-call'
     const [incomingCall, setIncomingCall] = useState(null);
     const [localStream, setLocalStream] = useState(null);
     const [remoteStream, setRemoteStream] = useState(null);
     const [peerConnection, setPeerConnection] = useState(null);
+    const [iceCandidatesBuffer, setIceCandidatesBuffer] = useState([]);
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
     
@@ -209,20 +210,48 @@ const ChatWidget = () => {
         };
 
         const handleIncomingCall = ({ offer, callerId }) => {
-            setIncomingCall({ offer, callerId });
-            ringSound.loop = true;
-            ringSound.play().catch(err => console.error('Ring sound error:', err));
-            if (navigator.vibrate) navigator.vibrate(1000);
+            if (callState === 'idle') {
+                setCallState('ringing');
+                setIncomingCall({ offer, callerId });
+                ringSound.loop = true;
+                ringSound.play().catch(err => console.error('Ring sound error:', err));
+                if (navigator.vibrate) navigator.vibrate(1000);
+            } else {
+                // If already in call, send busy signal
+                socket.emit("call-busy", { targetId: callerId });
+            }
         };
 
         const handleCallAccepted = () => {
-            setIncomingCall(null);
+            setCallState('in-call');
             ringSound.pause();
             ringSound.currentTime = 0;
         };
 
-        const handleCallRejected = () => {
+        const handleCallRejected = ({ reason } = {}) => {
+            setCallState('idle');
             setIncomingCall(null);
+            ringSound.pause();
+            ringSound.currentTime = 0;
+            if (reason === 'busy') {
+                alert("User is busy or declined.");
+            } else {
+                alert("Call declined.");
+            }
+        };
+
+        const handleCallEnded = () => {
+            setCallState('idle');
+            setIncomingCall(null);
+            if (peerConnection) {
+                peerConnection.close();
+                setPeerConnection(null);
+            }
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                setLocalStream(null);
+            }
+            setRemoteStream(null);
             ringSound.pause();
             ringSound.currentTime = 0;
         };
@@ -230,12 +259,26 @@ const ChatWidget = () => {
         const handleAnswer = async (answer) => {
             if (peerConnection) {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+                // Process buffered ICE candidates
+                setIceCandidatesBuffer(prev => {
+                    prev.forEach(cand => {
+                        if (peerConnection.remoteDescription) {
+                            peerConnection.addIceCandidate(new RTCIceCandidate(cand)).catch(err => console.error('Error adding buffered ICE candidate:', err));
+                        }
+                    });
+                    return [];
+                });
             }
         };
 
         const handleIceCandidate = (candidate) => {
             if (peerConnection) {
-                peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                if (peerConnection.remoteDescription) {
+                    peerConnection.addIceCandidate(new RTCIceCandidate(candidate)).catch(err => console.error('Error adding ICE candidate:', err));
+                } else {
+                    // Buffer the candidate until remote description is set
+                    setIceCandidatesBuffer(prev => [...prev, candidate]);
+                }
             }
         };
 
@@ -243,6 +286,7 @@ const ChatWidget = () => {
         socket.on('incoming-call', handleIncomingCall);
         socket.on('call-accepted', handleCallAccepted);
         socket.on('call-rejected', handleCallRejected);
+        socket.on('call-ended', handleCallEnded);
         socket.on('answer', handleAnswer);
         socket.on('ice-candidate', handleIceCandidate);
 
@@ -251,6 +295,7 @@ const ChatWidget = () => {
             socket.off('incoming-call', handleIncomingCall);
             socket.off('call-accepted', handleCallAccepted);
             socket.off('call-rejected', handleCallRejected);
+            socket.off('call-ended', handleCallEnded);
             socket.off('answer', handleAnswer);
             socket.off('ice-candidate', handleIceCandidate);
             socket.emit('leaveChat', chatId);
@@ -302,7 +347,7 @@ const ChatWidget = () => {
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
             socket.emit('call-user', { chatId: selectedChat._id, offer });
-            setIsCalling(true);
+            setCallState('calling');
         } catch (err) {
             console.error('Error starting call:', err);
             setChatError('Failed to start call. Check camera/microphone permissions.');
@@ -338,8 +383,10 @@ const ChatWidget = () => {
             await pc.setLocalDescription(answer);
             socket.emit('answer', { chatId: selectedChat._id, answer });
             socket.emit('accept-call', { chatId: selectedChat._id });
+            ringSound.pause();
+            ringSound.currentTime = 0;
             setIncomingCall(null);
-            setIsCalling(true);
+            setCallState('in-call');
         } catch (err) {
             console.error('Error accepting call:', err);
             setChatError('Failed to accept call.');
@@ -349,11 +396,13 @@ const ChatWidget = () => {
     const rejectCall = () => {
         socket.emit('reject-call', { chatId: selectedChat._id });
         setIncomingCall(null);
+        setCallState('idle');
         ringSound.pause();
         ringSound.currentTime = 0;
     };
 
     const hangUp = () => {
+        socket.emit('call-ended', { chatId: selectedChat._id });
         if (peerConnection) {
             peerConnection.close();
             setPeerConnection(null);
@@ -363,7 +412,24 @@ const ChatWidget = () => {
             setLocalStream(null);
         }
         setRemoteStream(null);
-        setIsCalling(false);
+        setCallState('idle');
+        setIncomingCall(null);
+        ringSound.pause();
+        ringSound.currentTime = 0;
+    };
+
+    const cancelCall = () => {
+        socket.emit('call-ended', { chatId: selectedChat._id });
+        if (peerConnection) {
+            peerConnection.close();
+            setPeerConnection(null);
+        }
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+            setLocalStream(null);
+        }
+        setRemoteStream(null);
+        setCallState('idle');
         setIncomingCall(null);
         ringSound.pause();
         ringSound.currentTime = 0;
@@ -452,7 +518,7 @@ const ChatWidget = () => {
                     alignItems: 'center'
                 }}>
                     <span>{chatHeader}</span>
-                    {isPrivateChat && !isCalling && (
+                    {isPrivateChat && callState === 'idle' && (
                         <button
                             onClick={startCall}
                             style={{
@@ -468,7 +534,29 @@ const ChatWidget = () => {
                             📞 Call
                         </button>
                     )}
-                    {isCalling && (
+                    {callState === 'calling' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Calling...</span>
+                            <button
+                                onClick={cancelCall}
+                                style={{
+                                    padding: '3px 8px',
+                                    backgroundColor: 'red',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: 3,
+                                    cursor: 'pointer',
+                                    fontSize: '10px'
+                                }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    )}
+                    {callState === 'ringing' && (
+                        <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>Ringing...</span>
+                    )}
+                    {callState === 'in-call' && (
                         <button
                             onClick={hangUp}
                             style={{
@@ -530,7 +618,7 @@ const ChatWidget = () => {
                 )}
 
                 {/* Video Call Area */}
-                {isCalling && (
+                {callState === 'in-call' && (
                     <div style={{
                         display: 'flex',
                         justifyContent: 'space-between',
