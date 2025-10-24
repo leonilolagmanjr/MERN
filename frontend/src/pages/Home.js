@@ -14,6 +14,7 @@ import {
 import { Link as RouterLink } from 'react-router-dom';
 import { fetchPostedJobs } from '../services/api';
 import Leaderboard from '../components/Leaderboard';
+import { fetchJobs } from '../services/api';
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
@@ -22,7 +23,7 @@ const Home = () => {
     const getJobs = async () => {
       try {
         const token = localStorage.getItem('token');
-        const data = await fetchPostedJobs(token);
+        const data = await fetchJobs(token);
         setJobs(data);
       } catch (err) {
         console.error('Error fetching jobs:', err);
@@ -86,6 +87,8 @@ const Home = () => {
                         >
                           <Card
                             sx={{
+                              width: '190px',
+                              height: '180px',
                               bgcolor: 'var(--color-card-bg)',
                               color: 'var(--color-text)',
                               textAlign: 'center',
@@ -132,7 +135,7 @@ const Home = () => {
                   {['Web Development', 'Graphic Design', 'Writing & Translation', 'Marketing'].map(
                     (category, index) => (
                       <Grid item xs={12} sm={6} md={6} key={index}>
-                        <Card sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)', textAlign: 'center' }}>
+                        <Card sx={{ width: '190px', height: '100px', bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)', textAlign: 'center' }}>
                           <CardContent>
                             <Typography variant="h6" sx={{ color: 'var(--color-text)' }}>
                               {category}

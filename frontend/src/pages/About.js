@@ -65,7 +65,10 @@ const About = () => {
           React.createElement('li', null, "Socket.IO: Enables real-time features like chat, notifications, and presence updates."),
           React.createElement('li', null, "Google Maps API: For location selection and marking jobs as remote or on-site."),
           React.createElement('li', null, "Material-UI (MUI): Design system for responsive layouts and consistent theming."),
-          React.createElement('li', null, "JWT Authentication: Secure user sessions and login management.")
+          React.createElement('li', null, "JWT Authentication: Secure user sessions and login management."),
+          React.createElement('li', null, "Vercel: Frontend Hosting."),
+          React.createElement('li', null, "Render: Backend Hosting."),
+          React.createElement('li', null, "Railway: Websocket Hosting.")
         )
       ),
 

@@ -327,7 +327,7 @@ const ChatWidget = () => {
                     refreshMessages();
                 }
                 refreshChatList();
-            }, 1000);
+            }, 2000);
         }
 
         return () => {

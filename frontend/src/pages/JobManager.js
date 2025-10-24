@@ -102,7 +102,7 @@ const JobManager = () => {
           </Typography>
           {/* Table Labels */}
           <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: 'var(--color-bg)', borderRadius: 1, fontWeight: 'bold', color: 'var(--color-text)', fontSize: 16 }}>
-            <Box sx={{ flex: 2 }}>Name</Box>
+            <Box sx={{ px: 16, flex: 1 }}>Name</Box>
             <Box sx={{ flex: 1 }}>Date Listed</Box>
             <Box sx={{ flex: 1 }}>Status</Box>
             <Box sx={{ flex: 1, textAlign: 'right' }}>Actions</Box>
@@ -124,7 +124,6 @@ const JobManager = () => {
                   </Box>
                   <Box>
                     <Typography variant="subtitle1" sx={{ color: 'var(--color-primary)', fontWeight: 'bold' }}>{job.title}</Typography>
-                    <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                   </Box>
                 </Box>
                 {/* Date Listed */}
@@ -170,7 +169,7 @@ const JobManager = () => {
               </Typography>
               {/* Table Labels */}
               <Box sx={{ display: 'flex', px: 2, py: 1, bgcolor: 'var(--color-bg)', borderRadius: 1, fontWeight: 'bold', color: 'var(--color-text)', fontSize: 16 }}>
-                <Box sx={{ flex: 2 }}>Name</Box>
+                <Box sx={{ px: 9, flex: 1 }}>Name</Box>
                 <Box sx={{ flex: 1 }}>Date Listed</Box>
                 <Box sx={{ flex: 1 }}>Price</Box>
                 <Box sx={{ flex: 1 }}>Category</Box>
@@ -195,7 +194,6 @@ const JobManager = () => {
                             {job.title}
                           </Link>
                         </Typography>
-                        <Typography variant="body2" sx={{ color: 'var(--color-text-gray)' }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                       </Box>
                     </Box>
                     {/* Date Listed */}
