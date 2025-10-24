@@ -32,7 +32,7 @@ const chatSchema = new mongoose.Schema({
   timestamps: true // Add createdAt and updatedAt timestamps automatically
 });
 
-// Create a unique index for private chats to prevent duplicates.
-chatSchema.index({ participants: 1 }, { unique: true, partialFilterExpression: { type: 'private' } });
+// Index for private chats (non-unique to allow multiple chats per pair)
+chatSchema.index({ participants: 1 }, { partialFilterExpression: { type: 'private' } });
 
 module.exports = mongoose.model('Chat', chatSchema);
