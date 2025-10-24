@@ -24,6 +24,161 @@ const socket = io(process.env.REACT_APP_SOCKET_URL, {
 // FIX: Helper function to reliably determine if a chat object is the Global Chat
 const isGlobalChat = (chat) => chat.participants && chat.participants.length === 0;
 
+// VideoCallPopup Component
+const VideoCallPopup = ({
+    localVideoRef,
+    remoteVideoRef,
+    onHangUp,
+    position,
+    size,
+    onDragStart,
+    onResizeStart
+}) => {
+    // Calculate aspect ratio for the videos
+    const videoAspectRatio = 16 / 9;
+    
+    // Calculate the best fit for the remote video to maintain aspect ratio
+    const calculateRemoteVideoStyle = () => {
+        const containerAspectRatio = size.width / size.height;
+        
+        if (containerAspectRatio > videoAspectRatio) {
+            // Container is wider than video - fit to height
+            return {
+                width: `${size.height * videoAspectRatio}px`,
+                height: '100%',
+                margin: '0 auto'
+            };
+        } else {
+            // Container is taller than video - fit to width
+            return {
+                width: '100%',
+                height: `${size.width / videoAspectRatio}px`,
+                margin: 'auto 0'
+            };
+        }
+    };
+
+    // Dynamic local video positioning and sizing
+    const localVideoSize = Math.min(size.width * 0.25, 120); // Max 25% of container width or 120px
+    const localVideoAspectRatio = 4 / 3; // Common webcam aspect ratio
+    
+    const localVideoStyle = {
+        position: 'absolute',
+        bottom: '10px',
+        right: '10px',
+        width: `${localVideoSize}px`,
+        height: `${localVideoSize / localVideoAspectRatio}px`,
+        border: '2px solid white',
+        borderRadius: '10px',
+        objectFit: 'contain', // Changed from 'cover' to 'contain'
+        backgroundColor: '#000', // Add background for letterboxing
+        zIndex: 10000,
+    };
+
+    const remoteVideoStyle = calculateRemoteVideoStyle();
+
+    return (
+        <div
+            style={{
+                position: 'absolute',
+                top: position.y,
+                left: position.x,
+                width: size.width,
+                height: size.height,
+                backgroundColor: '#000',
+                borderRadius: '10px',
+                boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+                zIndex: 9999,
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
+            {/* Draggable Header */}
+            <div
+                onMouseDown={onDragStart}
+                style={{
+                    height: '20px',
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                    cursor: 'grab',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    color: 'white',
+                }}
+            >
+                Drag to move
+            </div>
+
+            {/* Videos Container */}
+            <div 
+                style={{ 
+                    position: 'relative', 
+                    flex: 1, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    backgroundColor: '#000'
+                }}
+            >
+                {/* Remote Video - Centered with aspect ratio maintained */}
+                <video
+                    ref={remoteVideoRef}
+                    autoPlay
+                    style={{
+                        ...remoteVideoStyle,
+                        objectFit: 'contain', // Changed from 'cover' to 'contain'
+                        backgroundColor: '#000', // Add background for letterboxing
+                    }}
+                />
+                
+                {/* Local Video - Dynamic Overlay */}
+                <video
+                    ref={localVideoRef}
+                    autoPlay
+                    muted
+                    style={localVideoStyle}
+                />
+                
+                {/* Hang Up Button - Always Visible Overlay */}
+                <button
+                    onClick={onHangUp}
+                    style={{
+                        position: 'absolute',
+                        top: '10px',
+                        right: '10px',
+                        backgroundColor: 'red',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        padding: '5px 10px',
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        zIndex: 10001,
+                    }}
+                >
+                    End
+                </button>
+            </div>
+
+            {/* Resize Handle */}
+            <div
+                onMouseDown={onResizeStart}
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    width: '20px',
+                    height: '20px',
+                    cursor: 'nw-resize',
+                    backgroundColor: 'rgba(255,255,255,0.5)',
+                }}
+            />
+        </div>
+    );
+};
+
 const ChatWidget = () => {
     const { user } = useAuth();
     const { friendListUpdated, openChatUserId, clearOpenChatUser } = useContext(FriendContext);
@@ -48,6 +203,88 @@ const ChatWidget = () => {
     const [iceCandidatesBuffer, setIceCandidatesBuffer] = useState([]);
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+
+    // Popup Position and Size State
+    const [popupPosition, setPopupPosition] = useState({ x: window.innerWidth - 420, y: window.innerHeight - 320 });
+    const [popupSize, setPopupSize] = useState({ width: 400, height: 300 });
+
+    // Drag and Resize Handlers
+    const handleDragStart = useCallback((e) => {
+        e.preventDefault();
+        const startX = e.clientX - popupPosition.x;
+        const startY = e.clientY - popupPosition.y;
+
+        const handleMouseMove = (e) => {
+            let newX = e.clientX - startX;
+            let newY = e.clientY - startY;
+
+            // Constrain to viewport
+            newX = Math.max(0, Math.min(newX, window.innerWidth - popupSize.width));
+            newY = Math.max(0, Math.min(newY, window.innerHeight - popupSize.height));
+
+            setPopupPosition({ x: newX, y: newY });
+        };
+
+        const handleMouseUp = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }, [popupPosition, popupSize]);
+
+    const handleResizeStart = useCallback((e) => {
+        e.preventDefault();
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startWidth = popupSize.width;
+        const startHeight = popupSize.height;
+        const aspectRatio = 16 / 9; // Maintain 16:9 aspect ratio
+
+        const handleMouseMove = (e) => {
+            let deltaX = e.clientX - startX;
+            let deltaY = e.clientY - startY;
+
+            let newWidth = startWidth + deltaX;
+            let newHeight = startHeight + deltaY;
+
+            // Maintain aspect ratio by adjusting based on the larger change
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Width change is dominant, adjust height
+                newHeight = newWidth / aspectRatio;
+            } else {
+                // Height change is dominant, adjust width
+                newWidth = newHeight * aspectRatio;
+            }
+
+            // Minimum size constraints (based on aspect ratio)
+            const minWidth = 320;
+            const minHeight = minWidth / aspectRatio;
+            newWidth = Math.max(minWidth, newWidth);
+            newHeight = Math.max(minHeight, newHeight);
+
+            // Constrain so popup doesn't go outside viewport
+            if (popupPosition.x + newWidth > window.innerWidth) {
+                newWidth = window.innerWidth - popupPosition.x;
+                newHeight = newWidth / aspectRatio;
+            }
+            if (popupPosition.y + newHeight > window.innerHeight) {
+                newHeight = window.innerHeight - popupPosition.y;
+                newWidth = newHeight * aspectRatio;
+            }
+
+            setPopupSize({ width: newWidth, height: newHeight });
+        };
+
+        const handleMouseUp = () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+    }, [popupSize, popupPosition]);
     
     const bottomRef = useRef(null);
     const refreshIntervalRef = useRef(null);
@@ -55,7 +292,7 @@ const ChatWidget = () => {
     // --- Auto-Refresh Functionality ---
     const refreshMessages = useCallback(async () => {
         if (!selectedChat?._id || !user) return;
-        
+
         try {
             const res = await getMessages(selectedChat._id);
             setMessages(res.data);
@@ -462,16 +699,6 @@ const ChatWidget = () => {
         setNewMessage('');
         setChatError('');
 
-        // Optimistically add the message to the UI immediately
-        const optimisticMessage = {
-            _id: `temp-${Date.now()}`, // Temporary ID
-            content: content,
-            sender: { _id: user.id, name: user.name },
-            createdAt: new Date().toISOString(),
-            chat: selectedChat._id,
-        };
-        setMessages((prev) => [...prev]);
-
         try {
             const isGlobal = isGlobalChat(selectedChat);
             const otherParticipant = selectedChat.participants.find(p => p._id !== user.id);
@@ -501,8 +728,6 @@ const ChatWidget = () => {
             console.error('Failed to send message', err);
             setChatError(err.response?.data?.msg || 'Failed to send message.');
             setNewMessage(content);
-            // Remove the optimistic message on failure
-            setMessages((prev) => prev.filter(msg => msg._id !== optimisticMessage._id));
         }
     };
 
@@ -634,37 +859,7 @@ const ChatWidget = () => {
                     </div>
                 )}
 
-                {/* Video Call Area */}
-                {callState === 'in-call' && (
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        marginBottom: 10,
-                        height: '200px'
-                    }}>
-                        <video
-                            ref={localVideoRef}
-                            autoPlay
-                            muted
-                            style={{
-                                width: '48%',
-                                height: '100%',
-                                borderRadius: 5,
-                                backgroundColor: 'black'
-                            }}
-                        />
-                        <video
-                            ref={remoteVideoRef}
-                            autoPlay
-                            style={{
-                                width: '48%',
-                                height: '100%',
-                                borderRadius: 5,
-                                backgroundColor: 'black'
-                            }}
-                        />
-                    </div>
-                )}
+
 
                 {/* Messages Area */}
                 <div style={{ flex: 1, overflowY: 'auto', paddingRight: 8, display: 'flex', flexDirection: 'column' }}>
@@ -834,6 +1029,19 @@ const ChatWidget = () => {
                     {/* Messages Content */}
                     {renderChatContent()}
                 </div>
+            )}
+
+            {/* Video Call Popup */}
+            {callState === 'in-call' && (
+                <VideoCallPopup
+                    localVideoRef={localVideoRef}
+                    remoteVideoRef={remoteVideoRef}
+                    onHangUp={hangUp}
+                    position={popupPosition}
+                    size={popupSize}
+                    onDragStart={handleDragStart}
+                    onResizeStart={handleResizeStart}
+                />
             )}
         </div>
     );
