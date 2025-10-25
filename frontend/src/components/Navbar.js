@@ -30,7 +30,7 @@ const Navbar = () => {
     //{ text: 'Video Manager', to: '/videomanager' },
     //{ text: 'Task Manager', to: '/taskmanager' },
     { text: 'Social', to: '/social' },
-    { text: 'Forum', to: '/forum' },
+    //{ text: 'Forum', to: '/forum' },
     //{ text: 'Payments', to: '/payments' },
     //{ text: 'Transactions', to: '/transactions' },
     //{ text: 'Trade', to: '/trade' },
