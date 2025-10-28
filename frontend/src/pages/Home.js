@@ -101,9 +101,8 @@ const Home = () => {
                           >
                             <CardContent>
                               <Typography variant="h6" sx={{ color: 'var(--color-text)', mb: 1 }}>
-                                {job.title}
+                                {job.title.length > 20 ? job.title.substring(0, 20) + '...' : job.title}
                               </Typography>
-                              <Typography sx={{ mb: 1 }}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</Typography>
                               <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', fontWeight: 'bold' }}>
                                 {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
                               </Typography>
