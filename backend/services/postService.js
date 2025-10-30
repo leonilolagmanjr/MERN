@@ -67,8 +67,18 @@ const updatePost = async (postId, content, media, userId) => {
     const post = await Post.findById(postId);
     if (!post) throw new Error('Post not found');
     if (String(post.createdBy) !== String(userId)) throw new Error('Not authorized to update this post');
+
+    // If new media is provided, delete old media from Cloudinary and update
+    if (media && media.length > 0) {
+      if (post.media && post.media.length > 0) {
+        const cloudinary = require('../config/cloudinary');
+        const publicIds = post.media.map(mediaItem => mediaItem.public_id);
+        await cloudinary.api.delete_resources(publicIds);
+      }
+      post.media = media;
+    }
+
     post.content = content || post.content;
-    post.media = media || post.media;
     await post.save();
     return post;
   } catch (err) {

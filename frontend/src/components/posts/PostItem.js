@@ -10,6 +10,7 @@ import { likePost, addComment, deletePost, sharePost } from '../../services/api'
 import { useAuth } from '../../context/AuthContext';
 import CommentForm from './CommentForm';
 import CommentItem from './CommentItem';
+import EditPost from './EditPost';
 import UserLink from '../UserLink';
 import dayjs from 'dayjs';
 
@@ -21,6 +22,7 @@ const PostItem = ({ post, onPostUpdated }) => {
   const [showCommentForm, setShowCommentForm] = useState(false);
   const [comments, setComments] = useState(post.comments || []);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const open = Boolean(anchorEl);
 
   const handleLike = async () => {
@@ -78,10 +80,13 @@ const PostItem = ({ post, onPostUpdated }) => {
     }
   };
 
-  // Placeholder for edit functionality
   const handleEdit = () => {
-    alert('Edit functionality to be implemented');
+    setIsEditing(true);
     handleMenuClose();
+  };
+
+  const handleEditCancel = () => {
+    setIsEditing(false);
   };
 
   return (
@@ -128,18 +133,24 @@ const PostItem = ({ post, onPostUpdated }) => {
           )}
         </Box>
       </Box>
-      <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>{post.content}</Typography>
-      {post.media && post.media.length > 0 && (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
-          {post.media.map((media, idx) => {
-            const isVideo = media.url.match(/\.(mp4|webm|ogg)$/i);
-            return isVideo ? (
-              <video key={idx} src={media.url} controls style={{ width: '100%', borderRadius: 'var(--radius)' }} />
-            ) : (
-              <img key={idx} src={media.url} alt="post media" style={{ width: '100%', height: 'auto', borderRadius: 'var(--radius)' }} />
-            );
-          })}
-        </Box>
+      {isEditing ? (
+        <EditPost post={post} onPostUpdated={onPostUpdated} onCancel={handleEditCancel} />
+      ) : (
+        <>
+          <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>{post.content}</Typography>
+          {post.media && post.media.length > 0 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+              {post.media.map((media, idx) => {
+                const isVideo = media.url.match(/\.(mp4|webm|ogg)$/i);
+                return isVideo ? (
+                  <video key={idx} src={media.url} controls style={{ width: '100%', borderRadius: 'var(--radius)' }} />
+                ) : (
+                  <img key={idx} src={media.url} alt="post media" style={{ width: '100%', height: 'auto', borderRadius: 'var(--radius)' }} />
+                );
+              })}
+            </Box>
+          )}
+        </>
       )}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
         <Typography sx={{ color: 'var(--color-text-gray)', fontSize: '0.8rem' }}>

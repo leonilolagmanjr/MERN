@@ -72,15 +72,21 @@ const getThreads = async (req, res) => {
 
 // Update post
 const updatePost = async (req, res) => {
-  try {
-    const postId = req.params.postId;
-    const { content, media } = req.body;
-    const userId = req.user.id;
-    const updatedPost = await postService.updatePost(postId, content, media, userId);
-    res.json(updatedPost);
-  } catch (error) {
-    res.status(500).json({ msg: error.message || 'Server error updating post' });
-  }
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ msg: 'Error uploading files' });
+    }
+    try {
+      const postId = req.params.postId;
+      const { content } = req.body;
+      const media = req.files ? req.files.map(file => ({ url: file.path, public_id: file.filename })) : [];
+      const userId = req.user.id;
+      const updatedPost = await postService.updatePost(postId, content, media, userId);
+      res.json(updatedPost);
+    } catch (error) {
+      res.status(500).json({ msg: error.message || 'Server error updating post' });
+    }
+  });
 };
 
 // Delete post
