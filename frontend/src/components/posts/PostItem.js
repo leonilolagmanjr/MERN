@@ -40,8 +40,7 @@ const PostItem = ({ post, onPostUpdated }) => {
   const handleShare = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await sharePost(post._id, token);
-      setShareCount(response.shareCount);
+      await sharePost(post._id, token);
       onPostUpdated();
     } catch (err) {
       console.error('Error sharing post:', err);

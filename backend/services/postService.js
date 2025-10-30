@@ -149,6 +149,38 @@ const addComment = async (postId, userId, text) => {
   }
 };
 
+// Share Post
+const sharePost = async (postId, userId) => {
+  try {
+    const originalPost = await Post.findById(postId);
+    if (!originalPost) throw new Error('Post not found');
+
+    // Create a new post that references the original
+    const sharedPost = new Post({
+      content: originalPost.content,
+      media: originalPost.media,
+      createdBy: userId,
+      sharedFrom: postId,
+      type: 'post'
+    });
+    await sharedPost.save();
+
+    // Increment share count on original post
+    originalPost.shareCount = (originalPost.shareCount || 0) + 1;
+    await originalPost.save();
+
+    // Award XP for sharing a post
+    await awardXP(userId, 'post_shared');
+    const user = await User.findById(userId);
+    user.communityStats.posts += 1; // Count shared posts as posts
+    await user.save();
+
+    return sharedPost;
+  } catch (err) {
+    throw new Error(err.message || 'Error sharing post');
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
@@ -158,4 +190,5 @@ module.exports = {
   deletePost,
   likePost,
   addComment,
+  sharePost,
 };

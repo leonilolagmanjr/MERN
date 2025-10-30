@@ -126,18 +126,15 @@ const addComment = async (req, res) => {
   }
 };
 
-// Increment share count
+// Share post (create shared post)
 const sharePost = async (req, res) => {
   try {
     const postId = req.params.postId;
-    const post = await postService.getPostById(postId);
-    if (!post) return res.status(404).json({ msg: 'Post not found' });
-
-    post.shareCount = (post.shareCount || 0) + 1;
-    await post.save();
-    res.json({ shareCount: post.shareCount });
+    const userId = req.user.id;
+    const sharedPost = await postService.sharePost(postId, userId);
+    res.json(sharedPost);
   } catch (error) {
-    res.status(500).json({ msg: 'Server error sharing post' });
+    res.status(500).json({ msg: error.message || 'Server error sharing post' });
   }
 };
 

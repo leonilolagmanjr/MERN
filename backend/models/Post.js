@@ -15,6 +15,7 @@ const postSchema = new mongoose.Schema({
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array of user IDs who liked the post
   comments: [commentSchema], // Sub-document array for comments
   shareCount: { type: Number, default: 0 }, // Number of shares
+  sharedFrom: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' }, // Reference to original post if shared
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   type: { type: String, enum: ['post', 'thread'], default: 'post' }, // Type of post
   category: { type: String }, // Category for forum threads
