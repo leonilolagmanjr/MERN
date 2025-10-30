@@ -36,22 +36,22 @@ const DisplayVideo = ({ videoId }) => {
   }
 
   if (!video) {
-    return <Typography sx={{ color: '#c7d5e0', textAlign: 'center', mt: 4 }}>Video not found.</Typography>;
+    return <Typography sx={{ color: 'var(--color-text-secondary)', textAlign: 'center', mt: 4 }}>Video not found.</Typography>;
   }
 
   return (
-    <Box sx={{ bgcolor: '#23262e', borderRadius: 2, p: 2, mb: 3 }}>
+    <Box sx={{ bgcolor: 'var(--color-card-bg)', borderRadius: 2, p: 2, mb: 3 }}>
       <Box sx={{ mb: 2 }}>
         <UserLink userId={video.uploader?._id} name={video.uploader?.name} sx={{ fontWeight: 'bold', mb: 1 }} />
-        <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>
+        <Typography sx={{ color: 'var(--color-text-secondary)', fontSize: '0.8rem' }}>
           {dayjs(video.createdAt).format('h:mm A · MMM D, YYYY')}
         </Typography>
       </Box>
-      <Typography variant="h5" sx={{ color: '#c7d5e0', mb: 2 }}>
+      <Typography variant="h5" sx={{ color: 'var(--color-text)', mb: 2 }}>
         {video.title}
       </Typography>
       {video.description && (
-        <Typography sx={{ color: '#c7d5e0', mb: 2 }}>
+        <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>
           {video.description}
         </Typography>
       )}
@@ -66,10 +66,10 @@ const DisplayVideo = ({ videoId }) => {
         />
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>
+        <Typography sx={{ color: 'var(--color-text-secondary)', fontSize: '0.8rem' }}>
           {video.views || 0} Views
         </Typography>
-        <Typography sx={{ color: '#999', fontSize: '0.8rem' }}>
+        <Typography sx={{ color: 'var(--color-text-secondary)', fontSize: '0.8rem' }}>
           {video.likes || 0} Likes
         </Typography>
       </Box>

@@ -57,10 +57,10 @@ const Notification = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         PaperProps={{
-          sx: { bgcolor: '#171a21', color: '#c7d5e0', width: 300 },
+          sx: { bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)', width: 300 },
         }}
       >
-        <Typography variant="h6" sx={{ px: 2, py: 1, borderBottom: '1px solid #3a3f4b' }}>
+        <Typography variant="h6" sx={{ px: 2, py: 1, borderBottom: '1px solid var(--color-border)' }}>
           Friend Requests
         </Typography>
         {friendRequests.length === 0 ? (
@@ -72,7 +72,7 @@ const Notification = () => {
             <MenuItem key={req._id} sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Box>
                 <UserLink userId={req._id} name={req.name} />
-                <Typography variant="body2" sx={{ color: '#a9b7c6' }}>
+                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
                   {req.email}
                 </Typography>
               </Box>
@@ -80,7 +80,7 @@ const Notification = () => {
                 <Button
                   size="small"
                   variant="contained"
-                  sx={{ bgcolor: '#4CAF50', mr: 1 }}
+                  sx={{ bgcolor: 'var(--color-success)', mr: 1 }}
                   onClick={() => handleAccept(req._id)}
                 >
                   Accept
@@ -88,7 +88,7 @@ const Notification = () => {
                 <Button
                   size="small"
                   variant="contained"
-                  sx={{ bgcolor: '#ff4c4c' }}
+                  sx={{ bgcolor: 'var(--color-error)' }}
                   onClick={() => handleDeny(req._id)}
                 >
                   Deny

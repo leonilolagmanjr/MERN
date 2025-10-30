@@ -57,7 +57,7 @@ const Navbar = () => {
               <ListItemText primary={`${user?.name}'s Profile`} />
             </ListItem>
             <ListItem button onClick={handleLogout}>
-              <ListItemText primary="Logout" sx={{ color: '#ff4c4c' }} />
+              <ListItemText primary="Logout" sx={{ color: 'var(--color-error)' }} />
             </ListItem>
           </>
         ) : (

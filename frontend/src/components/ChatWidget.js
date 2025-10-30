@@ -85,7 +85,7 @@ const VideoCallPopup = ({
                 left: position.x,
                 width: size.width,
                 height: size.height,
-                backgroundColor: '#000',
+                backgroundColor: 'var(--color-bg)',
                 borderRadius: '10px',
                 boxShadow: '0 0 10px rgba(0,0,0,0.5)',
                 zIndex: 9999,
@@ -783,8 +783,8 @@ const ChatWidget = () => {
                                 onClick={cancelCall}
                                 style={{
                                     padding: '3px 8px',
-                                    backgroundColor: 'red',
-                                    color: 'white',
+                                    backgroundColor: 'var(--color-error)',
+                                    color: 'var(--color-bg)',
                                     border: 'none',
                                     borderRadius: 3,
                                     cursor: 'pointer',
@@ -931,7 +931,7 @@ const ChatWidget = () => {
                             cursor: (user && selectedChat && !isLoading && newMessage.trim()) ? 'pointer' : 'not-allowed',
                         }}
                     >
-                        {isLoading ? 'Sending...' : 'Send'}
+                        {isLoading ? 'Send' : 'Send'}
                     </button>
                 </form>
                 

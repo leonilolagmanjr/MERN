@@ -141,7 +141,7 @@ const FriendActions = ({
           Message
         </button>
         <button
-          style={{ ...styles.addFriendButton, backgroundColor: '#f44336' }}
+          style={{ ...styles.addFriendButton, backgroundColor: 'var(--color-error)' }}
           onClick={handleRemoveFriend}
           disabled={loading}
         >
@@ -155,7 +155,7 @@ const FriendActions = ({
       <>
         <button style={styles.addFriendButton} disabled>Request Sent</button>
         <button
-          style={{ ...styles.addFriendButton, marginLeft: '10px', backgroundColor: '#f44336' }}
+          style={{ ...styles.addFriendButton, marginLeft: '10px', backgroundColor: 'var(--color-error)' }}
           onClick={handleCancelFriendRequest}
           disabled={loading}
         >

@@ -17,6 +17,7 @@
   --color-card-bg: #f8f9fa;
   --color-text-gray: #666666;
   --color-text-lighter: #999999;
+  --color-text-secondary: #666666;
   --color-error: #cc0000;
 }
 
@@ -36,6 +37,7 @@
   --color-card-bg: #1a1a1a;
   --color-text-gray: #cccccc;
   --color-text-lighter: #ffffff;
+  --color-text-secondary: #cccccc;
   --color-error: #ff6666;
 }
 

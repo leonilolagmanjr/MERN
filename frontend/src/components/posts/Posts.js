@@ -37,7 +37,7 @@ const Posts = ({ refreshTrigger, userId, type, category, groupId, onPostUpdate }
   return (
     <Box>
       {posts.length === 0 ? (
-        <Typography sx={{ textAlign: 'center', color: '#8f98a0' }}>No posts yet. Be the first to post!</Typography>
+        <Typography sx={{ textAlign: 'center', color: 'var(--color-text-secondary)' }}>No posts yet. Be the first to post!</Typography>
       ) : (
         posts.map((post) => (
           <PostItem key={post._id} post={post} onPostUpdated={handlePostUpdated} />
