@@ -125,25 +125,27 @@ const SocialMedia = () => {
         {/* Main Content Area */}
         <Box sx={{ flex: 1 }}>
           <Typography variant="h4" sx={{ color: 'var(--color-text)', mb: 3, textAlign: 'center' }}>
-            {selectedGroup ? `${selectedGroupData?.name} Threads` : 'Social Media Feed'}
+            {selectedGroup ? `${selectedGroupData?.name} Group` : 'Social Media Feed'}
           </Typography>
 
           <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 3 }}>
             {isLoggedIn && (
               <Button variant="contained" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)' }} onClick={() => setOpenCreate(true)}>
-                {selectedGroup ? 'Create Thread' : 'Create Post'}
+                {selectedGroup ? 'Create Post' : 'Create Post'}
               </Button>
             )}
-            <Button variant="contained" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)' }} component={Link} to="/videos">
+            {/*<Button variant="contained" sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)' }} component={Link} to="/videos">
               View Videos
-            </Button>
+            </Button>*/}
           </Box>
 
-          <Posts
-            refreshTrigger={refreshPosts}
-            type={selectedGroup ? 'thread' : 'post'}
-            groupId={selectedGroup}
-          />
+          <Box sx={{ mx: 3 }}>
+            <Posts
+              refreshTrigger={refreshPosts}
+              type={selectedGroup ? 'thread' : 'post'}
+              groupId={selectedGroup}
+            />
+          </Box>
 
           {isLoggedIn && (
             <>
@@ -211,6 +213,20 @@ const SocialMedia = () => {
               </Modal>
             </>
           )}
+        </Box>
+
+        {/* Right Sidebar Placeholder */}
+        <Box sx={{ width: '300px', flexShrink: 0 }}>
+          <Card sx={{ bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)' }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ color: 'var(--color-primary)', mb: 2 }}>
+                Placeholder Sidebar
+              </Typography>
+              <Typography sx={{ color: 'var(--color-text)' }}>
+                Coming soon...
+              </Typography>
+            </CardContent>
+          </Card>
         </Box>
       </Box>
     </Box>

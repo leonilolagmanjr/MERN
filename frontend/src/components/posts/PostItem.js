@@ -85,7 +85,7 @@ const PostItem = ({ post, onPostUpdated }) => {
   };
 
   return (
-    <Box sx={{ bgcolor: 'var(--color-card-bg)', borderRadius: 'var(--radius)', p: 2, mb: 3, position: 'relative' }}>
+    <Box sx={{ bgcolor: 'var(--color-card-bg)', borderRadius: 'var(--radius)', p: 2, mb: 3, position: 'relative', maxWidth:"70%", margin: '0 auto' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
         <Box>
           <UserLink userId={post.createdBy?._id} name={post.createdBy?.name} />
@@ -130,13 +130,13 @@ const PostItem = ({ post, onPostUpdated }) => {
       </Box>
       <Typography sx={{ color: 'var(--color-text)', mb: 2 }}>{post.content}</Typography>
       {post.media && post.media.length > 0 && (
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
           {post.media.map((media, idx) => {
             const isVideo = media.url.match(/\.(mp4|webm|ogg)$/i);
             return isVideo ? (
-              <video key={idx} src={media.url} controls width="200" />
+              <video key={idx} src={media.url} controls style={{ width: '100%', borderRadius: 'var(--radius)' }} />
             ) : (
-              <img key={idx} src={media.url} alt="post media" style={{ maxWidth: 200, borderRadius: 'var(--radius)' }} />
+              <img key={idx} src={media.url} alt="post media" style={{ width: '100%', height: 'auto', borderRadius: 'var(--radius)' }} />
             );
           })}
         </Box>
