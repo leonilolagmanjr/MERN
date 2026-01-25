@@ -25,7 +25,7 @@ const App = () => {
     <Router>
       <div>
         <Navbar />
-        <div style={{ padding: '20px' }}>
+        <div>
           <Routes>
             {/* Render Home for both logged-in and logged-out users */}
             <Route path="/" element={<Home />} />

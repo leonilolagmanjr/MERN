@@ -6,25 +6,58 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-size: 16px;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+  color: var(--color-text-secondary);
+  background-color: var(--color-button-bg);
+  padding: 2px 6px;
+  border-radius: calc(var(--radius) / 2);
 }
 
 a {
   color: var(--color-link);
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 a:hover {
   text-decoration: underline;
+  color: var(--color-accent);
 }
 
-h1, h2, h3 {
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+h1, h2, h3, h4, h5, h6 {
   color: var(--color-text);
   font-family: var(--font-heading);
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
 }
 
 button {
@@ -35,54 +68,95 @@ button {
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 16px;
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 button:hover {
   background-color: var(--color-primary);
   color: var(--color-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(230, 126, 34, 0.4);
 }
 
-/* Responsive styles */
-@media (max-width: 600px) {
-  body {
-    font-size: 14px;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  h2 {
-    font-size: 1.25rem;
-  }
-
-  h3 {
-    font-size: 1.125rem;
-  }
-
-  button {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
+button:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 15px var(--color-primary);
 }
 
-@media (min-width: 601px) and (max-width: 960px) {
-  /* Tablet styles */
-  body {
-    font-size: 15px;
-  }
-
-  button {
-    padding: 9px 18px;
-    font-size: 15px;
-  }
+button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
-@media (min-width: 961px) {
-  /* Desktop styles */
-  body {
-    font-size: 16px;
-  }
+/* Card styles */
+.card {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(230, 126, 34, 0.15);
+  border-color: var(--color-primary);
+}
+
+/* Form elements */
+input, textarea, select {
+  background-color: var(--color-card-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Utility classes */
+.text-gray {
+  color: var(--color-text-gray);
+}
+
+.text-lighter {
+  color: var(--color-text-lighter);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.bg-warm-100 {
+  background-color: var(--color-warm-100);
+}
+
+.bg-warm-200 {
+  background-color: var(--color-warm-200);
+}
+
+.bg-warm-300 {
+  background-color: var(--color-warm-300);
+}
+
+.border {
+  border: 1px solid var(--color-border);
 }
 
 /* Chat Widget Styles */
@@ -90,16 +164,22 @@ button:hover {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: var(--color-button-bg);
-  color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-bg);
   border: 1px solid var(--color-border);
-  padding: 12px 16px;
+  padding: 16px;
   border-radius: 50%;
   font-size: 16px;
   font-weight: bold;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-widget-toggle:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 6px 24px rgba(230, 126, 34, 0.4);
 }
 
 .chat-widget-window {
@@ -112,17 +192,73 @@ button:hover {
   border: 2px solid var(--color-border);
   border-radius: var(--radius);
   display: flex;
-  flex-direction: row;
-  box-shadow: 0 0 15px rgba(0,0,0,0.6);
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   z-index: 999;
+  overflow: hidden;
 }
 
-/* Responsive Chat Widget */
+.chat-header {
+  background-color: var(--color-header-bg);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: var(--color-bg);
+}
+
+.chat-input-container {
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-card-bg);
+}
+
+.chat-input {
+  width: 100%;
+  background-color: var(--color-button-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-family: var(--font-body);
+}
+
+.chat-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+}
+
+/* Responsive styles */
 @media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+
+  button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
   .chat-widget-toggle {
     bottom: 10px;
     right: 10px;
-    padding: 10px 14px;
+    padding: 14px;
     font-size: 14px;
   }
 
@@ -137,8 +273,41 @@ button:hover {
 }
 
 @media (min-width: 601px) and (max-width: 960px) {
+  body {
+    font-size: 15px;
+  }
+
+  button {
+    padding: 9px 18px;
+    font-size: 15px;
+  }
+
   .chat-widget-window {
     width: 70vw;
     height: 70vh;
   }
+}
+
+@media (min-width: 961px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Enhanced scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-button-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-gray);
 }
