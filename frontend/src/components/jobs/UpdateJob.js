@@ -15,8 +15,11 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
 
   const currencies = ['USD', 'PHP'];
 
+  // Safely format price whether it's string or number
   const formatPrice = (value, currency) => {
-    const num = parseFloat(value.replace(/[^\d.]/g, ''));
+    if (value === null || value === undefined) return '';
+    const strValue = value.toString();
+    const num = parseFloat(strValue.replace(/[^\d.]/g, ''));
     if (isNaN(num)) return '';
     const symbol = currency === 'USD' ? '$' : '₱';
     return `${symbol}${num.toFixed(2)}`;
@@ -37,8 +40,10 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
       } else if (job.location) {
         location = job.location;
       }
+
       const currency = job.currency || 'USD';
       const formattedPrice = formatPrice(job.price || '', currency);
+
       setFormData({
         title: job.title || '',
         description: job.description || '',
@@ -54,12 +59,14 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const priceNum = parseFloat(formData.price.replace(/[^\d.]/g, ''));
+      // Convert the formatted price back to number
+      const priceNum = parseFloat(formData.price.toString().replace(/[^\d.]/g, '')) || 0;
       await editJob(job._id, { ...formData, price: priceNum }, token);
       setMessage('Job updated successfully!');
       onJobUpdated();
       onClose();
     } catch (err) {
+      console.error(err);
       setMessage('Failed to update job. Please try again.');
     }
   };
@@ -80,9 +87,7 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
         <textarea
           placeholder="Description"
           value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           style={styles.textarea}
           required
         />
@@ -94,8 +99,6 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
           style={styles.input}
           required
         />
-
-        {/* Currency Selection */}
         <select
           value={formData.currency}
           onChange={handleCurrencyChange}
@@ -107,14 +110,11 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
             <option key={curr} value={curr}>{curr}</option>
           ))}
         </select>
-
         <input
           type="text"
           placeholder="Category"
           value={formData.category}
-          onChange={(e) =>
-            setFormData({ ...formData, category: e.target.value })
-          }
+          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
           style={styles.input}
           required
         />
@@ -122,53 +122,98 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
           location={formData.location}
           onLocationChange={(location) => setFormData({ ...formData, location })}
         />
-        <button type="submit" style={styles.button}>
-          Update Job
-        </button>
+        <div style={styles.buttonContainer}>
+          <button type="button" onClick={onClose} style={styles.cancelButton}>
+            Cancel
+          </button>
+          <button type="submit" style={styles.button}>
+            Update Job
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
+// ...styles remain the same
 const styles = {
   container: {
     marginBottom: '20px',
+    backgroundColor: '#3F4E4F',
+    padding: '24px',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.3)',
   },
   heading: {
-    color: 'var(--color-text)',
-    marginBottom: '10px',
+    color: '#DCD7C9',
+    marginBottom: '15px',
+    fontSize: '1.75rem',
+    fontWeight: 600,
   },
   message: {
-    color: 'var(--color-primary)',
-    marginBottom: '10px',
+    color: '#A27B5C',
+    marginBottom: '15px',
+    padding: '10px 14px',
+    backgroundColor: 'rgba(162, 123, 92, 0.1)',
+    borderRadius: '8px',
+    borderLeft: '4px solid #A27B5C',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '10px',
+    gap: '12px',
   },
   input: {
-    padding: '10px',
-    borderRadius: 'var(--radius)',
-    border: '1px solid var(--color-primary)',
-    backgroundColor: 'var(--color-card-bg)',
-    color: 'var(--color-text)',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.3)',
+    backgroundColor: '#2C3639',
+    color: '#DCD7C9',
+    fontSize: '16px',
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+    transition: 'all 0.2s ease',
   },
   textarea: {
-    padding: '10px',
-    borderRadius: 'var(--radius)',
-    border: '1px solid var(--color-primary)',
-    backgroundColor: 'var(--color-card-bg)',
-    color: 'var(--color-text)',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.3)',
+    backgroundColor: '#2C3639',
+    color: '#DCD7C9',
+    fontSize: '16px',
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
     resize: 'none',
+    minHeight: '120px',
+    transition: 'all 0.2s ease',
+  },
+  buttonContainer: {
+    display: 'flex',
+    gap: '12px',
+    justifyContent: 'flex-end',
+    marginTop: '10px',
   },
   button: {
-    backgroundColor: 'var(--color-primary)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: 'var(--radius)',
+    backgroundColor: '#A27B5C',
+    color: '#2C3639',
+    border: '2px solid #A27B5C',
+    padding: '12px 24px',
+    borderRadius: '8px',
     cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 600,
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+  },
+  cancelButton: {
+    backgroundColor: '#3F4E4F',
+    color: '#DCD7C9',
+    border: '2px solid #A27B5C',
+    padding: '12px 24px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 600,
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   },
 };
 

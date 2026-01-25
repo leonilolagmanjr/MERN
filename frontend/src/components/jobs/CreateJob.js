@@ -159,33 +159,83 @@ const CreateJob = ({ onJobCreated }) => {
 };
 
 const styles = {
-  container: { marginBottom: '20px' },
-  heading: { color: 'var(--color-text)', marginBottom: '10px' },
-  message: { color: 'var(--color-primary)', marginBottom: '10px' },
-  form: { display: 'flex', flexDirection: 'column', gap: '10px' },
+  container: { 
+    marginBottom: '20px',
+    backgroundColor: '#3F4E4F',
+    padding: '20px',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.3)'
+  },
+  heading: { 
+    color: '#DCD7C9', 
+    marginBottom: '10px',
+    fontSize: '1.75rem',
+    fontWeight: 600
+  },
+  message: { 
+    color: '#A27B5C', 
+    marginBottom: '10px',
+    padding: '8px 12px',
+    backgroundColor: 'rgba(162, 123, 92, 0.1)',
+    borderRadius: '8px',
+    borderLeft: '4px solid #A27B5C'
+  },
+  form: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: '12px' 
+  },
   input: {
-    padding: '10px',
-    borderRadius: 'var(--radius)',
-    border: '1px solid var(--color-primary)',
-    backgroundColor: 'var(--color-card-bg)',
-    color: 'var(--color-text)',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.3)',
+    backgroundColor: '#2C3639',
+    color: '#DCD7C9',
+    fontSize: '16px',
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+    transition: 'all 0.2s ease'
   },
   textarea: {
-    padding: '10px',
-    borderRadius: 'var(--radius)',
-    border: '1px solid var(--color-primary)',
-    backgroundColor: 'var(--color-card-bg)',
-    color: 'var(--color-text)',
+    padding: '12px 16px',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.3)',
+    backgroundColor: '#2C3639',
+    color: '#DCD7C9',
+    fontSize: '16px',
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
     resize: 'none',
+    minHeight: '120px',
+    transition: 'all 0.2s ease'
   },
   button: {
-    backgroundColor: 'var(--color-primary)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: 'var(--radius)',
+    backgroundColor: '#A27B5C',
+    color: '#2C3639',
+    border: '2px solid #A27B5C',
+    padding: '12px 24px',
+    borderRadius: '8px',
     cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 600,
+    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    marginTop: '10px'
   },
+};
+
+// Adding hover effects via inline styles (React doesn't support :hover in style objects)
+const buttonHoverStyle = {
+  backgroundColor: '#8a6a50',
+  color: '#2C3639',
+  transform: 'translateY(-2px)',
+  boxShadow: '0 6px 16px rgba(162, 123, 92, 0.4)',
+  borderColor: '#8a6a50'
+};
+
+const inputFocusStyle = {
+  outline: 'none',
+  borderColor: '#A27B5C',
+  boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
+  backgroundColor: 'rgba(44, 54, 57, 0.9)'
 };
 
 export default CreateJob;

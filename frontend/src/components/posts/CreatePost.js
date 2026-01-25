@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box } from '@mui/material';
+import { TextField, Button, Box, Typography } from '@mui/material';
 import { createPost } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+
 
 const CreatePost = ({ onPostCreated, type = 'post', category, groupId }) => {
   const { user } = useAuth();
@@ -50,24 +51,71 @@ const CreatePost = ({ onPostCreated, type = 'post', category, groupId }) => {
         onChange={(e) => setContent(e.target.value)}
         fullWidth
         sx={{
-          bgcolor: 'var(--color-card-bg)',
-          input: { color: 'var(--color-text)' },
-          '& .MuiInputLabel-root': { color: 'var(--color-text)' },
-          '& .MuiOutlinedInput-root': { color: 'var(--color-text)'},
-            '& fieldset': { borderColor: 'var(--color-primary)' },
+          bgcolor: '#3F4E4F',
+          '& .MuiInputLabel-root': { 
+            color: '#DCD7C9',
+            '&.Mui-focused': { color: '#A27B5C' }
+          },
+          '& .MuiOutlinedInput-root': { 
+            color: '#DCD7C9',
+            '& fieldset': { 
+              borderColor: 'rgba(162, 123, 92, 0.3)' 
+            },
+            '&:hover fieldset': { 
+              borderColor: 'rgba(162, 123, 92, 0.5)' 
+            },
+            '&.Mui-focused fieldset': { 
+              borderColor: '#A27B5C' 
+            }
+          },
         }}
       />
-      <input
-        type="file"
-        multiple
-        accept="image/*,video/*"
-        onChange={handleFileChange}
-        style={{ color: 'var(--color-text)' }}
-      />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Button
+          component="label"
+          variant="outlined"
+          size="small"
+          sx={{
+            color: '#A27B5C',
+            borderColor: 'rgba(162, 123, 92, 0.5)',
+            '&:hover': {
+              borderColor: '#A27B5C',
+              bgcolor: 'rgba(162, 123, 92, 0.1)'
+            }
+          }}
+        >
+          Add Media
+          <input
+            type="file"
+            hidden
+            multiple
+            accept="image/*,video/*"
+            onChange={handleFileChange}
+          />
+        </Button>
+        {media.length > 0 && (
+          <Typography sx={{ color: '#A27B5C', fontSize: '0.875rem' }}>
+            {media.length} file{media.length !== 1 ? 's' : ''} selected
+          </Typography>
+        )}
+      </Box>
       <Button
         type="submit"
         variant="contained"
-        sx={{ bgcolor: 'var(--color-primary)', color: 'var(--color-bg)' }}
+        sx={{ 
+          bgcolor: '#A27B5C', 
+          color: '#2C3639',
+          fontWeight: 600,
+          '&:hover': {
+            bgcolor: '#8a6a50',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 6px 16px rgba(162, 123, 92, 0.4)'
+          },
+          '&:disabled': {
+            bgcolor: 'rgba(63, 78, 79, 0.7)',
+            color: 'rgba(220, 215, 201, 0.5)'
+          }
+        }}
         disabled={loading || !content.trim()}
       >
         {loading ? 'Posting...' : 'Post'}

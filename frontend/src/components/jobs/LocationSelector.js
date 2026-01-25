@@ -41,6 +41,7 @@ const LocationSelector = ({ location, onLocationChange }) => {
             value="remote"
             checked={location.type === 'remote'}
             onChange={handleTypeChange}
+            style={styles.radioInput}
           />
           Remote
         </label>
@@ -50,6 +51,7 @@ const LocationSelector = ({ location, onLocationChange }) => {
             value="physical"
             checked={location.type === 'physical'}
             onChange={handleTypeChange}
+            style={styles.radioInput}
           />
           Physical
         </label>
@@ -75,8 +77,8 @@ const LocationSelector = ({ location, onLocationChange }) => {
 };
 
 const render = (status) => {
-  if (status === Status.LOADING) return <div>Loading...</div>;
-  if (status === Status.FAILURE) return <div>Error loading map</div>;
+  if (status === Status.LOADING) return <div style={styles.loadingText}>Loading map...</div>;
+  if (status === Status.FAILURE) return <div style={styles.errorText}>Error loading map</div>;
   return null;
 };
 
@@ -201,13 +203,6 @@ const MapComponent = ({ center, zoom, onLocationSelect, selectedLocation }) => {
     }
   }, [marker, selectedLocation, map]);
 
-  // Prevent form submission on enter
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-    }
-  };
-
   return (
     <div style={styles.mapContainer}>
       <AddressAutocomplete
@@ -222,11 +217,42 @@ const MapComponent = ({ center, zoom, onLocationSelect, selectedLocation }) => {
 };
 
 const styles = {
-  container: { marginBottom: '20px' },
-  label: { display: 'block', color: 'var(--color-text)', marginBottom: '10px' },
-  radioGroup: { display: 'flex', gap: '20px', marginBottom: '10px' },
-  radioLabel: { color: 'var(--color-text)', cursor: 'pointer' },
-  physicalContainer: { marginTop: '10px' },
+  container: { 
+    marginBottom: '20px',
+    backgroundColor: '#3F4E4F',
+    padding: '20px',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.3)'
+  },
+  label: { 
+    display: 'block', 
+    color: '#DCD7C9', 
+    marginBottom: '10px',
+    fontSize: '16px',
+    fontWeight: 600
+  },
+  radioGroup: { 
+    display: 'flex', 
+    gap: '20px', 
+    marginBottom: '10px' 
+  },
+  radioLabel: { 
+    color: '#DCD7C9', 
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '16px'
+  },
+  radioInput: {
+    accentColor: '#A27B5C',
+    width: '18px',
+    height: '18px',
+    cursor: 'pointer'
+  },
+  physicalContainer: { 
+    marginTop: '10px' 
+  },
   mapContainer: {
     height: '200px',
     marginBottom: '20px',
@@ -234,12 +260,29 @@ const styles = {
     zIndex: 1,
     display: 'flex',
     flexDirection: 'column',
+    gap: '10px'
   },
   map: {
     flex: 1,
     width: '100%',
-    borderRadius: 'var(--radius)',
-    border: '1px solid var(--color-primary)',
+    borderRadius: '8px',
+    border: '2px solid rgba(162, 123, 92, 0.5)',
+  },
+  loadingText: {
+    color: '#A27B5C',
+    padding: '20px',
+    textAlign: 'center',
+    backgroundColor: 'rgba(162, 123, 92, 0.1)',
+    borderRadius: '8px',
+    border: '1px solid rgba(162, 123, 92, 0.3)'
+  },
+  errorText: {
+    color: '#dc3545',
+    padding: '20px',
+    textAlign: 'center',
+    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+    borderRadius: '8px',
+    border: '1px solid rgba(220, 53, 69, 0.3)'
   },
 };
 

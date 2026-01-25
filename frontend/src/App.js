@@ -9,7 +9,7 @@ import ReadJob from './components/jobs/ReadJob';
 import JobManager from './pages/JobManager'; // Import JobManager component
 import BrowseJobs from './pages/BrowseJobs'; // Import the new page
 import JobDetail from './pages/JobDetail';
-import ChatWidget from './components/ChatWidget';
+import ChatWidget from './components/chat/ChatWidget';
 import EditProfile from './pages/EditProfile'; // Import EditProfile
 import About from './pages/About';
 import VideoGallery from './pages/VideoGallery'; // Import VideoGallery
