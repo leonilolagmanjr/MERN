@@ -25,43 +25,111 @@ const Navbar = () => {
     { text: 'Home', to: '/' },
     { text: 'Browse', to: '/browse' },
     { text: 'About', to: '/about' },
-    //{ text: 'Videos', to: '/videos' },
-    //{ text: 'Video Manager', to: '/videomanager' },
-    //{ text: 'Task Manager', to: '/taskmanager' },
     { text: 'Social', to: '/social' },
     { text: 'Forum', to: '/forum' },
-    //{ text: 'Payments', to: '/payments' },
-    //{ text: 'Transactions', to: '/transactions' },
-    //{ text: 'Trade', to: '/trade' },
-    //{ text: 'Verification', to: '/verification' },
-    //{ text: 'Edit Profile', to: '/editprofile' },
   ];
 
   const drawerList = (
     <Box
-      sx={{ width: 250 }}
+      sx={{ 
+        width: 250,
+        height: '100%',
+        bgcolor: '#2C3639'
+      }}
       role="presentation"
       onClick={toggleDrawer(false)}
       onKeyDown={toggleDrawer(false)}
     >
       <List>
         {menuItems.map((item) => (
-          <ListItem button component={Link} to={item.to} key={item.text}>
-            <ListItemText primary={item.text} />
+          <ListItem 
+            button 
+            component={Link} 
+            to={item.to} 
+            key={item.text}
+            sx={{
+              borderBottom: '1px solid rgba(162, 123, 92, 0.1)',
+              '&:hover': {
+                bgcolor: 'rgba(162, 123, 92, 0.1)'
+              }
+            }}
+          >
+            <ListItemText 
+              primary={item.text} 
+              sx={{ 
+                color: '#DCD7C9',
+                '& .MuiListItemText-primary': {
+                  fontWeight: 500
+                }
+              }} 
+            />
           </ListItem>
         ))}
         {isLoggedIn ? (
           <>
-            <ListItem button component={Link} to={`/profile/${user?.id}`}>
-              <ListItemText primary={`${user?.name}'s Profile`} />
+            <ListItem 
+              button 
+              component={Link} 
+              to={`/profile/${user?.id}`}
+              sx={{
+                borderBottom: '1px solid rgba(162, 123, 92, 0.1)',
+                '&:hover': {
+                  bgcolor: 'rgba(162, 123, 92, 0.1)'
+                }
+              }}
+            >
+              <ListItemText 
+                primary={`${user?.name}'s Profile`} 
+                sx={{ 
+                  color: '#DCD7C9',
+                  '& .MuiListItemText-primary': {
+                    fontWeight: 500
+                  }
+                }} 
+              />
             </ListItem>
-            <ListItem button onClick={handleLogout}>
-              <ListItemText primary="Logout" sx={{ color: 'var(--color-error)' }} />
+            <ListItem 
+              button 
+              onClick={handleLogout}
+              sx={{
+                '&:hover': {
+                  bgcolor: 'rgba(255, 107, 107, 0.1)'
+                }
+              }}
+            >
+              <ListItemText 
+                primary="Logout" 
+                sx={{ 
+                  color: '#ff6b6b',
+                  '& .MuiListItemText-primary': {
+                    fontWeight: 500
+                  }
+                }} 
+              />
             </ListItem>
           </>
         ) : (
-          <ListItem button component={Link} to="/auth">
-            <ListItemText primary="Login" />
+          <ListItem 
+            button 
+            component={Link} 
+            to="/auth"
+            sx={{
+              borderTop: '1px solid rgba(162, 123, 92, 0.3)',
+              mt: 1,
+              '&:hover': {
+                bgcolor: 'rgba(162, 123, 92, 0.1)'
+              }
+            }}
+          >
+            <ListItemText 
+              primary="Login" 
+              sx={{ 
+                color: '#A27B5C',
+                '& .MuiListItemText-primary': {
+                  fontWeight: 600
+                }
+              }} 
+            />
           </ListItem>
         )}
       </List>
@@ -69,17 +137,52 @@ const Navbar = () => {
   );
 
   return (
-    <AppBar position="static" sx={{ bgcolor: 'var(--color-header-bg)', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.2)' }}>
+    <AppBar 
+      position="static" 
+      sx={{ 
+        bgcolor: '#2C3639', 
+        boxShadow: '0 4px 12px rgba(44, 54, 57, 0.8)',
+        borderBottom: '2px solid #A27B5C'
+      }}
+    >
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {/* Left Section */}
         <Box display="flex" alignItems="center" gap={2}>
-          <Typography variant="h6" component={Link} to="/" sx={{ fontWeight: 'bold', color: 'var(--color-text)', textDecoration: 'none' }}>
+          <Typography 
+            variant="h6" 
+            component={Link} 
+            to="/" 
+            sx={{ 
+              fontWeight: 'bold', 
+              color: '#DCD7C9', 
+              textDecoration: 'none',
+              fontSize: { xs: '1.1rem', sm: '1.25rem' },
+              '&:hover': {
+                color: '#A27B5C'
+              }
+            }}
+          >
             PBuild
           </Typography>
           {!isMobile && (
-            <Box display="flex" gap={2}>
+            <Box display="flex" gap={1}>
               {menuItems.map((item) => (
-                <Button component={Link} to={item.to} sx={{ color: 'var(--color-text)' }} key={item.text}>
+                <Button 
+                  component={Link} 
+                  to={item.to} 
+                  key={item.text}
+                  sx={{ 
+                    color: '#DCD7C9',
+                    fontWeight: 500,
+                    fontSize: '0.9rem',
+                    px: 1.5,
+                    '&:hover': {
+                      color: '#A27B5C',
+                      bgcolor: 'rgba(162, 123, 92, 0.1)',
+                      borderRadius: '4px'
+                    }
+                  }}
+                >
                   {item.text}
                 </Button>
               ))}
@@ -93,9 +196,14 @@ const Navbar = () => {
             <>
               <IconButton
                 edge="start"
-                color="inherit"
                 aria-label="menu"
                 onClick={toggleDrawer(true)}
+                sx={{
+                  color: '#DCD7C9',
+                  '&:hover': {
+                    bgcolor: 'rgba(162, 123, 92, 0.1)'
+                  }
+                }}
               >
                 <MenuIcon />
               </IconButton>
@@ -103,6 +211,11 @@ const Navbar = () => {
                 anchor="right"
                 open={drawerOpen}
                 onClose={toggleDrawer(false)}
+                PaperProps={{
+                  sx: {
+                    bgcolor: '#2C3639'
+                  }
+                }}
               >
                 {drawerList}
               </Drawer>
@@ -112,16 +225,49 @@ const Navbar = () => {
               {isLoggedIn ? (
                 <>
                   <Notification />
-                  <UserLink userId={user?.id} name={user?.name} sx={{ textTransform: 'none' }} />
+                  <UserLink 
+                    userId={user?.id} 
+                    name={user?.name} 
+                    sx={{ 
+                      color: '#A27B5C',
+                      fontWeight: 600,
+                      fontSize: '0.95rem'
+                    }} 
+                  />
                   <Button
                     onClick={handleLogout}
-                    sx={{ color: 'var(--color-error)', textTransform: 'none' }}
+                    sx={{ 
+                      color: '#ff6b6b',
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      '&:hover': {
+                        bgcolor: 'rgba(255, 107, 107, 0.1)',
+                        borderRadius: '4px'
+                      }
+                    }}
                   >
                     Logout
                   </Button>
                 </>
               ) : (
-                <Button component={Link} to="/auth" sx={{ color: 'var(--color-primary)' }}>
+                <Button 
+                  component={Link} 
+                  to="/auth" 
+                  sx={{ 
+                    color: '#A27B5C',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    border: '2px solid #A27B5C',
+                    borderRadius: '8px',
+                    px: 2,
+                    '&:hover': {
+                      bgcolor: '#A27B5C',
+                      color: '#2C3639',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 12px rgba(162, 123, 92, 0.4)'
+                    }
+                  }}
+                >
                   Login
                 </Button>
               )}

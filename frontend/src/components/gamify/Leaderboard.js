@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, List, ListItem, Avatar, Grid } from '@mui/material';
-import { fetchLeaderboard } from '../services/api';
+import { fetchLeaderboard } from '../../services/api';
 import LevelBar from './LevelBar';
 
 function Leaderboard() {

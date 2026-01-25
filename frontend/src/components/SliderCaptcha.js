@@ -28,11 +28,22 @@ export default function SliderCaptcha({ onPass }) {
   };
 
   return (
-    <Box sx={{ width: 300, textAlign: "center", p: 2 }}>
-      <Typography variant="subtitle1" sx={{ mb: 1 }}>
+    <Box sx={{ 
+      width: 300, 
+      textAlign: "center", 
+      p: 3,
+      bgcolor: '#3F4E4F',
+      borderRadius: '8px',
+      border: '2px solid rgba(162, 123, 92, 0.3)'
+    }}>
+      <Typography variant="subtitle1" sx={{ 
+        mb: 2,
+        color: '#DCD7C9',
+        fontWeight: 500
+      }}>
         Drag the slider into the highlighted zone to verify
       </Typography>
-      <Box sx={{ position: "relative", mb: 2 }}>
+      <Box sx={{ position: "relative", mb: 3 }}>
         <Box
           sx={{
             position: "absolute",
@@ -41,9 +52,9 @@ export default function SliderCaptcha({ onPass }) {
             height: 8,
             top: "50%",
             transform: "translateY(-50%)",
-            backgroundColor: verified ? "success.main" : "warning.main",
+            backgroundColor: verified ? '#4caf50' : '#A27B5C',
             borderRadius: 1,
-            opacity: 0.7,
+            opacity: verified ? 0.9 : 0.7,
           }}
         />
         <Slider
@@ -52,19 +63,52 @@ export default function SliderCaptcha({ onPass }) {
           min={0}
           max={100}
           disabled={verified}
-          sx={{ color: verified ? "success.main" : "primary.main", height: 8 }}
+          sx={{ 
+            color: verified ? '#4caf50' : '#A27B5C', 
+            height: 8,
+            '& .MuiSlider-track': {
+              backgroundColor: verified ? '#4caf50' : '#A27B5C',
+            },
+            '& .MuiSlider-thumb': {
+              backgroundColor: verified ? '#4caf50' : '#DCD7C9',
+              '&:hover, &.Mui-focusVisible': {
+                boxShadow: '0 0 0 8px rgba(162, 123, 92, 0.16)',
+              }
+            }
+          }}
         />
       </Box>
       <Button
         variant="contained"
-        color={verified ? "success" : "primary"}
+        sx={{
+          bgcolor: verified ? '#4caf50' : '#A27B5C',
+          color: verified ? '#2C3639' : '#2C3639',
+          fontWeight: 600,
+          '&:hover': {
+            bgcolor: verified ? '#388e3c' : '#8a6a50',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 6px 16px rgba(162, 123, 92, 0.4)'
+          },
+          '&:disabled': {
+            bgcolor: 'rgba(63, 78, 79, 0.7)',
+            color: 'rgba(220, 215, 201, 0.5)'
+          }
+        }}
         onClick={handleVerify}
+        disabled={verified}
       >
-        {verified ? "Verified" : "Verify"}
+        {verified ? "Verified ✓" : "Verify"}
       </Button>
-      <Typography sx={{ mt: 1, color: verified ? "green" : "error.main" }}>
-        {msg}
-      </Typography>
+      {verified && (
+        <Typography sx={{ 
+          mt: 2, 
+          color: '#4caf50',
+          fontWeight: 500,
+          fontSize: '0.9rem'
+        }}>
+          Verification successful!
+        </Typography>
+      )}
     </Box>
   );
 }

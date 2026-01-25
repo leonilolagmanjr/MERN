@@ -47,8 +47,26 @@ const Notification = () => {
 
   return (
     <Box>
-      <IconButton color="inherit" onClick={handleMenuOpen}>
-        <Badge badgeContent={friendRequests.length} color="error">
+      <IconButton 
+        color="inherit" 
+        onClick={handleMenuOpen}
+        sx={{
+          color: '#DCD7C9',
+          '&:hover': {
+            bgcolor: 'rgba(162, 123, 92, 0.1)'
+          }
+        }}
+      >
+        <Badge 
+          badgeContent={friendRequests.length} 
+          sx={{
+            '& .MuiBadge-badge': {
+              bgcolor: '#A27B5C',
+              color: '#2C3639',
+              fontWeight: 'bold'
+            }
+          }}
+        >
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -57,30 +75,103 @@ const Notification = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
         PaperProps={{
-          sx: { bgcolor: 'var(--color-card-bg)', color: 'var(--color-text)', width: 300 },
+          sx: { 
+            bgcolor: '#3F4E4F', 
+            color: '#DCD7C9', 
+            width: 350,
+            maxHeight: 400,
+            overflow: 'auto',
+            border: '2px solid rgba(162, 123, 92, 0.3)',
+            borderRadius: '8px',
+            mt: 1
+          },
         }}
       >
-        <Typography variant="h6" sx={{ px: 2, py: 1, borderBottom: '1px solid var(--color-border)' }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            px: 2, 
+            py: 1.5, 
+            borderBottom: '1px solid rgba(162, 123, 92, 0.3)',
+            fontWeight: 600,
+            fontSize: '1rem'
+          }}
+        >
           Friend Requests
         </Typography>
         {friendRequests.length === 0 ? (
-          <MenuItem disabled>
-            <Typography sx={{ fontStyle: 'italic' }}>No new friend requests</Typography>
+          <MenuItem 
+            disabled
+            sx={{
+              '&.Mui-disabled': {
+                opacity: 1
+              }
+            }}
+          >
+            <Typography sx={{ 
+              fontStyle: 'italic',
+              color: 'rgba(220, 215, 201, 0.7)',
+              py: 1
+            }}>
+              No new friend requests
+            </Typography>
           </MenuItem>
         ) : (
           friendRequests.map((req) => (
-            <MenuItem key={req._id} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Box>
-                <UserLink userId={req._id} name={req.name} />
-                <Typography variant="body2" sx={{ color: 'var(--color-text-secondary)' }}>
+            <MenuItem 
+              key={req._id} 
+              sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                py: 1.5,
+                borderBottom: '1px solid rgba(162, 123, 92, 0.1)',
+                '&:hover': {
+                  bgcolor: 'rgba(162, 123, 92, 0.1)'
+                },
+                '&:last-child': {
+                  borderBottom: 'none'
+                }
+              }}
+            >
+              <Box sx={{ flex: 1, mr: 1 }}>
+                <UserLink 
+                  userId={req._id} 
+                  name={req.name} 
+                  sx={{ 
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    color: '#DCD7C9'
+                  }} 
+                />
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'rgba(220, 215, 201, 0.7)',
+                    fontSize: '0.8rem',
+                    mt: 0.5
+                  }}
+                >
                   {req.email}
                 </Typography>
               </Box>
-              <Box>
+              <Box sx={{ display: 'flex', gap: 0.5 }}>
                 <Button
                   size="small"
                   variant="contained"
-                  sx={{ bgcolor: 'var(--color-success)', mr: 1 }}
+                  sx={{ 
+                    bgcolor: '#4caf50',
+                    color: '#2C3639',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    px: 1.5,
+                    py: 0.5,
+                    minWidth: 'auto',
+                    '&:hover': {
+                      bgcolor: '#388e3c',
+                      transform: 'translateY(-1px)'
+                    }
+                  }}
                   onClick={() => handleAccept(req._id)}
                 >
                   Accept
@@ -88,7 +179,19 @@ const Notification = () => {
                 <Button
                   size="small"
                   variant="contained"
-                  sx={{ bgcolor: 'var(--color-error)' }}
+                  sx={{ 
+                    bgcolor: '#ff6b6b',
+                    color: '#2C3639',
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    px: 1.5,
+                    py: 0.5,
+                    minWidth: 'auto',
+                    '&:hover': {
+                      bgcolor: '#ff5252',
+                      transform: 'translateY(-1px)'
+                    }
+                  }}
                   onClick={() => handleDeny(req._id)}
                 >
                   Deny

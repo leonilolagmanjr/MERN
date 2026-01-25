@@ -34,7 +34,7 @@ import { useFriend } from '../context/FriendContext';
 import Posts from '../components/posts/Posts';
 import FriendActions from '../components/friends/FriendActions';
 import UserLink from '../components/UserLink';
-import LevelBar from '../components/LevelBar';
+import LevelBar from '../components/gamify/LevelBar';
 
 // Icons
 import EditIcon from '@mui/icons-material/Edit';

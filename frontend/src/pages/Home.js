@@ -29,7 +29,7 @@ import {
   Add,
 } from '@mui/icons-material';
 import { fetchJobs } from '../services/api';
-import Leaderboard from '../components/Leaderboard';
+import Leaderboard from '../components/gamify/Leaderboard';
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);

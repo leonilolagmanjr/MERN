@@ -12,7 +12,12 @@ const UserLink = ({ userId, name, sx = {} }) => {
     return (
       <Typography
         component="span"
-        sx={{ color: 'var(--color-primary)', display: 'inline', ...sx }}
+        sx={{ 
+          color: '#A27B5C', 
+          display: 'inline', 
+          fontWeight: 500,
+          ...sx 
+        }}
       >
         {displayName}
       </Typography>
@@ -27,9 +32,13 @@ const UserLink = ({ userId, name, sx = {} }) => {
       <Typography
         component="span"
         sx={{
-          color: 'var(--color-primary)',
+          color: '#A27B5C',
           display: 'inline',
-          '&:hover': { textDecoration: 'underline' },
+          fontWeight: 500,
+          '&:hover': { 
+            textDecoration: 'underline',
+            color: '#DCD7C9'
+          },
           ...sx,
         }}
       >
