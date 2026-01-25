@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Notification from './Notification';
 import UserLink from './UserLink';
-import ThemeSwitcher from './ThemeSwitcher';
 import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
@@ -30,7 +29,7 @@ const Navbar = () => {
     //{ text: 'Video Manager', to: '/videomanager' },
     //{ text: 'Task Manager', to: '/taskmanager' },
     { text: 'Social', to: '/social' },
-    //{ text: 'Forum', to: '/forum' },
+    { text: 'Forum', to: '/forum' },
     //{ text: 'Payments', to: '/payments' },
     //{ text: 'Transactions', to: '/transactions' },
     //{ text: 'Trade', to: '/trade' },
@@ -90,7 +89,6 @@ const Navbar = () => {
 
         {/* Right Section */}
         <Box display="flex" alignItems="center" gap={2}>
-          <ThemeSwitcher />
           {isMobile ? (
             <>
               <IconButton

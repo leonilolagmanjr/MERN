@@ -1,5 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  Avatar,
+  Button,
+  Chip,
+  Container,
+  Divider,
+  Card,
+  CardContent,
+  Stack,
+  IconButton,
+  LinearProgress,
+  Fade,
+  CircularProgress
+} from '@mui/material';
 import {
   fetchPostedJobs,
   fetchCompletedJobs,
@@ -18,8 +36,24 @@ import FriendActions from '../components/friends/FriendActions';
 import UserLink from '../components/UserLink';
 import LevelBar from '../components/LevelBar';
 
+// Icons
+import EditIcon from '@mui/icons-material/Edit';
+import WorkIcon from '@mui/icons-material/Work';
+import StarIcon from '@mui/icons-material/Star';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
+import LanguageIcon from '@mui/icons-material/Language';
+import SchoolIcon from '@mui/icons-material/School';
+import BadgeIcon from '@mui/icons-material/Badge';
+import PeopleIcon from '@mui/icons-material/People';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+
 const Profile = () => {
   const { userId } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { getFriendStatus, notifyFriendListUpdated, openChatWithUser, friendRequests } = useFriend();
 
@@ -33,10 +67,12 @@ const Profile = () => {
   const [hasPendingRequest, setHasPendingRequest] = useState(null);
   const [loadingFriendStatus, setLoadingFriendStatus] = useState(true);
   const [refreshProfile, setRefreshProfile] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
+        setLoading(true);
         const token = localStorage.getItem('token');
         const viewedProfile = await getUserProfile(userId, token);
 
@@ -58,6 +94,7 @@ const Profile = () => {
       } catch (err) {
         console.error('Error fetching profile data:', err);
       } finally {
+        setLoading(false);
         setLoadingFriendStatus(false);
       }
     };
@@ -92,421 +129,593 @@ const Profile = () => {
     updateFriendStatus();
   }, [friendRequests, userId, user]);
 
-  const handleSendFriendRequest = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await sendFriendRequest(userId, token);
-      notifyFriendListUpdated();
-      // Update friend status after sending request
-      await updateFriendStatus();
-    } catch (err) {
-      console.error('Error sending friend request:', err);
-    }
-  };
-
-  const handleAcceptRequest = async (requesterId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await acceptFriendRequest(requesterId, token);
-      notifyFriendListUpdated();
-      // Update friend status after accepting request
-      await updateFriendStatus();
-    } catch (err) {
-      console.error('Error accepting friend request:', err);
-    }
-  };
-
-  const handleDenyRequest = async (requesterId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await denyFriendRequest(requesterId, token);
-      notifyFriendListUpdated();
-      // Update friend status after denying request
-      await updateFriendStatus();
-    } catch (err) {
-      console.error('Error denying friend request:', err);
-    }
-  };
-
-  const handleCancelFriendRequest = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await cancelFriendRequest(userId, token);
-      notifyFriendListUpdated();
-      // Update friend status after canceling request
-      await updateFriendStatus();
-    } catch (err) {
-      console.error('Error canceling friend request:', err);
-    }
-  };
+  if (loading) {
+    return (
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '100vh',
+        bgcolor: '#2C3639'
+      }}>
+        <CircularProgress sx={{ color: '#A27B5C' }} size={60} />
+      </Box>
+    );
+  }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <div style={styles.profileImageContainer}>
-          <img
-            src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'}
-            alt="User"
-            style={styles.profileImage}
-          />
-        </div>
-        <div style={styles.userInfo}>
-          <h1 style={styles.userName}><UserLink userId={profile._id} name={profile.name} /></h1>
-          <p style={styles.userDetails}>Email: {profile.email || 'Unknown'}</p>
-          <p style={styles.userDetails}>ID: {profile.id || 'N/A'}</p>
-          <p style={styles.userDetails}>Level: {profile.level || 1}</p>
-          <p style={styles.userDetails}>XP: {profile.xp || 0}</p>
-          <p>  </p>
-          {isCurrentUser ? (
-            <>
-              <button style={styles.editButton} onClick={() => window.location.href = '/editprofile'}>Edit Profile</button>
-              <FriendActions
-                userId={userId}
-                isCurrentUser={isCurrentUser}
-                isFriend={isFriend}
-                requestSent={requestSent}
-                hasPendingRequest={hasPendingRequest}
-                loadingFriendStatus={loadingFriendStatus}
-                openChatWithUser={openChatWithUser}
-                updateFriendStatus={updateFriendStatus}
-                notifyFriendListUpdated={notifyFriendListUpdated}
-                friendRequests={friendRequests}
-                styles={styles}
-              />
-            </>
-          ) : (
-            <FriendActions
-              userId={userId}
-              isCurrentUser={isCurrentUser}
-              isFriend={isFriend}
-              requestSent={requestSent}
-              hasPendingRequest={hasPendingRequest}
-              loadingFriendStatus={loadingFriendStatus}
-              openChatWithUser={openChatWithUser}
-              updateFriendStatus={updateFriendStatus}
-              notifyFriendListUpdated={notifyFriendListUpdated}
-              styles={styles}
-            />
-          )}
-        </div>
-      </div>
+    <Box sx={{ 
+      bgcolor: '#2C3639', 
+      color: '#DCD7C9', 
+      minHeight: '100vh',
+      py: 5,
+      position: 'relative',
+      '&::before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundImage: `
+          radial-gradient(circle at 20% 30%, rgba(162, 123, 92, 0.05) 0%, transparent 25%),
+          radial-gradient(circle at 80% 70%, rgba(63, 78, 79, 0.08) 0%, transparent 25%)
+        `,
+        zIndex: 0,
+      }
+    }}>
+      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
+        {/* Profile Header */}
+        <Fade in timeout={600}>
+          <Paper
+            sx={{
+              bgcolor: '#3F4E4F',
+              p: 5,
+              mb: 6,
+              borderRadius: 3,
+              border: '2px solid #A27B5C',
+              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.3)',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '6px',
+                background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
+              }
+            }}
+          >
+            <Grid container spacing={4} alignItems="center">
+              <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Avatar
+                  src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'}
+                  sx={{
+                    width: 180,
+                    height: 180,
+                    border: '4px solid #A27B5C',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+                  }}
+                />
+              </Grid>
+              
+              <Grid item xs={12} md={6}>
+                <Typography variant="h2" sx={{ color: '#DCD7C9', fontWeight: 'bold', mb: 1 }}>
+                  <UserLink userId={profile._id} name={profile.name} />
+                </Typography>
+                <Typography variant="h5" sx={{ color: '#A27B5C', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <EmailIcon /> {profile.email || 'No email provided'}
+                </Typography>
+                
+                <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+                  <Chip 
+                    icon={<StarIcon />}
+                    label={`Level ${profile.level || 1}`} 
+                    sx={{ 
+                      bgcolor: 'rgba(162, 123, 92, 0.2)', 
+                      color: '#DCD7C9',
+                      fontWeight: 'bold'
+                    }} 
+                  />
+                  <Chip 
+                    label={`${profile.xp || 0} XP`} 
+                    sx={{ 
+                      bgcolor: 'rgba(162, 123, 92, 0.2)', 
+                      color: '#DCD7C9',
+                      fontWeight: 'bold'
+                    }} 
+                  />
+                  <Chip 
+                    icon={<PeopleIcon />}
+                    label={`${profile.connections?.length || 0} Friends`} 
+                    sx={{ 
+                      bgcolor: 'rgba(162, 123, 92, 0.2)', 
+                      color: '#DCD7C9',
+                      fontWeight: 'bold'
+                    }} 
+                  />
+                </Box>
+              </Grid>
+              
+              <Grid item xs={12} md={3}>
+                <Stack spacing={2}>
+                  {isCurrentUser && (
+                    <Button
+                      variant="contained"
+                      startIcon={<EditIcon />}
+                      onClick={() => navigate('/editprofile')}
+                      fullWidth
+                      sx={{
+                        bgcolor: '#A27B5C',
+                        color: '#2C3639',
+                        py: 1.5,
+                        fontWeight: 'bold',
+                        '&:hover': {
+                          bgcolor: '#8a6a50',
+                        }
+                      }}
+                    >
+                      Edit Profile
+                    </Button>
+                  )}
+                  
+                  <FriendActions
+                    userId={userId}
+                    isCurrentUser={isCurrentUser}
+                    isFriend={isFriend}
+                    requestSent={requestSent}
+                    hasPendingRequest={hasPendingRequest}
+                    loadingFriendStatus={loadingFriendStatus}
+                    openChatWithUser={openChatWithUser}
+                    updateFriendStatus={updateFriendStatus}
+                    notifyFriendListUpdated={notifyFriendListUpdated}
+                    friendRequests={friendRequests}
+                  />
+                </Stack>
+              </Grid>
+            </Grid>
+          </Paper>
+        </Fade>
 
-      <div style={styles.mainContent}>
-        <div style={styles.leftColumn}>
-          {isCurrentUser && profile.connections && profile.connections.length > 0 && (
-            <div style={styles.friendListSection}>
-              <h2 style={styles.sectionHeading}>Friend List</h2>
-              <details>
-                <summary style={styles.summary}>Show Friends ({profile.connections.length})</summary>
-                <ul style={styles.friendList}>
-                  {profile.connections.map((friend) => (
-                    <li key={friend._id} style={styles.friendListItem}>
-                      <UserLink userId={friend._id} name={friend.name} /> ({friend.email})
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </div>
-          )}
+        {/* Main Content */}
+        <Grid container spacing={4}>
+          {/* Left Column - Main Content */}
+          <Grid item xs={12} lg={8}>
+            {/* Accomplishments Stats */}
+            <Fade in timeout={800} delay={200}>
+              <Paper
+                sx={{
+                  bgcolor: '#3F4E4F',
+                  p: 4,
+                  mb: 4,
+                  borderRadius: 3,
+                  border: '2px solid rgba(162, 123, 92, 0.3)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                <Typography variant="h5" sx={{ color: '#DCD7C9', mb: 4, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <EmojiEventsIcon /> Accomplishments
+                </Typography>
+                
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={4}>
+                    <Card sx={{ 
+                      bgcolor: '#2C3639', 
+                      textAlign: 'center',
+                      border: '2px solid #A27B5C',
+                      borderRadius: 2,
+                      height: '100%'
+                    }}>
+                      <CardContent sx={{ p: 3 }}>
+                        <Typography variant="h2" sx={{ color: '#A27B5C', fontWeight: 'bold', mb: 1 }}>
+                          {completedJobs.length}
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 600 }}>
+                          Jobs Completed
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={4}>
+                    <Card sx={{ 
+                      bgcolor: '#2C3639', 
+                      textAlign: 'center',
+                      border: '2px solid #A27B5C',
+                      borderRadius: 2,
+                      height: '100%'
+                    }}>
+                      <CardContent sx={{ p: 3 }}>
+                        <Typography variant="h2" sx={{ color: '#A27B5C', fontWeight: 'bold', mb: 1 }}>
+                          {postedJobs.length}
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 600 }}>
+                          Jobs Posted
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={4}>
+                    <Card sx={{ 
+                      bgcolor: '#2C3639', 
+                      textAlign: 'center',
+                      border: '2px solid #A27B5C',
+                      borderRadius: 2,
+                      height: '100%'
+                    }}>
+                      <CardContent sx={{ p: 3 }}>
+                        <Typography variant="h2" sx={{ color: '#A27B5C', fontWeight: 'bold', mb: 1 }}>
+                          {profile.xp || 0}
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 600 }}>
+                          Earned XP
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Fade>
 
-          <div style={styles.accomplishments}>
-            <h2 style={styles.sectionHeading}>Accomplishments</h2>
-            <div style={styles.replayStats}>
-              <div style={styles.statBox}>
-                <h3 style={styles.statNumber}>{completedJobs.length}</h3>
-                <p style={styles.statLabel}>Jobs Completed</p>
-              </div>
-              <div style={styles.statBox}>
-                <h3 style={styles.statNumber}>{postedJobs.length}</h3>
-                <p style={styles.statLabel}>Jobs Posted</p>
-              </div>
-              <div style={styles.statBox}>
-                <h3 style={styles.statNumber}>{profile.xp || 0}</h3>
-                <p style={styles.statLabel}>Earned XP</p>
-              </div>
-            </div>
-          </div>
+            {/* Recent Activity */}
+            {completedJobs.length > 0 && (
+              <Fade in timeout={800} delay={400}>
+                <Paper
+                  sx={{
+                    bgcolor: '#3F4E4F',
+                    p: 4,
+                    mb: 4,
+                    borderRadius: 3,
+                    border: '2px solid rgba(162, 123, 92, 0.3)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                  }}
+                >
+                  <Typography variant="h5" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <TrendingUpIcon /> Recent Activity
+                  </Typography>
+                  
+                  <Grid container spacing={3}>
+                    {completedJobs.slice(0, 3).map((job) => (
+                      <Grid item xs={12} md={6} key={job._id}>
+                        <Card sx={{ 
+                          bgcolor: '#2C3639',
+                          border: '1px solid rgba(162, 123, 92, 0.3)',
+                          borderRadius: 2,
+                          height: '100%',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            borderColor: '#A27B5C',
+                            boxShadow: '0 4px 12px rgba(162, 123, 92, 0.2)',
+                          }
+                        }}>
+                          <CardContent sx={{ p: 3 }}>
+                            <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 1.5, fontWeight: 'bold' }}>
+                              {job.title}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.8)', mb: 2, fontSize: '0.9rem' }}>
+                              {job.description.length > 120 ? job.description.substring(0, 120) + '...' : job.description}
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block' }}>
+                              Completed on: {new Date(job.updatedAt).toLocaleDateString()}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Paper>
+              </Fade>
+            )}
 
-          <div style={styles.recentActivity}>
-            <div style={styles.activityList}>
-              {completedJobs.map((job) => (
-                <div key={job._id} style={styles.activityItem}>
-                  <h3 style={styles.activityTitle}>{job.title}</h3>
-                  <p style={styles.activityDetails}>{job.description.length > 100 ? job.description.substring(0, 100) + '...' : job.description}</p>
-                  <p style={styles.activityMeta}>Completed on: {new Date(job.updatedAt).toLocaleDateString()}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+            {/* Posts Section */}
+            <Fade in timeout={800} delay={600}>
+              <Paper
+                sx={{
+                  bgcolor: '#3F4E4F',
+                  p: 4,
+                  borderRadius: 3,
+                  border: '2px solid rgba(162, 123, 92, 0.3)',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                <Typography variant="h5" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <AssessmentIcon /> Posts
+                </Typography>
+                <Posts userId={userId} onPostUpdate={() => setRefreshProfile(prev => prev + 1)} />
+              </Paper>
+            </Fade>
+          </Grid>
 
-          <div style={styles.postsSection}>
-            <h2 style={styles.sectionHeading}>Posts</h2>
-            <Posts userId={userId} onPostUpdate={() => setRefreshProfile(prev => prev + 1)} />
-          </div>
-        </div>
+          {/* Right Column - Sidebar */}
+          <Grid item xs={12} lg={4}>
+            <Box sx={{ position: 'sticky', top: 20 }}>
+              {/* Level Progress */}
+              <Fade in timeout={800} delay={300}>
+                <Paper
+                  sx={{
+                    bgcolor: '#3F4E4F',
+                    p: 4,
+                    mb: 4,
+                    borderRadius: 3,
+                    border: '2px solid #A27B5C',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '4px',
+                      background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
+                    }
+                  }}
+                >
+                  <LevelBar xp={profile.xp || 0} level={profile.level || 1} />
+                </Paper>
+              </Fade>
 
-        <div style={styles.rightColumn}>
-          <LevelBar xp={profile.xp || 0} level={profile.level || 1} />
-          <div style={styles.badges}>
-            <h3 style={styles.badgesTitle}>Badges</h3>
-            <p>{profile.badges?.length || 0} Badges</p>
-          </div>
-          <div style={styles.sidebarSection}>
-            <h3 style={styles.sidebarHeading}>Basic Information</h3>
-            <p>Full Name: <UserLink userId={profile._id} name={profile.name} /></p>
-            <p>Email Address: {profile.email || 'N/A'}</p>
-            <p>Phone Number: {profile.phone || 'N/A'}</p>
-            <p>Location: {profile.location || 'N/A'}</p>
-            <p>Remote Availability: {profile.remoteAvailability ? 'Yes' : 'No'}</p>
-          </div>
+              {/* Badges */}
+              <Fade in timeout={800} delay={400}>
+                <Paper
+                  sx={{
+                    bgcolor: '#3F4E4F',
+                    p: 4,
+                    mb: 4,
+                    borderRadius: 3,
+                    border: '2px solid rgba(162, 123, 92, 0.3)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <BadgeIcon /> Badges & Achievements
+                  </Typography>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <BadgeIcon sx={{ fontSize: '4rem', color: '#A27B5C', opacity: 0.7, mb: 2 }} />
+                    <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 'bold' }}>
+                      {profile.badges?.length || 0} Badges Earned
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.7)', mt: 1 }}>
+                      Continue completing jobs to earn more badges!
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Fade>
 
-          <div style={styles.sidebarSection}>
-            <h3 style={styles.sidebarHeading}>Skills and Certifications</h3>
-            <p>Skills: {profile.skills?.join(', ') || 'N/A'}</p>
-            <p>Languages: {profile.languages?.join(', ') || 'N/A'}</p>
-            <p>Certifications: {profile.certifications?.join(', ') || 'N/A'}</p>
-          </div>
+              {/* Basic Information */}
+              <Fade in timeout={800} delay={500}>
+                <Paper
+                  sx={{
+                    bgcolor: '#3F4E4F',
+                    p: 4,
+                    mb: 4,
+                    borderRadius: 3,
+                    border: '2px solid rgba(162, 123, 92, 0.3)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <WorkIcon /> Basic Information
+                  </Typography>
+                  
+                  <Stack spacing={2}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <LocationOnIcon sx={{ color: '#A27B5C' }} />
+                      <Box>
+                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block' }}>
+                          Location
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#DCD7C9' }}>
+                          {profile.location || 'Not specified'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    
+                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
+                    
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <PhoneIcon sx={{ color: '#A27B5C' }} />
+                      <Box>
+                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block' }}>
+                          Phone
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: '#DCD7C9' }}>
+                          {profile.phone || 'Not specified'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    
+                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
+                    
+                    <Box>
+                      <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 0.5 }}>
+                        Remote Availability
+                      </Typography>
+                      <Chip 
+                        label={profile.remoteAvailability ? 'Available for Remote Work' : 'Not Available Remotely'} 
+                        size="small"
+                        sx={{ 
+                          bgcolor: profile.remoteAvailability ? 'rgba(162, 123, 92, 0.2)' : 'rgba(63, 78, 79, 0.3)',
+                          color: profile.remoteAvailability ? '#A27B5C' : 'rgba(220, 215, 201, 0.7)',
+                          fontWeight: 'bold'
+                        }}
+                      />
+                    </Box>
+                  </Stack>
+                </Paper>
+              </Fade>
 
-          <div style={styles.sidebarSection}>
-            <h3 style={styles.sidebarHeading}>Ratings and Performance</h3>
-            <p>Average Rating: {profile.rating || 'N/A'}</p>
-            <p>Job Success Rate: {profile.successRate || 'N/A'}%</p>
-            <p>Completed Jobs: {completedJobs.length}</p>
-          </div>
-        </div>
-      </div>
-    </div>
+              {/* Skills and Certifications */}
+              <Fade in timeout={800} delay={600}>
+                <Paper
+                  sx={{
+                    bgcolor: '#3F4E4F',
+                    p: 4,
+                    mb: 4,
+                    borderRadius: 3,
+                    border: '2px solid rgba(162, 123, 92, 0.3)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <SchoolIcon /> Skills & Certifications
+                  </Typography>
+                  
+                  <Stack spacing={2}>
+                    {profile.skills?.length > 0 && (
+                      <Box>
+                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 1 }}>
+                          Skills
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {profile.skills.slice(0, 5).map((skill, index) => (
+                            <Chip
+                              key={index}
+                              label={skill}
+                              size="small"
+                              sx={{
+                                bgcolor: 'rgba(162, 123, 92, 0.1)',
+                                color: '#A27B5C',
+                                border: '1px solid rgba(162, 123, 92, 0.3)'
+                              }}
+                            />
+                          ))}
+                          {profile.skills.length > 5 && (
+                            <Chip
+                              label={`+${profile.skills.length - 5} more`}
+                              size="small"
+                              sx={{
+                                bgcolor: 'rgba(44, 54, 57, 0.3)',
+                                color: 'rgba(220, 215, 201, 0.7)'
+                              }}
+                            />
+                          )}
+                        </Box>
+                      </Box>
+                    )}
+                    
+                    {profile.languages?.length > 0 && (
+                      <Box>
+                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 1 }}>
+                          Languages
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {profile.languages.map((language, index) => (
+                            <Chip
+                              key={index}
+                              label={language}
+                              size="small"
+                              sx={{
+                                bgcolor: 'rgba(162, 123, 92, 0.1)',
+                                color: '#A27B5C',
+                                border: '1px solid rgba(162, 123, 92, 0.3)'
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </Box>
+                    )}
+                    
+                    {profile.certifications?.length > 0 && (
+                      <Box>
+                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 1 }}>
+                          Certifications
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                          {profile.certifications.slice(0, 3).map((cert, index) => (
+                            <Chip
+                              key={index}
+                              label={cert}
+                              size="small"
+                              sx={{
+                                bgcolor: 'rgba(162, 123, 92, 0.1)',
+                                color: '#A27B5C',
+                                border: '1px solid rgba(162, 123, 92, 0.3)'
+                              }}
+                            />
+                          ))}
+                          {profile.certifications.length > 3 && (
+                            <Chip
+                              label={`+${profile.certifications.length - 3} more`}
+                              size="small"
+                              sx={{
+                                bgcolor: 'rgba(44, 54, 57, 0.3)',
+                                color: 'rgba(220, 215, 201, 0.7)'
+                              }}
+                            />
+                          )}
+                        </Box>
+                      </Box>
+                    )}
+                    
+                    {(!profile.skills?.length && !profile.languages?.length && !profile.certifications?.length) && (
+                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.7)', fontStyle: 'italic' }}>
+                        No skills or certifications added yet
+                      </Typography>
+                    )}
+                  </Stack>
+                </Paper>
+              </Fade>
+
+              {/* Ratings and Performance */}
+              <Fade in timeout={800} delay={700}>
+                <Paper
+                  sx={{
+                    bgcolor: '#3F4E4F',
+                    p: 4,
+                    borderRadius: 3,
+                    border: '2px solid rgba(162, 123, 92, 0.3)',
+                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
+                  }}
+                >
+                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <StarIcon /> Ratings & Performance
+                  </Typography>
+                  
+                  <Stack spacing={2}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.9)' }}>
+                        Average Rating
+                      </Typography>
+                      <Typography variant="body1" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
+                        {profile.rating || 'N/A'}
+                      </Typography>
+                    </Box>
+                    
+                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
+                    
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.9)' }}>
+                        Job Success Rate
+                      </Typography>
+                      <Typography variant="body1" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
+                        {profile.successRate || 'N/A'}%
+                      </Typography>
+                    </Box>
+                    
+                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
+                    
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.9)' }}>
+                        Total Completed
+                      </Typography>
+                      <Typography variant="body1" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
+                        {completedJobs.length}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Paper>
+              </Fade>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
-};
-
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: 'var(--color-bg)',
-    color: 'var(--color-text)',
-    padding: '20px',
-    minHeight: '100vh',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '30px',
-  },
-  profileImageContainer: {
-    marginRight: '20px',
-  },
-  profileImage: {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    border: '3px solid var(--color-accent)',
-  },
-  userInfo: {
-    color: 'var(--color-text)',
-  },
-  userName: {
-    fontSize: '24px',
-    marginBottom: '10px',
-  },
-  userDetails: {
-    fontSize: '16px',
-    marginBottom: '5px',
-  },
-  editButton: {
-    backgroundColor: 'var(--color-accent)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    marginRight: '10px',
-  },
-  paymentButton: {
-    backgroundColor: 'var(--color-success)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    marginRight: '10px',
-  },
-  historyButton: {
-    backgroundColor: 'var(--color-warning)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    marginRight: '10px',
-  },
-  tradeButton: {
-    backgroundColor: 'var(--color-secondary)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    marginRight: '10px',
-  },
-  addFriendButton: {
-    backgroundColor: 'var(--color-success)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  messageButton: {
-    backgroundColor: 'var(--color-accent)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  mainContent: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  leftColumn: {
-    flex: 3,
-    marginRight: '20px',
-  },
-  rightColumn: {
-    flex: 1,
-    backgroundColor: 'var(--color-card-bg)',
-    padding: '20px',
-    borderRadius: '10px',
-    marginTop: '-250px',
-  },
-  accomplishments: {
-    marginBottom: '30px',
-  },
-  sectionHeading: {
-    fontSize: '20px',
-    marginBottom: '15px',
-    color: 'var(--color-accent)',
-  },
-  replayStats: {
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-  statBox: {
-    textAlign: 'center',
-    backgroundColor: 'var(--color-button-bg)',
-    padding: '20px',
-    borderRadius: '10px',
-    flex: 1,
-    margin: '0 10px',
-  },
-  statNumber: {
-    fontSize: '24px',
-    color: 'var(--color-text)',
-  },
-  statLabel: {
-    fontSize: '14px',
-    color: 'var(--color-text-gray)',
-  },
-  recentActivity: {
-    marginBottom: '30px',
-  },
-  activitySummary: {
-    fontSize: '16px',
-    marginBottom: '15px',
-  },
-  activityList: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '20px',
-  },
-  activityItem: {
-    backgroundColor: 'var(--color-button-bg)',
-    padding: '15px',
-    borderRadius: '10px',
-  },
-  activityTitle: {
-    fontSize: '18px',
-    color: 'var(--color-text)',
-    marginBottom: '10px',
-  },
-  activityDetails: {
-    fontSize: '14px',
-    color: 'var(--color-text-gray)',
-    marginBottom: '10px',
-  },
-  activityMeta: {
-    fontSize: '12px',
-    color: 'var(--color-text-lighter)',
-  },
-  levelBox: {
-    textAlign: 'center',
-    marginBottom: '20px',
-  },
-  levelTitle: {
-    fontSize: '20px',
-    color: 'var(--color-accent)',
-  },
-  xp: {
-    fontSize: '14px',
-    color: 'var(--color-text-gray)',
-  },
-  badges: {
-    marginBottom: '20px',
-  },
-  badgesTitle: {
-    fontSize: '16px',
-    color: 'var(--color-accent)',
-    marginBottom: '10px',
-  },
-  sidebarSection: {
-    marginBottom: '20px',
-  },
-  sidebarHeading: {
-    fontSize: '16px',
-    color: 'var(--color-accent)',
-    marginBottom: '10px',
-  },
-  postBox: {
-    backgroundColor: 'var(--color-card-bg)',
-    padding: '20px',
-    borderRadius: '10px',
-    marginTop: '30px',
-    color: 'var(--color-text-gray)',
-  },
-  postInput: {
-    width: '100%',
-    height: '100px',
-    backgroundColor: 'var(--color-button-bg)',
-    border: 'none',
-    borderRadius: '5px',
-    padding: '10px',
-    color: 'var(--color-text-gray)',
-    fontSize: '14px',
-    resize: 'none',
-    boxSizing: 'border-box',
-    marginBottom: '10px',
-  },
-  postActions: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
-  postButton: {
-    backgroundColor: 'var(--color-accent)',
-    color: 'var(--color-bg)',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
 };
 
 export default Profile;

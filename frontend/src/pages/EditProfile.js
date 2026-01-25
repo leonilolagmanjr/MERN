@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { updateUserProfile, getUserProfile, updateInfo, uploadAvatar } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Box, Card, CardContent, Typography, Avatar, Button, Divider, List, ListItem, ListItemButton, ListItemText, TextField, Select, MenuItem, Chip, FormControlLabel, Checkbox } from '@mui/material';
+import { 
+  Box, Card, CardContent, Typography, Avatar, Button, Divider, 
+  List, ListItem, ListItemButton, ListItemText, TextField, Select, 
+  MenuItem, Chip, FormControlLabel, Checkbox, Container, IconButton 
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import PersonIcon from '@mui/icons-material/Person';
+import WorkIcon from '@mui/icons-material/Work';
+import SettingsIcon from '@mui/icons-material/Settings';
+import WallpaperIcon from '@mui/icons-material/Wallpaper';
+import BadgeIcon from '@mui/icons-material/Badge';
 
 const sidebarItems = [
-  'Basic Information',
-  'Skills & Certifications',
-  'Preferences',
-  'Avatar',
-  'Profile Background',
+  { name: 'Basic Information', icon: <PersonIcon /> },
+  { name: 'Skills & Certifications', icon: <WorkIcon /> },
+  { name: 'Preferences', icon: <SettingsIcon /> },
+  { name: 'Avatar', icon: <BadgeIcon /> },
+  { name: 'Profile Background', icon: <WallpaperIcon /> },
 ];
 
 const EditProfile = () => {
@@ -144,422 +156,552 @@ const EditProfile = () => {
   return (
     <Box sx={{
       minHeight: '100vh',
-      bgcolor: 'var(--color-bg)',
-      color: 'var(--color-text)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'flex-start',
+      bgcolor: '#2C3639',
+      color: '#DCD7C9',
       py: 6,
     }}>
-      <Card sx={{ width: 1000, bgcolor: 'var(--color-card-bg)', boxShadow: 6, display: 'flex', minHeight: 600 }}>
-        {/* Sidebar */}
-        <Box sx={{ width: 220, bgcolor: 'var(--color-card-bg)', borderRight: `1px solid var(--color-border)`, p: 2 }}>
-          <Avatar 
-            src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'} 
-            sx={{ width: 64, height: 64, mb: 2, mx: 'auto' }} 
-          />
-          <Typography variant="h6" align="center" sx={{ color: 'var(--color-text)', mb: 2 }}>
-            {profile.name}
-          </Typography>
-          <Typography variant="body2" align="center" sx={{ color: 'var(--color-text-gray)', mb: 2 }}>
-            Level {profile.level || 1} • {profile.experience || 0} XP
-          </Typography>
-          <Divider sx={{ mb: 2, bgcolor: 'var(--color-border)' }} />
-          <List>
-            {sidebarItems.map((item) => (
-              <ListItem key={item} disablePadding>
-                <ListItemButton
-                  selected={selectedSection === item}
-                  onClick={() => setSelectedSection(item)}
-                  sx={{ 
-                    borderRadius: 1, 
-                    color: selectedSection === item ? 'var(--color-accent)' : 'var(--color-text-gray)', 
-                    mb: 1,
-                    '&.Mui-selected': {
-                      backgroundColor: 'var(--color-button-bg)',
-                    }
-                  }}
-                >
-                  <ListItemText primary={item} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-
-        {/* Main Content */}
-        <Box sx={{ flex: 1, p: 4 }}>
-          <Typography variant="h4" fontWeight="bold" sx={{ color: 'var(--color-text)', mb: 1 }}>
-            Edit Profile
-          </Typography>
-          <Typography sx={{ color: 'var(--color-text-gray)', mb: 2 }}>
-            Update your profile information to help others learn more about your skills and preferences.
-          </Typography>
-          <Divider sx={{ mb: 3, bgcolor: 'var(--color-border)' }} />
-
-          {/* Basic Information Section */}
-          {selectedSection === 'Basic Information' && (
-            <Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
-                BASIC INFORMATION
-              </Typography>
-              
-              <TextField
-                label="Full Name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{ 
-                  style: { 
-                    color: 'var(--color-text)', 
-                    backgroundColor: 'var(--color-button-bg)',
-                    border: '1px solid var(--color-border)'
-                  } 
-                }}
-                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
+      <Container maxWidth="lg">
+        <Card sx={{ 
+          bgcolor: '#3F4E4F', 
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+          display: 'flex',
+          minHeight: 700,
+          border: '2px solid #A27B5C',
+          borderRadius: 3,
+          overflow: 'hidden'
+        }}>
+          {/* Sidebar */}
+          <Box sx={{ 
+            width: 280, 
+            bgcolor: '#2C3639', 
+            p: 3,
+            borderRight: '2px solid #A27B5C',
+            position: 'relative',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '6px',
+              background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
+            }
+          }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+              <Avatar 
+                src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'} 
+                sx={{ 
+                  width: 100, 
+                  height: 100, 
+                  mb: 2, 
+                  border: '4px solid #A27B5C',
+                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)'
+                }} 
               />
-
-              <TextField
-                label="Email Address"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{
-                  style: {
-                    color: 'var(--color-text)',
-                    backgroundColor: 'var(--color-button-bg)',
-                    border: '1px solid var(--color-border)'
-                  }
-                }}
-                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
-              />
-
-              <TextField
-                label="Phone Number"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{ 
-                  style: { 
-                    color: 'var(--color-text)', 
-                    backgroundColor: 'var(--color-button-bg)',
-                    border: '1px solid var(--color-border)'
-                  } 
-                }}
-                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
-              />
-
-              <TextField
-                label="Location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                fullWidth
-                sx={{ mb: 2 }}
-                InputProps={{ 
-                  style: { 
-                    color: 'var(--color-text)', 
-                    backgroundColor: 'var(--color-button-bg)',
-                    border: '1px solid var(--color-border)'
-                  } 
-                }}
-                InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
-              />
-
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.remoteAvailability}
-                    onChange={handleInputChange}
-                    name="remoteAvailability"
-                    sx={{
-                      color: 'var(--color-accent)',
-                      '&.Mui-checked': {
-                        color: 'var(--color-accent)',
-                      },
-                    }}
-                  />
-                }
-                label="Available for Remote Work"
-                sx={{ color: 'var(--color-text)' }}
-              />
-            </Box>
-          )}
-
-          {/* Skills & Certifications Section */}
-          {selectedSection === 'Skills & Certifications' && (
-            <Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
-                SKILLS & CERTIFICATIONS
+              <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 0.5, fontWeight: 'bold' }}>
+                {profile.name || 'User Name'}
               </Typography>
-
-              {/* Skills */}
-              <Typography variant="subtitle1" sx={{ color: 'var(--color-text)', mb: 2 }}>
-                Skills
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-                <TextField
-                  label="Add Skill"
-                  name="newSkill"
-                  value={formData.newSkill}
-                  onChange={handleInputChange}
-                  sx={{ flex: 1 }}
-                  InputProps={{ 
-                    style: { 
-                      color: 'var(--color-text)', 
-                      backgroundColor: 'var(--color-button-bg)',
-                      border: '1px solid var(--color-border)'
-                    } 
-                  }}
-                  InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
-                />
-                <Button 
-                  variant="contained" 
-                  onClick={() => handleAddItem('skills')}
-                  sx={{ 
-                    bgcolor: 'var(--color-accent)', 
-                    color: 'var(--color-bg)',
-                    '&:hover': {
-                      bgcolor: 'var(--color-accent-dark)',
-                    }
-                  }}
-                >
-                  Add
-                </Button>
-              </Box>
-              <Box sx={{ mb: 3 }}>
-                {formData.skills.map((skill, index) => (
-                  <Chip
-                    key={index}
-                    label={skill}
-                    onDelete={() => handleRemoveItem('skills', index)}
-                    sx={{ 
-                      m: 0.5, 
-                      bgcolor: 'var(--color-button-bg)', 
-                      color: 'var(--color-text)',
-                      '& .MuiChip-deleteIcon': {
-                        color: 'var(--color-text-gray)',
-                      }
-                    }}
-                  />
-                ))}
-              </Box>
-
-              {/* Languages */}
-              <Typography variant="subtitle1" sx={{ color: 'var(--color-text)', mb: 2 }}>
-                Languages
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-                <TextField
-                  label="Add Language"
-                  name="newLanguage"
-                  value={formData.newLanguage}
-                  onChange={handleInputChange}
-                  sx={{ flex: 1 }}
-                  InputProps={{ 
-                    style: { 
-                      color: 'var(--color-text)', 
-                      backgroundColor: 'var(--color-button-bg)',
-                      border: '1px solid var(--color-border)'
-                    } 
-                  }}
-                  InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
-                />
-                <Button 
-                  variant="contained" 
-                  onClick={() => handleAddItem('languages')}
-                  sx={{ 
-                    bgcolor: 'var(--color-accent)', 
-                    color: 'var(--color-bg)',
-                    '&:hover': {
-                      bgcolor: 'var(--color-accent-dark)',
-                    }
-                  }}
-                >
-                  Add
-                </Button>
-              </Box>
-              <Box sx={{ mb: 3 }}>
-                {formData.languages.map((language, index) => (
-                  <Chip
-                    key={index}
-                    label={language}
-                    onDelete={() => handleRemoveItem('languages', index)}
-                    sx={{ 
-                      m: 0.5, 
-                      bgcolor: 'var(--color-button-bg)', 
-                      color: 'var(--color-text)',
-                      '& .MuiChip-deleteIcon': {
-                        color: 'var(--color-text-gray)',
-                      }
-                    }}
-                  />
-                ))}
-              </Box>
-
-              {/* Certifications */}
-              <Typography variant="subtitle1" sx={{ color: 'var(--color-text)', mb: 2 }}>
-                Certifications
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
-                <TextField
-                  label="Add Certification"
-                  name="newCertification"
-                  value={formData.newCertification}
-                  onChange={handleInputChange}
-                  sx={{ flex: 1 }}
-                  InputProps={{ 
-                    style: { 
-                      color: 'var(--color-text)', 
-                      backgroundColor: 'var(--color-button-bg)',
-                      border: '1px solid var(--color-border)'
-                    } 
-                  }}
-                  InputLabelProps={{ style: { color: 'var(--color-accent)' } }}
-                />
-                <Button 
-                  variant="contained" 
-                  onClick={() => handleAddItem('certifications')}
-                  sx={{ 
-                    bgcolor: 'var(--color-accent)', 
-                    color: 'var(--color-bg)',
-                    '&:hover': {
-                      bgcolor: 'var(--color-accent-dark)',
-                    }
-                  }}
-                >
-                  Add
-                </Button>
-              </Box>
-              <Box sx={{ mb: 3 }}>
-                {formData.certifications.map((certification, index) => (
-                  <Chip
-                    key={index}
-                    label={certification}
-                    onDelete={() => handleRemoveItem('certifications', index)}
-                    sx={{ 
-                      m: 0.5, 
-                      bgcolor: 'var(--color-button-bg)', 
-                      color: 'var(--color-text)',
-                      '& .MuiChip-deleteIcon': {
-                        color: 'var(--color-text-gray)',
-                      }
-                    }}
-                  />
-                ))}
-              </Box>
-            </Box>
-          )}
-
-          {/* Preferences Section */}
-          {selectedSection === 'Preferences' && (
-            <Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
-                PREFERENCES
-              </Typography>
-              <Typography sx={{ color: 'var(--color-text-gray)', mb: 3 }}>
-                Additional preference settings will be added here based on your application's requirements.
+              <Typography variant="body2" sx={{ color: '#A27B5C', mb: 1 }}>
+                Level {profile.level || 1} • {profile.experience || 0} XP
               </Typography>
             </Box>
-          )}
-
-          {/* Avatar Section */}
-          {selectedSection === 'Avatar' && (
-            <Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
-                AVATAR
-              </Typography>
-              <Typography sx={{ color: 'var(--color-text-gray)', mb: 3 }}>
-                Upload a new profile picture. The image will be cropped to a square format.
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 3 }}>
-                <Avatar
-                  src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'}
-                  sx={{ width: 120, height: 120, border: '3px solid var(--color-accent)' }}
-                />
-                <Box>
-                  <input
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    id="avatar-upload"
-                    type="file"
-                    onChange={handleAvatarUpload}
-                  />
-                  <label htmlFor="avatar-upload">
-                    <Button
-                      variant="contained"
-                      component="span"
-                      sx={{
-                        bgcolor: 'var(--color-accent)',
-                        color: 'var(--color-bg)',
-                        textTransform: 'none',
+            
+            <Divider sx={{ mb: 3, bgcolor: 'rgba(162, 123, 92, 0.3)' }} />
+            
+            <List>
+              {sidebarItems.map((item) => (
+                <ListItem key={item.name} disablePadding>
+                  <ListItemButton
+                    selected={selectedSection === item.name}
+                    onClick={() => setSelectedSection(item.name)}
+                    sx={{ 
+                      borderRadius: 2, 
+                      color: selectedSection === item.name ? '#DCD7C9' : 'rgba(220, 215, 201, 0.7)',
+                      mb: 1,
+                      py: 1.5,
+                      '&.Mui-selected': {
+                        backgroundColor: '#A27B5C',
+                        color: '#2C3639',
+                        fontWeight: 'bold',
                         '&:hover': {
-                          bgcolor: 'var(--color-accent-dark)',
+                          backgroundColor: '#8a6a50',
+                        }
+                      },
+                      '&:hover': {
+                        backgroundColor: 'rgba(162, 123, 92, 0.2)',
+                        color: '#DCD7C9',
+                      }
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      {React.cloneElement(item.icon, { 
+                        sx: { fontSize: '1.2rem' }
+                      })}
+                      <ListItemText 
+                        primary={item.name} 
+                        primaryTypographyProps={{
+                          fontWeight: selectedSection === item.name ? 'bold' : 'normal'
+                        }}
+                      />
+                    </Box>
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+
+          {/* Main Content */}
+          <Box sx={{ flex: 1, p: 5, position: 'relative' }}>
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h4" fontWeight="bold" sx={{ color: '#DCD7C9', mb: 1 }}>
+                Edit Profile
+                <EditIcon sx={{ ml: 2, color: '#A27B5C', verticalAlign: 'middle' }} />
+              </Typography>
+              <Typography sx={{ color: 'rgba(220, 215, 201, 0.7)', mb: 2 }}>
+                Update your profile information to help others learn more about your skills and preferences.
+              </Typography>
+              <Divider sx={{ mb: 3, bgcolor: 'rgba(162, 123, 92, 0.3)' }} />
+            </Box>
+
+            {/* Basic Information Section */}
+            {selectedSection === 'Basic Information' && (
+              <Box>
+                <Typography variant="h5" fontWeight="bold" sx={{ color: '#A27B5C', mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <PersonIcon /> BASIC INFORMATION
+                </Typography>
+                
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                  <TextField
+                    label="Full Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    fullWidth
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#2C3639',
+                        color: '#DCD7C9',
+                        borderRadius: 2,
+                        border: '2px solid rgba(162, 123, 92, 0.3)',
+                        '&:hover': {
+                          borderColor: 'rgba(162, 123, 92, 0.5)',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: '#A27B5C',
+                          boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: '#A27B5C',
+                        '&.Mui-focused': {
+                          color: '#A27B5C',
+                        }
+                      }
+                    }}
+                  />
+
+                  <TextField
+                    label="Email Address"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    fullWidth
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#2C3639',
+                        color: '#DCD7C9',
+                        borderRadius: 2,
+                        border: '2px solid rgba(162, 123, 92, 0.3)',
+                        '&:hover': {
+                          borderColor: 'rgba(162, 123, 92, 0.5)',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: '#A27B5C',
+                          boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: '#A27B5C',
+                        '&.Mui-focused': {
+                          color: '#A27B5C',
+                        }
+                      }
+                    }}
+                  />
+
+                  <TextField
+                    label="Phone Number"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    fullWidth
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#2C3639',
+                        color: '#DCD7C9',
+                        borderRadius: 2,
+                        border: '2px solid rgba(162, 123, 92, 0.3)',
+                        '&:hover': {
+                          borderColor: 'rgba(162, 123, 92, 0.5)',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: '#A27B5C',
+                          boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: '#A27B5C',
+                        '&.Mui-focused': {
+                          color: '#A27B5C',
+                        }
+                      }
+                    }}
+                  />
+
+                  <TextField
+                    label="Location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    fullWidth
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#2C3639',
+                        color: '#DCD7C9',
+                        borderRadius: 2,
+                        border: '2px solid rgba(162, 123, 92, 0.3)',
+                        '&:hover': {
+                          borderColor: 'rgba(162, 123, 92, 0.5)',
+                        },
+                        '&.Mui-focused': {
+                          borderColor: '#A27B5C',
+                          boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
+                        }
+                      },
+                      '& .MuiInputLabel-root': {
+                        color: '#A27B5C',
+                        '&.Mui-focused': {
+                          color: '#A27B5C',
+                        }
+                      }
+                    }}
+                  />
+                </Box>
+
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={formData.remoteAvailability}
+                      onChange={handleInputChange}
+                      name="remoteAvailability"
+                      sx={{
+                        color: '#A27B5C',
+                        '&.Mui-checked': {
+                          color: '#A27B5C',
+                        },
+                      }}
+                    />
+                  }
+                  label="Available for Remote Work"
+                  sx={{ color: '#DCD7C9', mt: 3 }}
+                />
+              </Box>
+            )}
+
+            {/* Skills & Certifications Section */}
+            {selectedSection === 'Skills & Certifications' && (
+              <Box>
+                <Typography variant="h5" fontWeight="bold" sx={{ color: '#A27B5C', mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <WorkIcon /> SKILLS & CERTIFICATIONS
+                </Typography>
+
+                {/* Skills */}
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 2 }}>
+                    Skills
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                      label="Add Skill"
+                      name="newSkill"
+                      value={formData.newSkill}
+                      onChange={handleInputChange}
+                      sx={{ flex: 1 }}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddItem('skills')}
+                    />
+                    <Button 
+                      variant="contained" 
+                      onClick={() => handleAddItem('skills')}
+                      startIcon={<AddIcon />}
+                      sx={{ 
+                        bgcolor: '#A27B5C', 
+                        color: '#2C3639',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                          bgcolor: '#8a6a50',
                         }
                       }}
                     >
-                      Upload New Avatar
+                      Add
                     </Button>
-                  </label>
-                  <Typography variant="body2" sx={{ color: 'var(--color-text-gray)', mt: 1 }}>
-                    JPG, PNG up to 5MB
+                  </Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {formData.skills.map((skill, index) => (
+                      <Chip
+                        key={index}
+                        label={skill}
+                        onDelete={() => handleRemoveItem('skills', index)}
+                        deleteIcon={<DeleteIcon />}
+                        sx={{ 
+                          bgcolor: '#2C3639', 
+                          color: '#DCD7C9',
+                          border: '1px solid #A27B5C',
+                          '& .MuiChip-deleteIcon': {
+                            color: '#A27B5C',
+                            '&:hover': {
+                              color: '#DCD7C9',
+                            }
+                          }
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+
+                {/* Languages */}
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 2 }}>
+                    Languages
                   </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                      label="Add Language"
+                      name="newLanguage"
+                      value={formData.newLanguage}
+                      onChange={handleInputChange}
+                      sx={{ flex: 1 }}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddItem('languages')}
+                    />
+                    <Button 
+                      variant="contained" 
+                      onClick={() => handleAddItem('languages')}
+                      startIcon={<AddIcon />}
+                      sx={{ 
+                        bgcolor: '#A27B5C', 
+                        color: '#2C3639',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                          bgcolor: '#8a6a50',
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {formData.languages.map((language, index) => (
+                      <Chip
+                        key={index}
+                        label={language}
+                        onDelete={() => handleRemoveItem('languages', index)}
+                        deleteIcon={<DeleteIcon />}
+                        sx={{ 
+                          bgcolor: '#2C3639', 
+                          color: '#DCD7C9',
+                          border: '1px solid #A27B5C',
+                          '& .MuiChip-deleteIcon': {
+                            color: '#A27B5C',
+                            '&:hover': {
+                              color: '#DCD7C9',
+                            }
+                          }
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+
+                {/* Certifications */}
+                <Box sx={{ mb: 4 }}>
+                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 2 }}>
+                    Certifications
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                    <TextField
+                      label="Add Certification"
+                      name="newCertification"
+                      value={formData.newCertification}
+                      onChange={handleInputChange}
+                      sx={{ flex: 1 }}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddItem('certifications')}
+                    />
+                    <Button 
+                      variant="contained" 
+                      onClick={() => handleAddItem('certifications')}
+                      startIcon={<AddIcon />}
+                      sx={{ 
+                        bgcolor: '#A27B5C', 
+                        color: '#2C3639',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                          bgcolor: '#8a6a50',
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                    {formData.certifications.map((certification, index) => (
+                      <Chip
+                        key={index}
+                        label={certification}
+                        onDelete={() => handleRemoveItem('certifications', index)}
+                        deleteIcon={<DeleteIcon />}
+                        sx={{ 
+                          bgcolor: '#2C3639', 
+                          color: '#DCD7C9',
+                          border: '1px solid #A27B5C',
+                          '& .MuiChip-deleteIcon': {
+                            color: '#A27B5C',
+                            '&:hover': {
+                              color: '#DCD7C9',
+                            }
+                          }
+                        }}
+                      />
+                    ))}
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-          )}
+            )}
 
-          {/* Profile Background Section */}
-          {selectedSection === 'Profile Background' && (
-            <Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: 'var(--color-accent)', mb: 3 }}>
-                PROFILE BACKGROUND
-              </Typography>
-              <Typography sx={{ color: 'var(--color-text-gray)', mb: 3 }}>
-                Profile background customization will be implemented here.
-              </Typography>
-            </Box>
-          )}
+            {/* Preferences Section */}
+            {selectedSection === 'Preferences' && (
+              <Box>
+                <Typography variant="h5" fontWeight="bold" sx={{ color: '#A27B5C', mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <SettingsIcon /> PREFERENCES
+                </Typography>
+                <Typography sx={{ color: 'rgba(220, 215, 201, 0.7)', mb: 3 }}>
+                  Additional preference settings will be added here based on your application's requirements.
+                </Typography>
+              </Box>
+            )}
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
-            <Button 
-              onClick={handleCancel} 
-              variant="outlined" 
-              sx={{ 
-                borderColor: 'var(--color-error)', 
-                color: 'var(--color-error)',
-                textTransform: 'none',
-                '&:hover': {
-                  borderColor: 'var(--color-error-dark)',
-                  backgroundColor: 'rgba(244, 67, 54, 0.04)',
-                }
-              }}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSave} 
-              variant="contained" 
-              sx={{ 
-                bgcolor: 'var(--color-accent)', 
-                color: 'var(--color-bg)',
-                textTransform: 'none',
-                '&:hover': {
-                  bgcolor: 'var(--color-accent-dark)',
-                }
-              }}
-            >
-              Save Changes
-            </Button>
+            {/* Avatar Section */}
+            {selectedSection === 'Avatar' && (
+              <Box>
+                <Typography variant="h5" fontWeight="bold" sx={{ color: '#A27B5C', mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <BadgeIcon /> AVATAR
+                </Typography>
+                <Typography sx={{ color: 'rgba(220, 215, 201, 0.7)', mb: 3 }}>
+                  Upload a new profile picture. The image will be cropped to a square format.
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, mb: 3 }}>
+                  <Avatar
+                    src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'}
+                    sx={{ 
+                      width: 150, 
+                      height: 150, 
+                      border: '4px solid #A27B5C',
+                      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.3)'
+                    }}
+                  />
+                  <Box>
+                    <input
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      id="avatar-upload"
+                      type="file"
+                      onChange={handleAvatarUpload}
+                    />
+                    <label htmlFor="avatar-upload">
+                      <Button
+                        variant="contained"
+                        component="span"
+                        startIcon={<AddIcon />}
+                        sx={{
+                          bgcolor: '#A27B5C',
+                          color: '#2C3639',
+                          fontWeight: 'bold',
+                          py: 1.5,
+                          px: 4,
+                          '&:hover': {
+                            bgcolor: '#8a6a50',
+                          }
+                        }}
+                      >
+                        Upload New Avatar
+                      </Button>
+                    </label>
+                    <Typography variant="body2" sx={{ color: 'rgba(162, 123, 92, 0.8)', mt: 2 }}>
+                      Supported formats: JPG, PNG (max 5MB)
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            )}
+
+            {/* Profile Background Section */}
+            {selectedSection === 'Profile Background' && (
+              <Box>
+                <Typography variant="h5" fontWeight="bold" sx={{ color: '#A27B5C', mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <WallpaperIcon /> PROFILE BACKGROUND
+                </Typography>
+                <Typography sx={{ color: 'rgba(220, 215, 201, 0.7)', mb: 3 }}>
+                  Profile background customization will be implemented here.
+                </Typography>
+              </Box>
+            )}
+
+            {/* Action Buttons */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end', 
+              gap: 2, 
+              mt: 6,
+              pt: 4,
+              borderTop: '2px solid rgba(162, 123, 92, 0.3)'
+            }}>
+              <Button 
+                onClick={handleCancel} 
+                variant="outlined" 
+                sx={{ 
+                  borderColor: '#A27B5C', 
+                  color: '#A27B5C',
+                  fontWeight: 'bold',
+                  px: 4,
+                  py: 1.5,
+                  '&:hover': {
+                    borderColor: '#8a6a50',
+                    backgroundColor: 'rgba(162, 123, 92, 0.1)',
+                  }
+                }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSave} 
+                variant="contained" 
+                sx={{ 
+                  bgcolor: '#A27B5C', 
+                  color: '#2C3639',
+                  fontWeight: 'bold',
+                  px: 5,
+                  py: 1.5,
+                  '&:hover': {
+                    bgcolor: '#8a6a50',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(162, 123, 92, 0.4)',
+                  }
+                }}
+              >
+                Save Changes
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </Card>
+        </Card>
+      </Container>
     </Box>
   );
 };

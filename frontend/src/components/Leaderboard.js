@@ -26,7 +26,7 @@ function Leaderboard() {
       >
         Top Users by XP
       </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
         {leaderboard.slice(0, 5).map((user, index) => (
           <Box key={user._id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="body1" sx={{ color: 'var(--color-text)', fontWeight: 'bold', minWidth: '20px' }}>
