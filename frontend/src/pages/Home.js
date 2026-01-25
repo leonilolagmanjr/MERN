@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -35,21 +35,7 @@ const Home = () => {
   const [jobs, setJobs] = useState([]);
   const [hoveredCard, setHoveredCard] = useState(null);
   const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    const getJobs = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const data = await fetchJobs(token);
-        setJobs(data);
-        setLoaded(true);
-      } catch (err) {
-        console.error('Error fetching jobs:', err);
-        setLoaded(true);
-      }
-    };
-    getJobs();
-  }, []);
+  const [featuredJobs, setFeaturedJobs] = useState([]);
 
   // Helper to get 4 random jobs
   const getRandomJobs = (jobsArr, count = 4) => {
@@ -58,7 +44,22 @@ const Home = () => {
     return shuffled.slice(0, count);
   };
 
-  const featuredJobs = getRandomJobs(jobs);
+  useEffect(() => {
+    const getJobs = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const data = await fetchJobs(token);
+        setJobs(data);
+        // Set featured jobs once when data is loaded
+        setFeaturedJobs(getRandomJobs(data));
+        setLoaded(true);
+      } catch (err) {
+        console.error('Error fetching jobs:', err);
+        setLoaded(true);
+      }
+    };
+    getJobs();
+  }, []);
 
   const categories = [
     { name: 'Web Development', icon: '💻', count: '124 jobs', color: '#A27B5C' },
