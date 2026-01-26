@@ -89,6 +89,7 @@ const UpdateJob = ({ job, onJobUpdated, onClose }) => {
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           style={styles.textarea}
+          maxLength={500}
           required
         />
         <input

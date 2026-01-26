@@ -15,8 +15,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import WorkIcon from '@mui/icons-material/Work';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import CategoryIcon from '@mui/icons-material/Category';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CloseIcon from '@mui/icons-material/Close';
 
 const JobManager = () => {
@@ -31,7 +29,6 @@ const JobManager = () => {
     setRefreshJobs(!refreshJobs);
   };
 
-  // Modal state
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
@@ -100,12 +97,96 @@ const JobManager = () => {
     setFilteredJobs(allJobs);
   };
 
+  const commonStyles = {
+    card: {
+      bgcolor: '#3F4E4F',
+      borderRadius: 3,
+      border: '2px solid rgba(162, 123, 92, 0.3)',
+      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+      p: 4,
+    },
+    primaryButton: {
+      bgcolor: '#A27B5C',
+      color: '#2C3639',
+      py: 1.5,
+      borderRadius: 2,
+      fontWeight: 'bold',
+      textTransform: 'none',
+      border: '2px solid #A27B5C',
+      fontSize: '1rem',
+      '&:hover': {
+        bgcolor: '#8a6a50',
+        borderColor: '#8a6a50',
+        transform: 'translateY(-2px)',
+        boxShadow: '0 8px 24px rgba(162, 123, 92, 0.4)',
+      },
+    },
+    secondaryButton: {
+      color: '#A27B5C',
+      borderColor: '#A27B5C',
+      py: 1.5,
+      borderRadius: 2,
+      fontWeight: 'bold',
+      textTransform: 'none',
+      '&:hover': {
+        bgcolor: 'rgba(162, 123, 92, 0.1)',
+        borderColor: '#8a6a50',
+      },
+    },
+    textField: {
+      '& .MuiOutlinedInput-root': {
+        backgroundColor: '#2C3639',
+        color: '#DCD7C9',
+        borderRadius: 2,
+        border: '2px solid rgba(162, 123, 92, 0.3)',
+        '&:hover': {
+          borderColor: 'rgba(162, 123, 92, 0.5)',
+        },
+        '&.Mui-focused': {
+          borderColor: '#A27B5C',
+          boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
+        }
+      },
+      '& .MuiOutlinedInput-input': {
+        color: '#DCD7C9',
+      },
+      '& .MuiOutlinedInput-notchedOutline': {
+        border: 'none',
+      }
+    },
+    sectionTitle: {
+      color: '#DCD7C9',
+      fontWeight: 'bold',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1.5,
+      mb: 3,
+    },
+    chip: {
+      bgcolor: 'rgba(162, 123, 92, 0.2)',
+      color: '#DCD7C9',
+      fontWeight: 'bold',
+    },
+    jobCard: {
+      bgcolor: '#2C3639',
+      borderRadius: 2,
+      p: 2,
+      border: '1px solid rgba(162, 123, 92, 0.2)',
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        borderColor: '#A27B5C',
+        bgcolor: 'rgba(44, 54, 57, 0.9)',
+        boxShadow: '0 4px 12px rgba(162, 123, 92, 0.2)',
+      }
+    },
+  };
+
   return (
     <Box sx={{ 
       bgcolor: '#2C3639', 
       color: '#DCD7C9', 
       minHeight: '100vh',
-      py: 5,
+      py: { xs: 3, md: 5 },
       position: 'relative',
       '&::before': {
         content: '""',
@@ -121,9 +202,9 @@ const JobManager = () => {
         zIndex: 0,
       }
     }}>
-      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
+      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1, px: { xs: 2, sm: 3, md: 4 } }}>
         {/* Header */}
-        <Box sx={{ mb: 6, textAlign: 'center' }}>
+        <Box sx={{ mb: { xs: 4, md: 6 }, textAlign: 'center' }}>
           <Typography 
             variant="h3" 
             sx={{ 
@@ -134,10 +215,11 @@ const JobManager = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 2
+              gap: 2,
+              fontSize: { xs: '2rem', md: '2.5rem' }
             }}
           >
-            <WorkIcon sx={{ fontSize: '2.5rem', color: '#A27B5C' }} />
+            <WorkIcon sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, color: '#A27B5C' }} />
             Job Manager
           </Typography>
           <Typography 
@@ -147,7 +229,8 @@ const JobManager = () => {
               mb: 4,
               maxWidth: 600,
               mx: 'auto',
-              lineHeight: 1.6
+              lineHeight: 1.6,
+              fontSize: { xs: '1rem', md: '1.25rem' }
             }}
           >
             Manage your job postings and browse available opportunities
@@ -160,24 +243,7 @@ const JobManager = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setOpenCreate(true)}
-            sx={{
-              bgcolor: '#A27B5C',
-              color: '#2C3639',
-              py: 1.5,
-              px: 4,
-              borderRadius: 2,
-              fontSize: '1.1rem',
-              fontWeight: 'bold',
-              textTransform: 'none',
-              border: '2px solid #A27B5C',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              '&:hover': {
-                bgcolor: '#8a6a50',
-                borderColor: '#8a6a50',
-                transform: 'translateY(-2px)',
-                boxShadow: '0 8px 24px rgba(162, 123, 92, 0.4)',
-              },
-            }}
+            sx={commonStyles.primaryButton}
           >
             Create New Job
           </Button>
@@ -187,48 +253,31 @@ const JobManager = () => {
         <Grid container spacing={4}>
           {/* Left Column: My Posted Jobs */}
           <Grid item xs={12} lg={8}>
-            {/* My Posted Jobs Section */}
-            <Paper
-              sx={{
-                bgcolor: '#3F4E4F',
-                p: 4,
-                borderRadius: 3,
-                border: '2px solid #A27B5C',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-                position: 'relative',
-                overflow: 'hidden',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: '6px',
-                  background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-                }
-              }}
-            >
+            <Paper sx={{
+              ...commonStyles.card,
+              border: '2px solid #A27B5C',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '6px',
+                background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
+              }
+            }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                 <Typography
                   variant="h5"
-                  sx={{
-                    color: '#DCD7C9',
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1.5
-                  }}
+                  sx={commonStyles.sectionTitle}
                 >
                   <WorkIcon sx={{ color: '#A27B5C' }} />
                   My Posted Jobs
                   <Chip 
                     label={`${userJobs.length} total`} 
-                    sx={{ 
-                      bgcolor: 'rgba(162, 123, 92, 0.2)', 
-                      color: '#DCD7C9',
-                      fontWeight: 'bold',
-                      ml: 1
-                    }} 
+                    sx={commonStyles.chip} 
                   />
                 </Typography>
               </Box>
@@ -252,13 +301,7 @@ const JobManager = () => {
                     variant="contained"
                     startIcon={<AddIcon />}
                     onClick={() => setOpenCreate(true)}
-                    sx={{
-                      bgcolor: '#A27B5C',
-                      color: '#2C3639',
-                      '&:hover': {
-                        bgcolor: '#8a6a50',
-                      }
-                    }}
+                    sx={commonStyles.primaryButton}
                   >
                     Create First Job
                   </Button>
@@ -266,31 +309,32 @@ const JobManager = () => {
               ) : (
                 <Box>
                   {/* Table Header */}
-                  <Grid container sx={{ 
-                    bgcolor: '#2C3639', 
+                  <Grid container alignItems="center" sx={{
+                    bgcolor: '#2C3639',
                     borderRadius: 2,
                     p: 2,
                     mb: 2,
-                    border: '1px solid rgba(162, 123, 92, 0.3)'
+                    border: '1px solid rgba(162, 123, 92, 0.3)',
+                    display: { xs: 'none', md: 'flex' }
                   }}>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} md={4}>
                       <Typography variant="subtitle2" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
                         JOB DETAILS
                       </Typography>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={12} md={2}>
                       <Typography variant="subtitle2" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
                         <DateRangeIcon sx={{ fontSize: '1rem', mr: 0.5 }} />
                         DATE
                       </Typography>
                     </Grid>
-                    <Grid item xs={2}>
+                    <Grid item xs={12} md={2}>
                       <Typography variant="subtitle2" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
                         STATUS
                       </Typography>
                     </Grid>
-                    <Grid item xs={4}>
-                      <Typography variant="subtitle2" sx={{ color: '#A27B5C', fontWeight: 'bold', textAlign: 'right' }}>
+                    <Grid item xs={12} md={4}>
+                      <Typography variant="subtitle2" sx={{ color: '#A27B5C', fontWeight: 'bold', textAlign: { md: 'right' } }}>
                         ACTIONS
                       </Typography>
                     </Grid>
@@ -300,22 +344,10 @@ const JobManager = () => {
                   {userJobs.map((job) => (
                     <Paper
                       key={job._id}
-                      sx={{
-                        bgcolor: '#2C3639',
-                        borderRadius: 2,
-                        p: 2,
-                        mb: 2,
-                        border: '1px solid rgba(162, 123, 92, 0.2)',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          borderColor: '#A27B5C',
-                          bgcolor: 'rgba(44, 54, 57, 0.9)',
-                          boxShadow: '0 4px 12px rgba(162, 123, 92, 0.2)',
-                        }
-                      }}
+                      sx={commonStyles.jobCard}
                     >
-                      <Grid container alignItems="center">
-                        <Grid item xs={4}>
+                      <Grid container alignItems="center" spacing={2}>
+                        <Grid item xs={12} md={4}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Box sx={{ 
                               width: 56, 
@@ -325,26 +357,46 @@ const JobManager = () => {
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              border: '2px solid #A27B5C'
+                              border: '2px solid #A27B5C',
+                              flexShrink: 0
                             }}>
                               <WorkIcon sx={{ color: '#A27B5C', fontSize: '1.8rem' }} />
                             </Box>
-                            <Box>
-                              <Typography variant="subtitle1" sx={{ color: '#DCD7C9', fontWeight: 'bold', mb: 0.5 }}>
-                                {job.title}
-                              </Typography>
+                            <Box sx={{ overflow: 'hidden' }}>
+                              <Link
+                                to={`/job/${job._id}`}
+                                style={{ textDecoration: 'none' }}
+                              >
+                                <Typography
+                                  variant="subtitle1"
+                                  sx={{
+                                    color: '#A27B5C',
+                                    fontWeight: 'bold',
+                                    mb: 0.5,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    '&:hover': {
+                                      textDecoration: 'underline',
+                                      color: '#DCD7C9'
+                                    }
+                                  }}
+                                >
+                                  {job.title}
+                                </Typography>
+                              </Link>
                               <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.7)', fontSize: '0.85rem' }}>
                                 {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
                               </Typography>
                             </Box>
                           </Box>
                         </Grid>
-                        <Grid item xs={2}>
+                        <Grid item xs={6} md={2}>
                           <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.8)' }}>
                             {new Date(job.dateListed).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </Typography>
                         </Grid>
-                        <Grid item xs={2}>
+                        <Grid item xs={6} md={2}>
                           <Chip 
                             label={job.status || 'Active'} 
                             size="small"
@@ -356,8 +408,13 @@ const JobManager = () => {
                             }}
                           />
                         </Grid>
-                        <Grid item xs={4}>
-                          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                        <Grid item xs={12} md={4}>
+                          <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: { xs: 'flex-start', md: 'flex-end' }, 
+                            gap: 1,
+                            mt: { xs: 2, md: 0 }
+                          }}>
                             <IconButton
                               onClick={() => handleViewCandidates(job)}
                               sx={{
@@ -407,26 +464,10 @@ const JobManager = () => {
           {/* Right Column: Search & All Jobs */}
           <Grid item xs={12} lg={4}>
             {/* Search & Filter Card */}
-            <Paper
-              sx={{
-                bgcolor: '#3F4E4F',
-                p: 4,
-                borderRadius: 3,
-                border: '2px solid rgba(162, 123, 92, 0.3)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-                mb: 4
-              }}
-            >
+            <Paper sx={{ ...commonStyles.card, mb: 4 }}>
               <Typography
                 variant="h6"
-                sx={{
-                  color: '#DCD7C9',
-                  mb: 3,
-                  fontWeight: 'bold',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5
-                }}
+                sx={commonStyles.sectionTitle}
               >
                 <FilterListIcon sx={{ color: '#A27B5C' }} />
                 Search & Filter
@@ -438,31 +479,7 @@ const JobManager = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={handleKeyPress}
-                sx={{
-                  mb: 3,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: '#2C3639',
-                    color: '#DCD7C9',
-                    borderRadius: 2,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    '&:hover': {
-                      borderColor: 'rgba(162, 123, 92, 0.5)',
-                    },
-                    '&.Mui-focused': {
-                      borderColor: '#A27B5C',
-                      boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
-                    }
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: '#A27B5C',
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    color: '#DCD7C9',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
-                  }
-                }}
+                sx={{ mb: 3, ...commonStyles.textField }}
                 InputProps={{
                   startAdornment: <SearchIcon sx={{ color: '#A27B5C', mr: 1 }} />,
                 }}
@@ -474,31 +491,7 @@ const JobManager = () => {
                 value={filterPrice}
                 onChange={(e) => setFilterPrice(e.target.value)}
                 onKeyPress={handleKeyPress}
-                sx={{
-                  mb: 3,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: '#2C3639',
-                    color: '#DCD7C9',
-                    borderRadius: 2,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    '&:hover': {
-                      borderColor: 'rgba(162, 123, 92, 0.5)',
-                    },
-                    '&.Mui-focused': {
-                      borderColor: '#A27B5C',
-                      boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
-                    }
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: '#A27B5C',
-                  },
-                  '& .MuiOutlinedInput-input': {
-                    color: '#DCD7C9',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
-                  }
-                }}
+                sx={{ mb: 3, ...commonStyles.textField }}
                 InputProps={{
                   startAdornment: <AttachMoneyIcon sx={{ color: '#A27B5C', mr: 1 }} />,
                 }}
@@ -509,18 +502,7 @@ const JobManager = () => {
                   variant="contained"
                   onClick={handleSearch}
                   fullWidth
-                  sx={{
-                    bgcolor: '#A27B5C',
-                    color: '#2C3639',
-                    py: 1.5,
-                    borderRadius: 2,
-                    fontWeight: 'bold',
-                    border: '2px solid #A27B5C',
-                    '&:hover': {
-                      bgcolor: '#8a6a50',
-                      borderColor: '#8a6a50',
-                    }
-                  }}
+                  sx={commonStyles.primaryButton}
                 >
                   Search Jobs
                 </Button>
@@ -528,17 +510,7 @@ const JobManager = () => {
                   variant="outlined"
                   onClick={handleClearFilters}
                   fullWidth
-                  sx={{
-                    color: '#A27B5C',
-                    borderColor: '#A27B5C',
-                    py: 1.5,
-                    borderRadius: 2,
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      bgcolor: 'rgba(162, 123, 92, 0.1)',
-                      borderColor: '#8a6a50',
-                    }
-                  }}
+                  sx={commonStyles.secondaryButton}
                 >
                   Clear
                 </Button>
@@ -546,36 +518,16 @@ const JobManager = () => {
             </Paper>
 
             {/* All Jobs Count */}
-            <Paper
-              sx={{
-                bgcolor: '#3F4E4F',
-                p: 3,
-                borderRadius: 3,
-                border: '2px solid rgba(162, 123, 92, 0.3)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-              }}
-            >
+            <Paper sx={commonStyles.card}>
               <Typography
                 variant="h6"
-                sx={{
-                  color: '#DCD7C9',
-                  mb: 2,
-                  fontWeight: 'bold',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.5
-                }}
+                sx={commonStyles.sectionTitle}
               >
                 <WorkIcon sx={{ color: '#A27B5C' }} />
                 All Jobs Available
                 <Chip 
                   label={`${filteredJobs.length} jobs`} 
-                  sx={{ 
-                    bgcolor: 'rgba(162, 123, 92, 0.2)', 
-                    color: '#DCD7C9',
-                    fontWeight: 'bold',
-                    ml: 1
-                  }} 
+                  sx={commonStyles.chip} 
                 />
               </Typography>
               
@@ -586,20 +538,7 @@ const JobManager = () => {
                   variant="contained"
                   fullWidth
                   startIcon={<SearchIcon />}
-                  sx={{
-                    bgcolor: '#A27B5C',
-                    color: '#2C3639',
-                    py: 1.5,
-                    borderRadius: 2,
-                    fontWeight: 'bold',
-                    border: '2px solid #A27B5C',
-                    '&:hover': {
-                      bgcolor: '#8a6a50',
-                      borderColor: '#8a6a50',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 24px rgba(162, 123, 92, 0.4)',
-                    }
-                  }}
+                  sx={commonStyles.primaryButton}
                 >
                   Browse All Jobs
                 </Button>
@@ -616,11 +555,11 @@ const JobManager = () => {
             left: '50%', 
             transform: 'translate(-50%, -50%)', 
             bgcolor: '#3F4E4F', 
-            p: 5, 
+            p: { xs: 3, md: 5 }, 
             borderRadius: 3, 
             boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
             border: '3px solid #A27B5C',
-            minWidth: { xs: '90%', sm: 600 },
+            width: { xs: '95%', sm: 600 },
             maxWidth: 800,
             maxHeight: '90vh',
             overflow: 'auto',
@@ -653,11 +592,11 @@ const JobManager = () => {
             left: '50%', 
             transform: 'translate(-50%, -50%)', 
             bgcolor: '#3F4E4F', 
-            p: 5, 
+            p: { xs: 3, md: 5 }, 
             borderRadius: 3, 
             boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
             border: '3px solid #A27B5C',
-            minWidth: { xs: '90%', sm: 600 },
+            width: { xs: '95%', sm: 600 },
             maxWidth: 800,
             maxHeight: '90vh',
             overflow: 'auto',
@@ -679,7 +618,7 @@ const JobManager = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            <UpdateJob job={selectedJob} onJobUpdated={() => { setOpenUpdate(false); setSelectedJob(null); triggerRefresh(); }} onClose={() => { setOpenUpdate(false); setSelectedJob(null); }} />
+            <UpdateJob job={selectedJob} onJobUpdated={() => { setOpenUpdate(false); setSelectedJob(null); triggerRefresh(); }} />
           </Box>
         </Modal>
 
@@ -690,15 +629,15 @@ const JobManager = () => {
             left: '50%', 
             transform: 'translate(-50%, -50%)', 
             bgcolor: '#3F4E4F', 
-            p: 5, 
+            p: { xs: 3, md: 5 }, 
             borderRadius: 3, 
             boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
             border: '3px solid #A27B5C',
-            minWidth: { xs: '90%', sm: 500 },
+            width: { xs: '95%', sm: 500 },
             maxWidth: 600,
             outline: 'none'
           }}>
-            <DeleteJob job={selectedJob} onJobDeleted={() => { setOpenDelete(false); setSelectedJob(null); triggerRefresh(); }} onClose={() => { setOpenDelete(false); setSelectedJob(null); }} />
+            <DeleteJob job={selectedJob} onJobDeleted={() => { setOpenDelete(false); setSelectedJob(null); triggerRefresh(); }} />
           </Box>
         </Modal>
 

@@ -20,6 +20,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CategoryIcon from '@mui/icons-material/Category';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CollapsibleText from '../components/CollapsibleText';
 
 const BrowseJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -230,7 +231,7 @@ const BrowseJobs = () => {
         {filteredJobs.length > 0 ? (
           <Grid container spacing={4}>
             {filteredJobs.map((job) => (
-              <Grid item xs={12} sm={6} md={4} key={job._id}>
+              <Grid item sx={{ width: 280, flexShrink: 0 }} key={job._id}>
                 <Link
                   to={`/job/${job._id}`}
                   style={{ textDecoration: 'none' }}
@@ -239,10 +240,10 @@ const BrowseJobs = () => {
                     sx={{
                       bgcolor: '#3F4E4F',
                       color: '#DCD7C9',
-                      borderRadius: 3,
-                      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+                      borderRadius: 2,
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
                       cursor: 'pointer',
-                      height: '100%',
+                      height: 280,
                       display: 'flex',
                       flexDirection: 'column',
                       border: '2px solid rgba(162, 123, 92, 0.3)',
@@ -250,8 +251,7 @@ const BrowseJobs = () => {
                       position: 'relative',
                       overflow: 'hidden',
                       '&:hover': {
-                        transform: 'translateY(-8px)',
-                        boxShadow: '0 16px 40px rgba(162, 123, 92, 0.3)',
+                        boxShadow: '0 8px 20px rgba(162, 123, 92, 0.3)',
                         borderColor: '#A27B5C',
                         '& .job-price': {
                           bgcolor: '#A27B5C',
@@ -294,21 +294,9 @@ const BrowseJobs = () => {
                       </Typography>
                       
                       {/* Description */}
-                      <Typography 
-                        sx={{ 
-                          mb: 3, 
-                          flexGrow: 1,
-                          color: 'rgba(220, 215, 201, 0.8)',
-                          fontSize: '0.95rem',
-                          lineHeight: 1.6,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden'
-                        }}
-                      >
-                        {job.description}
-                      </Typography>
+                      <Box sx={{ mb: 3, flexGrow: 1 }}>
+                        <CollapsibleText text={job.description} limit={100} />
+                      </Box>
                       
                       {/* Job Details */}
                       <Box sx={{ mt: 'auto' }}>

@@ -86,6 +86,7 @@ const CreateJob = ({ onJobCreated }) => {
           value={formData.title}
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           style={styles.input}
+          maxLength={100}
           required
         />
 
@@ -94,6 +95,7 @@ const CreateJob = ({ onJobCreated }) => {
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           style={styles.textarea}
+          maxLength={500}
           required
         />
 
