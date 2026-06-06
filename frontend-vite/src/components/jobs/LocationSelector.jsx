@@ -14,7 +14,7 @@ const LocationSelector = ({ location, onLocationChange }) => {
       ...location,
       type,
       address: type === 'remote' ? '' : location.address,
-      coordinates: type === 'remote' ? null : location.coordinates,
+      coordinates: type === 'remote' ? { lat: 0, lng: 0 } : location.coordinates,
     };
     onLocationChange(newLocation);
     if (type === 'remote') {

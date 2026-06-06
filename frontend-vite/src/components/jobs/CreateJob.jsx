@@ -56,8 +56,28 @@ const CreateJob = ({ onJobCreated }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        setMessage('You must be logged in to create a job.');
+        return;
+      }
       const priceNum = parseFloat(formData.price.replace(/[^\d.]/g, ''));
-      await postJob({ ...formData, price: priceNum }, token);
+      if (isNaN(priceNum) || priceNum <= 0) {
+        setMessage('Please enter a valid price.');
+        return;
+      }
+      if (!formData.title || !formData.description || !formData.category) {
+        setMessage('Please fill in all required fields.');
+        return;
+      }
+      const jobData = {
+        title: formData.title,
+        description: formData.description,
+        price: priceNum,
+        currency: formData.currency,
+        category: formData.category,
+        location: formData.location,
+      };
+      await postJob(jobData, token);
       setMessage('Job created successfully!');
       setFormData({
         title: '',
@@ -71,7 +91,9 @@ const CreateJob = ({ onJobCreated }) => {
       onJobCreated();
       window.location.href = '/jobmanager';
     } catch (err) {
-      setMessage('Failed to create job. Please try again.');
+      console.error('Job creation error:', err);
+      const errorMsg = err.response?.data?.msg || err.message || 'Failed to create job. Please try again.';
+      setMessage(errorMsg);
     }
   };
 
