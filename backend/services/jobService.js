@@ -1,4 +1,5 @@
 const Job = require('../models/Job');
+const Application = require('../models/Application');
 
 // Create Job
 const createJob = async (title, description, price, currency, category, locationData, createdBy) => {
@@ -168,7 +169,7 @@ const deleteJob = async (jobId) => {
   }
 };
 
-// Add Candidate
+// Add Candidate (Apply)
 const addCandidate = async (jobId, candidateId, currentUserId) => {
   try {
     const job = await Job.findById(jobId);
@@ -181,6 +182,15 @@ const addCandidate = async (jobId, candidateId, currentUserId) => {
     if (job.rejectedCandidates.includes(candidateId)) throw new Error('User has been rejected and cannot reapply');
     job.candidates.push(candidateId);
     await job.save();
+
+    // Create application record
+    const application = new Application({
+      applicant: candidateId,
+      job: jobId,
+      status: 'applied'
+    });
+    await application.save();
+
     return job;
   } catch (err) {
     throw new Error(err.message || 'Error adding candidate');
@@ -203,45 +213,84 @@ const removeCandidate = async (jobId, candidateId, currentUserId) => {
 
 const { awardXP } = require('../utils/gameEngine');
 const User = require('../models/User');
+const { createStatusNotification } = require('./notificationService');
 
-// Accept Candidate
-const acceptCandidate = async (jobId, candidateId, currentUserId) => {
+// Update Application Status
+const updateApplicationStatus = async (jobId, applicationId, newStatus, currentUserId) => {
   try {
     const job = await Job.findById(jobId);
     if (!job) throw new Error('Job not found');
-    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to accept candidates');
-    if (!job.candidates.includes(candidateId)) throw new Error('User is not a candidate');
-    if (job.status !== 'open') throw new Error('Job is not open');
-    job.candidates = job.candidates.filter(id => String(id) !== String(candidateId));
-    job.assignedTo = candidateId;
-    job.status = 'in-progress';
-    await job.save();
+    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to update candidate status');
 
-    // Award XP to the hired candidate
-    await awardXP(candidateId, 'job_hired');
-    const user = await User.findById(candidateId);
-    user.jobStats.jobsHired += 1;
-    await user.save();
+    const application = await Application.findById(applicationId);
+    if (!application) throw new Error('Application not found');
+    if (String(application.job) !== String(jobId)) throw new Error('Application does not belong to this job');
 
-    return job;
+    const validStatuses = ['applied', 'reviewing', 'shortlisted', 'interview', 'offered', 'hired', 'rejected'];
+    if (!validStatuses.includes(newStatus)) throw new Error('Invalid status');
+
+    const oldStatus = application.status;
+    application.status = newStatus;
+    application.updatedAt = new Date();
+    await application.save();
+
+    // If hired, update job and award XP
+    if (newStatus === 'hired') {
+      job.assignedTo = application.applicant;
+      job.status = 'in-progress';
+      await job.save();
+
+      await awardXP(application.applicant, 'job_hired');
+      const user = await User.findById(application.applicant);
+      user.jobStats.jobsHired += 1;
+      await user.save();
+    }
+
+    // Create notification for status change (only if status actually changed)
+    if (oldStatus !== newStatus) {
+      await createStatusNotification(application, oldStatus, newStatus);
+    }
+
+    return application;
   } catch (err) {
-    throw new Error(err.message || 'Error accepting candidate');
+    throw new Error(err.message || 'Error updating application status');
   }
 };
 
-// Reject Candidate
-const rejectCandidate = async (jobId, candidateId, currentUserId) => {
+// Get Applications for a Job
+const getApplicationsByJob = async (jobId, currentUserId) => {
   try {
     const job = await Job.findById(jobId);
     if (!job) throw new Error('Job not found');
-    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to reject candidates');
-    if (!job.candidates.includes(candidateId)) throw new Error('User is not a candidate');
-    job.candidates = job.candidates.filter(id => String(id) !== String(candidateId));
-    job.rejectedCandidates.push(candidateId);
-    await job.save();
-    return job;
+    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to view candidates');
+
+    const applications = await Application.find({ job: jobId })
+      .populate('applicant', 'name email')
+      .sort({ appliedAt: -1 });
+
+    return applications;
   } catch (err) {
-    throw new Error(err.message || 'Error rejecting candidate');
+    throw new Error(err.message || 'Error fetching applications');
+  }
+};
+
+// Update Interview Data
+const updateInterviewData = async (applicationId, interviewDate, meetingLink, currentUserId) => {
+  try {
+    const application = await Application.findById(applicationId);
+    if (!application) throw new Error('Application not found');
+
+    const job = await Job.findById(application.job);
+    if (!job) throw new Error('Job not found');
+    if (String(job.createdBy) !== String(currentUserId)) throw new Error('Not authorized to update interview data');
+
+    if (interviewDate) application.interviewDate = interviewDate;
+    if (meetingLink) application.meetingLink = meetingLink;
+    await application.save();
+
+    return application;
+  } catch (err) {
+    throw new Error(err.message || 'Error updating interview data');
   }
 };
 
@@ -258,6 +307,7 @@ module.exports = {
   deleteJob,
   addCandidate,
   removeCandidate,
-  acceptCandidate,
-  rejectCandidate
+  getApplicationsByJob,
+  updateApplicationStatus,
+  updateInterviewData
 };

@@ -53,6 +53,14 @@ app.use('/api/posts', postRoutes);
 const forumRoutes = require('./routes/forumRoutes');
 app.use('/api/forum', forumRoutes);
 
+// Notification routes
+const notificationRoutes = require('./routes/notificationRoutes');
+app.use('/api/notifications', notificationRoutes);
+
+// Application chat routes
+const applicationChatRoutes = require('./routes/applicationChatRoutes');
+app.use('/api/application-chat', applicationChatRoutes);
+
 
 
 

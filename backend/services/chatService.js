@@ -59,6 +59,55 @@ const getOrCreateChat = async (userId, otherUserId = null) => {
     return chat;
 };
 
+// Get or Create Application Chat (for employer-candidate communication without friendship requirement)
+const getOrCreateApplicationChat = async (applicationId, userId) => {
+    const Application = require('../models/Application');
+    const Job = require('../models/Job');
+
+    // Validate the application exists
+    const application = await Application.findById(applicationId).populate('applicant').populate('job');
+    if (!application) {
+        throw new Error('Application not found');
+    }
+
+    const job = await Job.findById(application.job._id || application.job);
+    if (!job) {
+        throw new Error('Job not found');
+    }
+
+    // Verify user is either the employer (createdBy) or the applicant
+    const isEmployer = job.createdBy.toString() === userId.toString();
+    const isApplicant = application.applicant._id.toString() === userId.toString();
+
+    if (!isEmployer && !isApplicant) {
+        throw new Error('Not authorized to access this application chat');
+    }
+
+    // Determine the other participant
+    const otherUserId = isEmployer ? application.applicant._id.toString() : job.createdBy.toString();
+
+    // Find existing application chat
+    let chat = await Chat.findOne({
+        application: applicationId,
+        type: 'application'
+    }).lean();
+
+    if (!chat) {
+        // Create new application chat
+        chat = await Chat.create({
+            participants: [userId, otherUserId],
+            type: 'application',
+            application: applicationId,
+            lastMessage: 'Welcome to your application chat!'
+        });
+    }
+
+    // Update the application with chat room reference
+    await Application.findByIdAndUpdate(applicationId, { chatRoom: chat._id });
+
+    return chat;
+};
+
 // Send Message (Revised to include Socket.IO broadcast)
 const sendMessage = async (chatId, senderId, receiverId, content) => {
     
@@ -131,4 +180,4 @@ const getUserChats = async (userId) => {
       .lean(); // Use .lean() for speed
 };
 
-module.exports = { getOrCreateChat, sendMessage, getChatMessages, getUserChats };
+module.exports = { getOrCreateChat, getOrCreateApplicationChat, sendMessage, getChatMessages, getUserChats };
