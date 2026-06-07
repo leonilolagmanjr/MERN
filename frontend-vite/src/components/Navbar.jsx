@@ -14,19 +14,11 @@ const Navbar = () => {
   const toggleDrawer = (open) => () => setDrawerOpen(open);
 
   const menuItems = [
-<<<<<<< HEAD
-    { text: "HOME", to: "/" },
-    { text: "BROWSE", to: "/browse" },
-    // { text: "ABOUT", to: "/about" },
-    { text: "SOCIAL", to: "/social" },
-    { text: "FORUM", to: "/forum" },
-=======
     { text: 'Home', to: '/' },
     { text: 'Browse', to: '/browse' },
     //{ text: 'About', to: '/about' },
     { text: 'Social', to: '/social' },
     { text: 'Forum', to: '/forum' },
->>>>>>> d181e02258fc35df77d0f2bdb6efb1990866a803
   ];
 
   return (
