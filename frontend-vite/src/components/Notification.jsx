@@ -1,207 +1,291 @@
-import React, { useState, useContext } from 'react';
-import { acceptFriendRequest, denyFriendRequest } from '../services/api';
-import { FriendContext } from '../context/FriendContext';
-import {
-  IconButton,
-  Badge,
-  Menu,
-  MenuItem,
-  Typography,
-  Box,
-  Button,
-} from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import UserLink from './UserLink';
+import React, { useState, useContext, useRef, useEffect } from "react";
+import { Bell } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+
+import { acceptFriendRequest, denyFriendRequest } from "../services/api";
+import { FriendContext } from "../context/FriendContext";
+
+import UserLink from "./UserLink";
 
 const Notification = () => {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+
   const { friendRequests, notifyFriendListUpdated } = useContext(FriendContext);
+
+  const menuRef = useRef(null);
 
   const handleAccept = async (requesterId) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
+
       await acceptFriendRequest(requesterId, token);
+
       notifyFriendListUpdated();
     } catch (err) {
-      console.error('Error accepting friend request:', err);
+      console.error("Error accepting friend request:", err);
     }
   };
 
   const handleDeny = async (requesterId) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
+
       await denyFriendRequest(requesterId, token);
+
       notifyFriendListUpdated();
     } catch (err) {
-      console.error('Error denying friend request:', err);
+      console.error("Error denying friend request:", err);
     }
   };
 
-  const handleMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   return (
-    <Box>
-      <IconButton 
-        color="inherit" 
-        onClick={handleMenuOpen}
-        sx={{
-          color: '#DCD7C9',
-          '&:hover': {
-            bgcolor: 'rgba(162, 123, 92, 0.1)'
-          }
-        }}
+    <div className="relative" ref={menuRef}>
+      {/* Bell Button */}
+
+      <button
+        onClick={() => setOpen((prev) => !prev)}
+        className="
+          relative
+          flex
+          h-10
+          w-10
+          items-center
+          justify-center
+          rounded-full
+          text-[#DCD7C9]
+          transition-all
+          hover:bg-[#A27B5C]/10
+        "
       >
-        <Badge 
-          badgeContent={friendRequests.length} 
-          sx={{
-            '& .MuiBadge-badge': {
-              bgcolor: '#A27B5C',
-              color: '#2C3639',
-              fontWeight: 'bold'
-            }
-          }}
-        >
-          <NotificationsIcon />
-        </Badge>
-      </IconButton>
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        PaperProps={{
-          sx: { 
-            bgcolor: '#3F4E4F', 
-            color: '#DCD7C9', 
-            width: 350,
-            maxHeight: 400,
-            overflow: 'auto',
-            border: '2px solid rgba(162, 123, 92, 0.3)',
-            borderRadius: '8px',
-            mt: 1
-          },
-        }}
-      >
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            px: 2, 
-            py: 1.5, 
-            borderBottom: '1px solid rgba(162, 123, 92, 0.3)',
-            fontWeight: 600,
-            fontSize: '1rem'
-          }}
-        >
-          Friend Requests
-        </Typography>
-        {friendRequests.length === 0 ? (
-          <MenuItem 
-            disabled
-            sx={{
-              '&.Mui-disabled': {
-                opacity: 1
-              }
-            }}
+        <Bell size={20} />
+
+        {friendRequests.length > 0 && (
+          <span
+            className="
+              absolute
+              -right-1
+              -top-10
+              flex
+              h-5
+              min-w-5
+              items-center
+              justify-center
+              rounded-full
+              bg-[#A27B5C]
+              px-1
+              text-[10px]
+              font-bold
+              text-[#2C3639]
+            "
           >
-            <Typography sx={{ 
-              fontStyle: 'italic',
-              color: 'rgba(220, 215, 201, 0.7)',
-              py: 1
-            }}>
-              No new friend requests
-            </Typography>
-          </MenuItem>
-        ) : (
-          friendRequests.map((req) => (
-            <MenuItem 
-              key={req._id} 
-              sx={{ 
-                display: 'flex', 
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                py: 1.5,
-                borderBottom: '1px solid rgba(162, 123, 92, 0.1)',
-                '&:hover': {
-                  bgcolor: 'rgba(162, 123, 92, 0.1)'
-                },
-                '&:last-child': {
-                  borderBottom: 'none'
-                }
-              }}
-            >
-              <Box sx={{ flex: 1, mr: 1 }}>
-                <UserLink 
-                  userId={req._id} 
-                  name={req.name} 
-                  sx={{ 
-                    fontWeight: 600,
-                    fontSize: '0.95rem',
-                    color: '#DCD7C9'
-                  }} 
-                />
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
-                    color: 'rgba(220, 215, 201, 0.7)',
-                    fontSize: '0.8rem',
-                    mt: 0.5
-                  }}
-                >
-                  {req.email}
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', gap: 0.5 }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  sx={{ 
-                    bgcolor: '#4caf50',
-                    color: '#2C3639',
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                    px: 1.5,
-                    py: 0.5,
-                    minWidth: 'auto',
-                    '&:hover': {
-                      bgcolor: '#388e3c',
-                      transform: 'translateY(-1px)'
-                    }
-                  }}
-                  onClick={() => handleAccept(req._id)}
-                >
-                  Accept
-                </Button>
-                <Button
-                  size="small"
-                  variant="contained"
-                  sx={{ 
-                    bgcolor: '#ff6b6b',
-                    color: '#2C3639',
-                    fontWeight: 600,
-                    fontSize: '0.75rem',
-                    px: 1.5,
-                    py: 0.5,
-                    minWidth: 'auto',
-                    '&:hover': {
-                      bgcolor: '#ff5252',
-                      transform: 'translateY(-1px)'
-                    }
-                  }}
-                  onClick={() => handleDeny(req._id)}
-                >
-                  Deny
-                </Button>
-              </Box>
-            </MenuItem>
-          ))
+            {friendRequests.length}
+          </span>
         )}
-      </Menu>
-    </Box>
+      </button>
+
+      {/* Animated Dropdown */}
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: -15,
+              scale: 0.95,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: 1,
+            }}
+            exit={{
+              opacity: 0,
+              y: -15,
+              scale: 0.95,
+            }}
+            transition={{
+              duration: 0.22,
+              ease: [0.16, 0.2, 0.3, 1],
+            }}
+            className="
+              absolute
+              left-2
+              top-20
+              z-50
+              w-97.5
+              overflow-hidden
+              rounded-2xl
+              border
+              border-[#C08A5D]/20
+              bg-[#111827]
+              shadow-[0_20px_50px_rgba(0,0,0,.45)]
+            "
+          >
+            {/* Arrow */}
+
+            <div
+              className="
+                absolute
+                -top-2
+                left-6
+                h-4
+                w-4
+                rotate-45
+                border-l
+                border-t
+                border-[#C08A5D]/20
+                bg-[#111827]
+              "
+            />
+
+            {/* Header */}
+
+            <div
+              className="
+                border-b
+                border-[#C08A5D]/10
+                px-6
+                py-5
+              "
+            >
+              <h3
+                className="
+                  text-lg
+                  font-semibold
+                  text-[#DCD7C9]
+                "
+              >
+                Friend Requests
+              </h3>
+            </div>
+
+            {/* Empty State */}
+
+            {friendRequests.length === 0 ? (
+              <div
+                className="
+                  flex
+                  h-55
+                  items-center
+                  justify-center
+                  px-6
+                "
+              >
+                <p
+                  className="
+                    text-center
+                    text-base
+                    text-[#DCD7C9]/60
+                  "
+                >
+                  No new friend requests.
+                </p>
+              </div>
+            ) : (
+              <div
+                className="
+                  max-h-105
+                  overflow-y-auto
+                "
+              >
+                {friendRequests.map((req) => (
+                  <div
+                    key={req._id}
+                    className="
+                      flex
+                      items-center
+                      justify-between
+                      border-b
+                      border-[#C08A5D]/10
+                      px-5
+                      py-4
+                      transition-colors
+                      hover:bg-[#C08A5D]/5
+                    "
+                  >
+                    {/* User Info */}
+
+                    <div className="mr-3 flex-1">
+                      <UserLink
+                        userId={req._id}
+                        name={req.name}
+                        className="
+                          text-[15px]
+                          font-semibold
+                          text-[#DCD7C9]
+                        "
+                      />
+
+                      <p
+                        className="
+                          mt-1
+                          text-xs
+                          text-[#DCD7C9]/60
+                        "
+                      >
+                        {req.email}
+                      </p>
+                    </div>
+
+                    {/* Actions */}
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleAccept(req._id)}
+                        className="
+                          rounded-lg
+                          bg-green-500
+                          px-3
+                          py-1.5
+                          text-xs
+                          font-semibold
+                          text-white
+                          transition-colors
+                          hover:bg-green-600
+                        "
+                      >
+                        Accept
+                      </button>
+
+                      <button
+                        onClick={() => handleDeny(req._id)}
+                        className="
+                          rounded-lg
+                          bg-red-500
+                          px-3
+                          py-1.5
+                          text-xs
+                          font-semibold
+                          text-white
+                          transition-colors
+                          hover:bg-red-600
+                        "
+                      >
+                        Deny
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 };
 

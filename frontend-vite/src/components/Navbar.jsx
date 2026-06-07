@@ -1,281 +1,204 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import Notification from './Notification';
-import UserLink from './UserLink';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemText, useMediaQuery } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { useTheme } from '@mui/material/styles';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import Notification from "./Notification";
+import UserLink from "./UserLink";
+import { Menu, Bell } from "lucide-react";
 
 const Navbar = () => {
   const { isLoggedIn, user, logout } = useAuth();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const location = useLocation();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
-  const handleLogout = () => {
-    logout();
-  };
-
-  const toggleDrawer = (open) => () => {
-    setDrawerOpen(open);
-  };
+  const handleLogout = () => logout();
+  const toggleDrawer = (open) => () => setDrawerOpen(open);
 
   const menuItems = [
-    { text: 'Home', to: '/' },
-    { text: 'Browse', to: '/browse' },
-    { text: 'About', to: '/about' },
-    { text: 'Social', to: '/social' },
-    { text: 'Forum', to: '/forum' },
+    { text: "HOME", to: "/" },
+    { text: "BROWSE", to: "/browse" },
+    // { text: "ABOUT", to: "/about" },
+    { text: "SOCIAL", to: "/social" },
+    { text: "FORUM", to: "/forum" },
   ];
 
-  const drawerList = (
-    <Box
-      sx={{ 
-        width: 250,
-        height: '100%',
-        bgcolor: '#2C3639'
-      }}
-      role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-    >
-      <List>
-        {menuItems.map((item) => (
-          <ListItem 
-            button 
-            component={Link} 
-            to={item.to} 
-            key={item.text}
-            sx={{
-              borderBottom: '1px solid rgba(162, 123, 92, 0.1)',
-              '&:hover': {
-                bgcolor: 'rgba(162, 123, 92, 0.1)'
-              }
-            }}
-          >
-            <ListItemText 
-              primary={item.text} 
-              sx={{ 
-                color: '#DCD7C9',
-                '& .MuiListItemText-primary': {
-                  fontWeight: 500
-                }
-              }} 
-            />
-          </ListItem>
-        ))}
-        {isLoggedIn ? (
-          <>
-            <ListItem 
-              button 
-              component={Link} 
-              to={`/profile/${user?.id}`}
-              sx={{
-                borderBottom: '1px solid rgba(162, 123, 92, 0.1)',
-                '&:hover': {
-                  bgcolor: 'rgba(162, 123, 92, 0.1)'
-                }
-              }}
-            >
-              <ListItemText 
-                primary={`${user?.name}'s Profile`} 
-                sx={{ 
-                  color: '#DCD7C9',
-                  '& .MuiListItemText-primary': {
-                    fontWeight: 500
-                  }
-                }} 
-              />
-            </ListItem>
-            <ListItem 
-              button 
-              onClick={handleLogout}
-              sx={{
-                '&:hover': {
-                  bgcolor: 'rgba(255, 107, 107, 0.1)'
-                }
-              }}
-            >
-              <ListItemText 
-                primary="Logout" 
-                sx={{ 
-                  color: '#ff6b6b',
-                  '& .MuiListItemText-primary': {
-                    fontWeight: 500
-                  }
-                }} 
-              />
-            </ListItem>
-          </>
-        ) : (
-          <ListItem 
-            button 
-            component={Link} 
-            to="/auth"
-            sx={{
-              borderTop: '1px solid rgba(162, 123, 92, 0.3)',
-              mt: 1,
-              '&:hover': {
-                bgcolor: 'rgba(162, 123, 92, 0.1)'
-              }
-            }}
-          >
-            <ListItemText 
-              primary="Login" 
-              sx={{ 
-                color: '#A27B5C',
-                '& .MuiListItemText-primary': {
-                  fontWeight: 600
-                }
-              }} 
-            />
-          </ListItem>
-        )}
-      </List>
-    </Box>
-  );
-
   return (
-    <AppBar 
-      position="static" 
-      sx={{ 
-        bgcolor: '#2C3639', 
-        boxShadow: '0 4px 12px rgba(44, 54, 57, 0.8)',
-        borderBottom: '2px solid #A27B5C'
-      }}
-    >
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Left Section */}
-        <Box display="flex" alignItems="center" gap={2}>
-          <Typography 
-            variant="h6" 
-            component={Link} 
-            to="/" 
-            sx={{ 
-              fontWeight: 'bold', 
-              color: '#DCD7C9', 
-              textDecoration: 'none',
-              fontSize: { xs: '1.1rem', sm: '1.25rem' },
-              '&:hover': {
-                color: '#A27B5C'
-              }
-            }}
+    <>
+      {/* ================================
+          NAVBAR
+      ================================ */}
+      <header
+        className="sticky top-0 z-50 border-b-[3px] border-[#C08A5D]"
+        style={{
+          background: "#111827",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+        }}
+      >
+        <div className="mx-auto flex h-16 max-w-350 items-center px-6 lg:px-10">
+          {/* LOGO */}
+          <Link
+            to="/"
+            className="shrink-0 text-[2rem] font-extrabold tracking-tight no-underline"
           >
-            PBuild
-          </Typography>
-          {!isMobile && (
-            <Box display="flex" gap={1}>
-              {menuItems.map((item) => (
-                <Button 
-                  component={Link} 
-                  to={item.to} 
+            <span className="text-[#C08A5D]">P</span>
+            <span className="text-white">Build</span>
+          </Link>
+
+          {/* DIVIDER */}
+          <div className="mx-8 hidden h-8 w-px bg-white/15 lg:block shrink-0" />
+
+          {/* DESKTOP NAV */}
+          <nav className="hidden flex-1 items-center gap-1 lg:flex">
+            {menuItems.map((item) => {
+              const active = location.pathname === item.to;
+              return (
+                <Link
                   key={item.text}
-                  sx={{ 
-                    color: '#DCD7C9',
-                    fontWeight: 500,
-                    fontSize: '0.9rem',
-                    px: 1.5,
-                    '&:hover': {
-                      color: '#A27B5C',
-                      bgcolor: 'rgba(162, 123, 92, 0.1)',
-                      borderRadius: '4px'
+                  to={item.to}
+                  className={`
+                    rounded-lg px-5 py-2 text-[0.82rem] font-semibold tracking-wide
+                    transition-all duration-200 no-underline
+                    ${
+                      active
+                        ? "border border-[#C08A5D]/30 bg-[#C08A5D]/10 text-[#C08A5D]"
+                        : "text-white/80 hover:text-[#C08A5D] hover:bg-white/5"
                     }
-                  }}
+                  `}
                 >
                   {item.text}
-                </Button>
-              ))}
-            </Box>
-          )}
-        </Box>
+                </Link>
+              );
+            })}
+          </nav>
 
-        {/* Right Section */}
-        <Box display="flex" alignItems="center" gap={2}>
-          {isMobile ? (
-            <>
-              <IconButton
-                edge="start"
-                aria-label="menu"
-                onClick={toggleDrawer(true)}
-                sx={{
-                  color: '#DCD7C9',
-                  '&:hover': {
-                    bgcolor: 'rgba(162, 123, 92, 0.1)'
-                  }
-                }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Drawer
-                anchor="right"
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-                PaperProps={{
-                  sx: {
-                    bgcolor: '#2C3639'
-                  }
-                }}
-              >
-                {drawerList}
-              </Drawer>
-            </>
-          ) : (
-            <>
+          {/* RIGHT SIDE */}
+          <div className="ml-auto flex items-center gap-4">
+            {/* MOBILE BUTTON */}
+            <button
+              onClick={toggleDrawer(true)}
+              className="rounded-lg p-1.5 text-white hover:bg-white/5 transition-colors lg:hidden"
+            >
+              <Menu size={24} />
+            </button>
+
+            {/* DESKTOP AUTH */}
+            <div className="hidden items-center gap-4 lg:flex">
               {isLoggedIn ? (
                 <>
-                  <Notification />
-                  <UserLink 
-                    userId={user?.id} 
-                    name={user?.name} 
-                    sx={{ 
-                      color: '#A27B5C',
-                      fontWeight: 600,
-                      fontSize: '0.95rem'
-                    }} 
-                  />
-                  <Button
+                  {/* Bell with red dot */}
+                  <div className="relative">
+                    <Notification />
+                    <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-[#C08A5D] ring-2 ring-[#111827] pointer-events-none" />
+                  </div>
+
+                  <UserLink userId={user?.id} name={user?.name} />
+
+                  <button
                     onClick={handleLogout}
-                    sx={{ 
-                      color: '#ff6b6b',
-                      textTransform: 'none',
-                      fontWeight: 500,
-                      '&:hover': {
-                        bgcolor: 'rgba(255, 107, 107, 0.1)',
-                        borderRadius: '4px'
-                      }
-                    }}
+                    className="rounded-lg border border-[#C08A5D] px-5 py-2 text-[0.875rem] font-semibold text-[#C08A5D] transition-all duration-200 hover:bg-[#C08A5D] hover:text-[#0F172A]"
                   >
                     Logout
-                  </Button>
+                  </button>
                 </>
               ) : (
-                <Button 
-                  component={Link} 
-                  to="/auth" 
-                  sx={{ 
-                    color: '#A27B5C',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    border: '2px solid #A27B5C',
-                    borderRadius: '8px',
-                    px: 2,
-                    '&:hover': {
-                      bgcolor: '#A27B5C',
-                      color: '#2C3639',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(162, 123, 92, 0.4)'
-                    }
-                  }}
+                <Link
+                  to="/auth"
+                  className="rounded-lg border border-[#C08A5D] px-5 py-2 text-[0.875rem] font-semibold text-[#C08A5D] no-underline transition-all duration-200 hover:bg-[#C08A5D] hover:text-[#0F172A]"
                 >
                   Login
-                </Button>
+                </Link>
               )}
-            </>
-          )}
-        </Box>
-      </Toolbar>
-    </AppBar>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* ================================
+          MOBILE DRAWER
+      ================================ */}
+      <div
+        className={`
+          fixed inset-0 z-100 lg:hidden transition-all duration-300
+          ${drawerOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
+        `}
+      >
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          onClick={toggleDrawer(false)}
+        />
+
+        {/* Drawer Panel */}
+        <div
+          className={`
+            absolute right-0 top-0 h-full w-62.5
+            border-l border-white/10
+            transition-transform duration-300
+            ${drawerOpen ? "translate-x-0" : "translate-x-full"}
+          `}
+          style={{ background: "#111827" }}
+        >
+          <ul className="list-none m-0 p-0 pt-3">
+            {menuItems.map((item) => {
+              const active = location.pathname === item.to;
+              return (
+                <li key={item.text}>
+                  <Link
+                    to={item.to}
+                    onClick={toggleDrawer(false)}
+                    className={`
+                      flex items-center border-b border-white/6 px-5 py-4
+                      text-sm font-medium no-underline transition-all duration-200
+                      ${
+                        active
+                          ? "bg-[#C08A5D]/15 text-[#C08A5D]"
+                          : "text-[#DCD7C9] hover:bg-[rgba(192,138,93,0.08)] hover:text-[#C08A5D]"
+                      }
+                    `}
+                  >
+                    {item.text}
+                  </Link>
+                </li>
+              );
+            })}
+
+            {isLoggedIn ? (
+              <>
+                <li>
+                  <Link
+                    to={`/profile/${user?.id}`}
+                    onClick={toggleDrawer(false)}
+                    className="flex items-center border-b border-white/6 px-5 py-4 text-sm font-medium text-[#C08A5D] no-underline  transition-all"
+                  >
+                    {user?.name}'s Profile
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      toggleDrawer(false)();
+                    }}
+                    className="w-full text-left px-5 py-4 text-sm font-medium text-[#ff6b6b] hover:bg-[rgba(255,107,107,0.08)] transition-all"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <li className="mt-2 border-t border-[rgba(162,123,92,0.3)]">
+                <Link
+                  to="/auth"
+                  onClick={toggleDrawer(false)}
+                  className="flex items-center px-5 py-4 text-sm font-semibold text-[#C08A5D] no-underline hover:bg-[rgba(192,138,93,0.08)] transition-all"
+                >
+                  Login
+                </Link>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+    </>
   );
 };
 

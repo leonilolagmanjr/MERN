@@ -1,61 +1,96 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Typography,
-  Grid,
-  Paper,
-  Avatar,
-  Button,
-  Chip,
-  Container,
-  Divider,
-  Card,
-  CardContent,
-  Stack,
-  IconButton,
-  LinearProgress,
-  Fade,
-  CircularProgress
-} from '@mui/material';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   fetchPostedJobs,
   fetchCompletedJobs,
   fetchAcceptedJobs,
   getUserProfile,
-  sendFriendRequest,
   getFriendRequests,
-  acceptFriendRequest,
-  denyFriendRequest,
-  cancelFriendRequest
-} from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import { useFriend } from '../context/FriendContext';
-import Posts from '../components/posts/Posts';
-import FriendActions from '../components/friends/FriendActions';
-import UserLink from '../components/UserLink';
-import LevelBar from '../components/gamify/LevelBar';
+} from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import { useFriend } from "../context/FriendContext";
+import Posts from "../components/posts/Posts";
+import FriendActions from "../components/friends/FriendActions";
+import UserLink from "../components/UserLink";
+import LevelBar from "../components/gamify/LevelBar";
 
-// Icons
-import EditIcon from '@mui/icons-material/Edit';
-import WorkIcon from '@mui/icons-material/Work';
-import StarIcon from '@mui/icons-material/Star';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import LanguageIcon from '@mui/icons-material/Language';
-import SchoolIcon from '@mui/icons-material/School';
-import BadgeIcon from '@mui/icons-material/Badge';
-import PeopleIcon from '@mui/icons-material/People';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import AssessmentIcon from '@mui/icons-material/Assessment';
+import {
+  Edit,
+  MapPin,
+  Phone,
+  Mail,
+  Star,
+  Trophy,
+  TrendingUp,
+  BarChart2,
+  GraduationCap,
+  Badge,
+  Users,
+  Zap,
+  ClipboardList,
+  FileText,
+  ChevronRight,
+  MoreVertical,
+  Camera,
+  Pencil,
+  CheckCircle,
+} from "lucide-react";
+
+const StatCard = ({ icon, value, label, trend }) => (
+  <div className="flex-1 rounded-xl bg-[#1a1f2e] p-6 h-full flex flex-col gap-2 min-w-0">
+    <div className="text-[#C08A5D] mb-1">{icon}</div>
+    <span className="text-2xl font-bold text-white">{value}</span>
+    <span className="text-xs text-white/50">{label}</span>
+    {trend && (
+      <span className="text-xs text-green-400 flex items-center gap-1">
+        ↑ {trend} <span className="text-white/40">vs last month</span>
+      </span>
+    )}
+  </div>
+);
+
+const SectionCard = ({ children, className = "" }) => (
+  <div
+    className={`rounded-2xl bg-[#151b27] border border-white/6 p-6 ${className}`}
+  >
+    {children}
+  </div>
+);
+
+const SectionTitle = ({ icon, title, action }) => (
+  <div className="flex items-center justify-between mb-4">
+    <div className="flex items-center gap-2">
+      <span className="text-[#C08A5D]">{icon}</span>
+      <span className="text-white font-bold text-base">{title}</span>
+    </div>
+    {action && (
+      <button className="text-[#C08A5D] text-sm flex items-center gap-1 hover:text-[#d9a06a] transition-colors">
+        {action} <ChevronRight size={14} />
+      </button>
+    )}
+  </div>
+);
+
+const InfoRow = ({ icon, label, value }) => (
+  <div className="flex items-start gap-3 py-3 border-b border-white/6 last:border-0">
+    <span className="text-[#C08A5D] mt-0.5 shrink-0">{icon}</span>
+    <div>
+      <p className="text-[#C08A5D] text-xs mb-0.5">{label}</p>
+      <p className="text-white/80 text-sm">{value}</p>
+    </div>
+  </div>
+);
 
 const Profile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { getFriendStatus, notifyFriendListUpdated, openChatWithUser, friendRequests } = useFriend();
+  const {
+    getFriendStatus,
+    notifyFriendListUpdated,
+    openChatWithUser,
+    friendRequests,
+  } = useFriend();
 
   const [profile, setProfile] = useState({});
   const [postedJobs, setPostedJobs] = useState([]);
@@ -68,12 +103,13 @@ const Profile = () => {
   const [loadingFriendStatus, setLoadingFriendStatus] = useState(true);
   const [refreshProfile, setRefreshProfile] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("badges");
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const viewedProfile = await getUserProfile(userId, token);
 
         setProfile(viewedProfile);
@@ -89,632 +125,501 @@ const Profile = () => {
         setCompletedJobs(completed);
         setAcceptedJobs(accepted);
 
-        // Always check friend status when profile is visited
         await updateFriendStatus();
       } catch (err) {
-        console.error('Error fetching profile data:', err);
+        console.error("Error fetching profile data:", err);
       } finally {
         setLoading(false);
         setLoadingFriendStatus(false);
       }
     };
 
-    if (user?.id) {
-      fetchProfileData();
-    }
+    if (user?.id) fetchProfileData();
   }, [userId, user, getFriendStatus, refreshProfile]);
 
-  // New function to update friend status
   const updateFriendStatus = async () => {
     try {
       const status = await getFriendStatus(userId);
-      setIsFriend(status === 'friends');
-      setRequestSent(status === 'requestSent');
-      setHasPendingRequest(status === 'requestReceived');
+      setIsFriend(status === "friends");
+      setRequestSent(status === "requestSent");
+      setHasPendingRequest(status === "requestReceived");
 
       if (userId === user?.id) {
-        const token = localStorage.getItem('token');
-        const requests = await getFriendRequests(token);
+        const token = localStorage.getItem("token");
+        await getFriendRequests(token);
         setHasPendingRequest(false);
         setRequestSent(false);
         setIsFriend(false);
       }
     } catch (err) {
-      console.error('Error updating friend status:', err);
+      console.error("Error updating friend status:", err);
     }
   };
 
-  // Listen for friendRequests or friend list updates to refresh friend status in real time
   useEffect(() => {
     updateFriendStatus();
   }, [friendRequests, userId, user]);
 
   if (loading) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh',
-        bgcolor: '#2C3639'
-      }}>
-        <CircularProgress sx={{ color: '#A27B5C' }} size={60} />
-      </Box>
+      <div className="flex items-center justify-center min-h-screen bg-[#0f1420]">
+        <div className="w-14 h-14 rounded-full border-4 border-[#C08A5D] border-t-transparent animate-spin" />
+      </div>
     );
   }
 
   return (
-    <Box sx={{ 
-      bgcolor: '#2C3639', 
-      color: '#DCD7C9', 
-      minHeight: '100vh',
-      py: 5,
-      position: 'relative',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: `
-          radial-gradient(circle at 20% 30%, rgba(162, 123, 92, 0.05) 0%, transparent 25%),
-          radial-gradient(circle at 80% 70%, rgba(63, 78, 79, 0.08) 0%, transparent 25%)
-        `,
-        zIndex: 0,
-      }
-    }}>
-      <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Profile Header */}
-        <Fade in timeout={600}>
-          <Paper
-            sx={{
-              bgcolor: '#3F4E4F',
-              p: 5,
-              mb: 6,
-              borderRadius: 3,
-              border: '2px solid #A27B5C',
-              boxShadow: '0 12px 40px rgba(0, 0, 0, 0.3)',
-              position: 'relative',
-              overflow: 'hidden',
-              '&::before': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '6px',
-                background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-              }
-            }}
-          >
-            <Grid container spacing={4} alignItems="center">
-              <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Avatar
-                  src={profile.profileImage || 'https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png'}
-                  sx={{
-                    width: 180,
-                    height: 180,
-                    border: '4px solid #A27B5C',
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
-                  }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <Typography variant="h2" sx={{ color: '#DCD7C9', fontWeight: 'bold', mb: 1 }}>
-                  <UserLink userId={profile._id} name={profile.name} />
-                </Typography>
-                <Typography variant="h5" sx={{ color: '#A27B5C', mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <EmailIcon /> {profile.email || 'No email provided'}
-                </Typography>
-                
-                <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-                  <Chip 
-                    icon={<StarIcon />}
-                    label={`Level ${profile.level || 1}`} 
-                    sx={{ 
-                      bgcolor: 'rgba(162, 123, 92, 0.2)', 
-                      color: '#DCD7C9',
-                      fontWeight: 'bold'
-                    }} 
-                  />
-                  <Chip 
-                    label={`${profile.xp || 0} XP`} 
-                    sx={{ 
-                      bgcolor: 'rgba(162, 123, 92, 0.2)', 
-                      color: '#DCD7C9',
-                      fontWeight: 'bold'
-                    }} 
-                  />
-                  <Chip 
-                    icon={<PeopleIcon />}
-                    label={`${profile.connections?.length || 0} Friends`} 
-                    sx={{ 
-                      bgcolor: 'rgba(162, 123, 92, 0.2)', 
-                      color: '#DCD7C9',
-                      fontWeight: 'bold'
-                    }} 
-                  />
-                </Box>
-              </Grid>
-              
-              <Grid item xs={12} md={3}>
-                <Stack spacing={2}>
-                  {isCurrentUser && (
-                    <Button
-                      variant="contained"
-                      startIcon={<EditIcon />}
-                      onClick={() => navigate('/editprofile')}
-                      fullWidth
-                      sx={{
-                        bgcolor: '#A27B5C',
-                        color: '#2C3639',
-                        py: 1.5,
-                        fontWeight: 'bold',
-                        '&:hover': {
-                          bgcolor: '#8a6a50',
-                        }
-                      }}
-                    >
-                      Edit Profile
-                    </Button>
-                  )}
-                  
-                  <FriendActions
-                    userId={userId}
-                    isCurrentUser={isCurrentUser}
-                    isFriend={isFriend}
-                    requestSent={requestSent}
-                    hasPendingRequest={hasPendingRequest}
-                    loadingFriendStatus={loadingFriendStatus}
-                    openChatWithUser={openChatWithUser}
-                    updateFriendStatus={updateFriendStatus}
-                    notifyFriendListUpdated={notifyFriendListUpdated}
-                    friendRequests={friendRequests}
-                  />
-                </Stack>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Fade>
-
-        {/* Main Content */}
-        <Grid container spacing={4}>
-          {/* Left Column - Main Content */}
-          <Grid item xs={12} lg={8}>
-            {/* Accomplishments Stats */}
-            <Fade in timeout={800} delay={200}>
-              <Paper
-                sx={{
-                  bgcolor: '#3F4E4F',
-                  p: 4,
-                  mb: 4,
-                  borderRadius: 3,
-                  border: '2px solid rgba(162, 123, 92, 0.3)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
-                }}
+    <div className="min-h-screen py-8" style={{ background: "#0f1420" }}>
+      <div className="mx-auto max-w-6xl">
+        {/* ================================
+            PROFILE HEADER CARD
+        ================================ */}
+        <div
+          className="rounded-2xl p-8 mb-5 relative overflow-hidden border border-white/6"
+          style={{
+            background: "linear-gradient(145deg, #1a1f2e 0%, #151b27 100%)",
+          }}
+        >
+          {/* Top Row: Avatar + Info + Actions */}
+          <div className="flex items-start gap-5">
+            {/* Avatar */}
+            <div className="relative shrink-0">
+              <div
+                className="w-45 h-45 rounded-full overflow-hidden"
+                style={{ border: "3px solid #C08A5D" }}
               >
-                <Typography variant="h5" sx={{ color: '#DCD7C9', mb: 4, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <EmojiEventsIcon /> Accomplishments
-                </Typography>
-                
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={4}>
-                    <Card sx={{ 
-                      bgcolor: '#2C3639', 
-                      textAlign: 'center',
-                      border: '2px solid #A27B5C',
-                      borderRadius: 2,
-                      height: '100%'
-                    }}>
-                      <CardContent sx={{ p: 3 }}>
-                        <Typography variant="h2" sx={{ color: '#A27B5C', fontWeight: 'bold', mb: 1 }}>
-                          {completedJobs.length}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 600 }}>
-                          Jobs Completed
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={4}>
-                    <Card sx={{ 
-                      bgcolor: '#2C3639', 
-                      textAlign: 'center',
-                      border: '2px solid #A27B5C',
-                      borderRadius: 2,
-                      height: '100%'
-                    }}>
-                      <CardContent sx={{ p: 3 }}>
-                        <Typography variant="h2" sx={{ color: '#A27B5C', fontWeight: 'bold', mb: 1 }}>
-                          {postedJobs.length}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 600 }}>
-                          Jobs Posted
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={4}>
-                    <Card sx={{ 
-                      bgcolor: '#2C3639', 
-                      textAlign: 'center',
-                      border: '2px solid #A27B5C',
-                      borderRadius: 2,
-                      height: '100%'
-                    }}>
-                      <CardContent sx={{ p: 3 }}>
-                        <Typography variant="h2" sx={{ color: '#A27B5C', fontWeight: 'bold', mb: 1 }}>
-                          {profile.xp || 0}
-                        </Typography>
-                        <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 600 }}>
-                          Earned XP
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Fade>
+                <img
+                  src={
+                    profile.profileImage ||
+                    "https://www.kindpng.com/picc/m/722-7221920_placeholder-profile-image-placeholder-png-transparent-png.png"
+                  }
+                  alt="avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {isCurrentUser && (
+                <button className="absolute bottom-1 right-1 w-7 h-7 rounded-full bg-[#C08A5D] flex items-center justify-center">
+                  <Camera size={13} className="text-[#0f1420]" />
+                </button>
+              )}
+            </div>
 
-            {/* Recent Activity */}
-            {completedJobs.length > 0 && (
-              <Fade in timeout={800} delay={400}>
-                <Paper
-                  sx={{
-                    bgcolor: '#3F4E4F',
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 3,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
-                  }}
+            {/* Name + Info */}
+            <div className="flex-1 min-w-0 pt-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-white text-3xl font-bold">
+                  <UserLink name={profile.name} className="text-white" />
+                </span>
+                <CheckCircle size={18} className="text-[#C08A5D] shrink-0" />
+              </div>
+
+              <div className="flex items-center gap-2 mt-1 text-white text-sm">
+                <Mail size={15} className="text-[#C08A5D]" />
+                <span>{profile.email || "No email provided"}</span>
+              </div>
+
+              <div className="flex items-center gap-2 mt-1 text-white/40 text-xs">
+                <span>No bio provided yet.</span>
+                {isCurrentUser && (
+                  <Pencil size={12} className="text-[#C08A5D] cursor-pointer" />
+                )}
+              </div>
+
+              {/* Chips */}
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+                <span className="flex items-center gap-1.5 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-xs text-white">
+                  <Users size={11} className="text-[#C08A5D]" />
+                  {profile.connections?.length || 0} Friends
+                </span>
+              </div>
+            </div>
+
+            {/* Edit + More */}
+            <div className="flex items-center gap-2 shrink-0">
+              {isCurrentUser && (
+                <button
+                  onClick={() => navigate("/editprofile")}
+                  className="flex items-center gap-2 rounded-lg bg-[#C08A5D] px-4 py-2 text-sm font-semibold text-white hover:bg-[#d9a06a] transition-colors"
                 >
-                  <Typography variant="h5" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <TrendingUpIcon /> Recent Activity
-                  </Typography>
-                  
-                  <Grid container spacing={3}>
-                    {completedJobs.slice(0, 3).map((job) => (
-                      <Grid item xs={12} md={6} key={job._id}>
-                        <Card sx={{ 
-                          bgcolor: '#2C3639',
-                          border: '1px solid rgba(162, 123, 92, 0.3)',
-                          borderRadius: 2,
-                          height: '100%',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            borderColor: '#A27B5C',
-                            boxShadow: '0 4px 12px rgba(162, 123, 92, 0.2)',
-                          }
-                        }}>
-                          <CardContent sx={{ p: 3 }}>
-                            <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 1.5, fontWeight: 'bold' }}>
-                              {job.title}
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.8)', mb: 2, fontSize: '0.9rem' }}>
-                              {job.description.length > 120 ? job.description.substring(0, 120) + '...' : job.description}
-                            </Typography>
-                            <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block' }}>
-                              Completed on: {new Date(job.updatedAt).toLocaleDateString()}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Paper>
-              </Fade>
+                  <Edit size={14} />
+                  EDIT PROFILE
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Friend Actions (non-current user) */}
+          {!isCurrentUser && (
+            <div className="mt-4">
+              <FriendActions
+                userId={userId}
+                isCurrentUser={isCurrentUser}
+                isFriend={isFriend}
+                requestSent={requestSent}
+                hasPendingRequest={hasPendingRequest}
+                loadingFriendStatus={loadingFriendStatus}
+                openChatWithUser={openChatWithUser}
+                updateFriendStatus={updateFriendStatus}
+                notifyFriendListUpdated={notifyFriendListUpdated}
+                friendRequests={friendRequests}
+              />
+            </div>
+          )}
+
+          {/* Level Bar */}
+          <div className="mt-2 rounded-xl p-4">
+            <LevelBar xp={profile.xp || 84} level={profile.level || 1} />
+          </div>
+
+          {/* Tabs */}
+          <div className=" flex items-center justify-between border-b border-white/6">
+            <div className="flex gap-1">
+              <button
+                onClick={() => setActiveTab("badges")}
+                className={`flex items-center gap-2 px-2 py-2.5 text-sm font-semibold transition-all border-b-2 -mb-px
+                  ${
+                    activeTab === "badges"
+                      ? "text-[#C08A5D] border-[#C08A5D]"
+                      : "text-white/50 border-transparent hover:text-white/70"
+                  }`}
+              >
+                <Star size={14} /> Badges
+              </button>
+              <button
+                onClick={() => setActiveTab("accomplishments")}
+                className={`flex items-center gap-2 px-2 py-2.5 text-sm font-semibold transition-all border-b-2 -mb-px
+                  ${
+                    activeTab === "accomplishments"
+                      ? "text-[#C08A5D] border-[#C08A5D]"
+                      : "text-white/50 border-transparent hover:text-white/70"
+                  }`}
+              >
+                <Trophy size={14} /> Accomplishments
+              </button>
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <div className="mt-4">
+            {activeTab === "badges" && (
+              <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide justify-center w-full">
+                {(profile.badges?.length > 0
+                  ? profile.badges
+                  : [
+                      {
+                        icon: "🏆",
+                        name: "Early Adopter",
+                        desc: "Joined early PBuild community",
+                      },
+                      {
+                        icon: "⭐",
+                        name: "Rising Star",
+                        desc: "Reached Level 5",
+                      },
+                      {
+                        icon: "🔥",
+                        name: "Top Contributor",
+                        desc: "Made 50+ contributions",
+                      },
+                      {
+                        icon: "💼",
+                        name: "Job Crusher",
+                        desc: "Completed 25 jobs",
+                      },
+                      {
+                        icon: "🚀",
+                        name: "On a Roll",
+                        desc: "7 days streak active",
+                      },
+                      {
+                        icon: "🎯",
+                        name: "Detail Oriented",
+                        desc: "Received 10+ 5-star reviews",
+                      },
+                    ]
+                ).map((badge, i) => (
+                  <div
+                    key={i}
+                    className="shrink-0 w-35 rounded-xl bg-[#1a1f2e] border border-white/6 p-3 flex flex-col items-center gap-1 text-center hover:border-[#C08A5D]/30 transition-colors"
+                  >
+                    <div className="w-18 h-18 rounded-full bg-[#0f1420] flex items-center justify-center text-2xl mb-1">
+                      {badge.icon || "🏅"}
+                    </div>
+                    <span className="text-[#C08A5D] text-xs font-semibold leading-tight">
+                      {badge.name}
+                    </span>
+                    <span className="text-white/40 text-[10px] leading-tight">
+                      {badge.desc}
+                    </span>
+                  </div>
+                ))}
+              </div>
             )}
 
-            {/* Posts Section */}
-            <Fade in timeout={800} delay={600}>
-              <Paper
-                sx={{
-                  bgcolor: '#3F4E4F',
-                  p: 4,
-                  borderRadius: 3,
-                  border: '2px solid rgba(162, 123, 92, 0.3)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
-                }}
-              >
-                <Typography variant="h5" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                  <AssessmentIcon /> Posts
-                </Typography>
-                <Posts userId={userId} onPostUpdate={() => setRefreshProfile(prev => prev + 1)} />
-              </Paper>
-            </Fade>
-          </Grid>
+            {activeTab === "accomplishments" && (
+              <div className="flex gap-4">
+                <div className="flex-1 rounded-xl bg-[#1a1f2e] p-8.5 text-center">
+                  <ClipboardList
+                    size={28}
+                    className="text-[#C08A5D] mx-auto mb1"
+                  />
+                  <p className="text-2xl font-bold text-white">
+                    {completedJobs.length}
+                  </p>
+                  <p className="text-white/50 text-xs">Jobs Completed</p>
+                </div>
+                <div className="flex-1 rounded-xl bg-[#1a1f2e] p-8.5 text-center">
+                  <FileText size={28} className="text-[#C08A5D] mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-white">
+                    {postedJobs.length}
+                  </p>
+                  <p className="text-white/50 text-xs">Jobs Posted</p>
+                </div>
+                <div className="flex-1 rounded-xl bg-[#1a1f2e] p-4 text-center">
+                  <span className="text-[#C08A5D] text-xl font-black block mb-2">
+                    XP
+                  </span>
+                  <p className="text-2xl font-bold text-white">
+                    {profile.xp || 0}
+                  </p>
+                  <p className="text-white/50 text-xs">Earned XP</p>
+                </div>
+              </div>
+            )}
+          </div>
 
-          {/* Right Column - Sidebar */}
-          <Grid item xs={12} lg={4}>
-            <Box sx={{ position: 'sticky', top: 20 }}>
-              {/* Level Progress */}
-              <Fade in timeout={800} delay={300}>
-                <Paper
-                  sx={{
-                    bgcolor: '#3F4E4F',
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 3,
-                    border: '2px solid #A27B5C',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: '4px',
-                      background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-                    }
-                  }}
-                >
-                  <LevelBar xp={profile.xp || 0} level={profile.level || 1} />
-                </Paper>
-              </Fade>
+          {/* Bottom Stats Row */}
+          <div className="mt-4 pt-4 border-t border-white/6 flex gap-8 justify-between items-center  px-26">
+            <div className="flex items-center gap-2">
+              <ClipboardList size={40} className="text-[#C08A5D]" />
+              <div>
+                <p className="text-3xl font-bold text-white">
+                  {completedJobs.length}
+                </p>
+                <p className="text-white/40 text-xs">Jobs Completed</p>
+              </div>
+            </div>
 
-              {/* Badges */}
-              <Fade in timeout={800} delay={400}>
-                <Paper
-                  sx={{
-                    bgcolor: '#3F4E4F',
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 3,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
-                  }}
-                >
-                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <BadgeIcon /> Badges & Achievements
-                  </Typography>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <BadgeIcon sx={{ fontSize: '4rem', color: '#A27B5C', opacity: 0.7, mb: 2 }} />
-                    <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 'bold' }}>
-                      {profile.badges?.length || 0} Badges Earned
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.7)', mt: 1 }}>
-                      Continue completing jobs to earn more badges!
-                    </Typography>
-                  </Box>
-                </Paper>
-              </Fade>
+            <div className="flex items-center gap-3">
+              <FileText size={40} className="text-[#C08A5D]" />
+              <div>
+                <p className="text-3xl font-bold text-white">
+                  {postedJobs.length}
+                </p>
+                <p className="text-white/40 text-xs">Jobs Posted</p>
+              </div>
+            </div>
 
-              {/* Basic Information */}
-              <Fade in timeout={800} delay={500}>
-                <Paper
-                  sx={{
-                    bgcolor: '#3F4E4F',
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 3,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
-                  }}
-                >
-                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <WorkIcon /> Basic Information
-                  </Typography>
-                  
-                  <Stack spacing={2}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <LocationOnIcon sx={{ color: '#A27B5C' }} />
-                      <Box>
-                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block' }}>
-                          Location
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#DCD7C9' }}>
-                          {profile.location || 'Not specified'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    
-                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
-                    
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <PhoneIcon sx={{ color: '#A27B5C' }} />
-                      <Box>
-                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block' }}>
-                          Phone
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#DCD7C9' }}>
-                          {profile.phone || 'Not specified'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    
-                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
-                    
-                    <Box>
-                      <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 0.5 }}>
-                        Remote Availability
-                      </Typography>
-                      <Chip 
-                        label={profile.remoteAvailability ? 'Available for Remote Work' : 'Not Available Remotely'} 
-                        size="small"
-                        sx={{ 
-                          bgcolor: profile.remoteAvailability ? 'rgba(162, 123, 92, 0.2)' : 'rgba(63, 78, 79, 0.3)',
-                          color: profile.remoteAvailability ? '#A27B5C' : 'rgba(220, 215, 201, 0.7)',
-                          fontWeight: 'bold'
-                        }}
-                      />
-                    </Box>
-                  </Stack>
-                </Paper>
-              </Fade>
+            <div className="flex items-center gap-3">
+              <span className="text-[#C08A5D] font-black text-3xl">XP</span>
+              <div>
+                <p className="text-3xl font-bold text-white">
+                  {profile.xp || 0}
+                </p>
+                <p className="text-white/40 text-xs">Earned XP</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-              {/* Skills and Certifications */}
-              <Fade in timeout={800} delay={600}>
-                <Paper
-                  sx={{
-                    bgcolor: '#3F4E4F',
-                    p: 4,
-                    mb: 4,
-                    borderRadius: 3,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
-                  }}
+        {/* ================================
+            MAIN 2-COLUMN LAYOUT
+        ================================ */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_350px] gap-4">
+          {/* LEFT COLUMN */}
+          <div className="flex flex-col gap-4">
+            {/* Overview */}
+            <SectionCard>
+              <SectionTitle
+                icon={<BarChart2 size={18} />}
+                title="Overview"
+                action="View all"
+              />
+              <p className="text-white/40 text-xs -mt-3 mb-4">
+                Your activity at a glance
+              </p>
+              <div className="flex gap-4">
+                <StatCard
+                  icon={<ClipboardList size={22} />}
+                  value={completedJobs.length}
+                  label="Jobs Completed"
+                  trend="12%"
+                />
+                <StatCard
+                  icon={<FileText size={22} />}
+                  value={postedJobs.length}
+                  label="Jobs Posted"
+                  trend="8%"
+                />
+                <StatCard
+                  icon={<span className="font-black text-base">XP</span>}
+                  value={profile.xp || 0}
+                  label="Earned XP"
+                  trend="15%"
+                />
+              </div>
+            </SectionCard>
+
+            {/* Posts */}
+            <SectionCard className="flex-1">
+              <SectionTitle
+                icon={<FileText size={18} />}
+                title="Posts"
+                action="View all posts"
+              />
+              <p className="text-white/40 text-xs -mt-3 mb-4">
+                Your recent job posts
+              </p>
+              <Posts
+                userId={userId}
+                onPostUpdate={() => setRefreshProfile((prev) => prev + 1)}
+              />
+            </SectionCard>
+          </div>
+
+          {/* RIGHT COLUMN */}
+          <div className="flex flex-col gap-4">
+            {/* Basic Information */}
+            <SectionCard>
+              <SectionTitle
+                icon={<Badge size={18} />}
+                title="Basic Information"
+              />
+              <InfoRow
+                icon={<MapPin size={15} />}
+                label="Location"
+                value={profile.location || "Not specified"}
+              />
+              <InfoRow
+                icon={<Phone size={15} />}
+                label="Phone"
+                value={profile.phone || "Not specified"}
+              />
+              <div className="pt-3">
+                <p className="text-[#C08A5D] text-xs mb-1.5">
+                  Remote Availability
+                </p>
+                <span
+                  className={`text-sm font-medium ${
+                    profile.remoteAvailability
+                      ? "text-[#C08A5D]"
+                      : "text-white/60"
+                  }`}
                 >
-                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <SchoolIcon /> Skills & Certifications
-                  </Typography>
-                  
-                  <Stack spacing={2}>
-                    {profile.skills?.length > 0 && (
-                      <Box>
-                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 1 }}>
-                          Skills
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {profile.skills.slice(0, 5).map((skill, index) => (
-                            <Chip
-                              key={index}
-                              label={skill}
-                              size="small"
-                              sx={{
-                                bgcolor: 'rgba(162, 123, 92, 0.1)',
-                                color: '#A27B5C',
-                                border: '1px solid rgba(162, 123, 92, 0.3)'
-                              }}
-                            />
-                          ))}
-                          {profile.skills.length > 5 && (
-                            <Chip
-                              label={`+${profile.skills.length - 5} more`}
-                              size="small"
-                              sx={{
-                                bgcolor: 'rgba(44, 54, 57, 0.3)',
-                                color: 'rgba(220, 215, 201, 0.7)'
-                              }}
-                            />
-                          )}
-                        </Box>
-                      </Box>
+                  {profile.remoteAvailability
+                    ? "Available for Remote Work"
+                    : "Not Available Remotely"}
+                </span>
+              </div>
+            </SectionCard>
+
+            {/* Skills & Certifications */}
+            <SectionCard>
+              <SectionTitle
+                icon={<GraduationCap size={18} />}
+                title="Skills & Certifications"
+              />
+
+              {profile.skills?.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[#C08A5D] text-xs mb-2">Skills</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {profile.skills.slice(0, 5).map((skill, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full border border-[#C08A5D]/30 bg-[#C08A5D]/10 px-2.5 py-0.5 text-xs text-[#C08A5D]"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                    {profile.skills.length > 5 && (
+                      <span className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs text-white/40">
+                        +{profile.skills.length - 5} more
+                      </span>
                     )}
-                    
-                    {profile.languages?.length > 0 && (
-                      <Box>
-                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 1 }}>
-                          Languages
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {profile.languages.map((language, index) => (
-                            <Chip
-                              key={index}
-                              label={language}
-                              size="small"
-                              sx={{
-                                bgcolor: 'rgba(162, 123, 92, 0.1)',
-                                color: '#A27B5C',
-                                border: '1px solid rgba(162, 123, 92, 0.3)'
-                              }}
-                            />
-                          ))}
-                        </Box>
-                      </Box>
-                    )}
-                    
-                    {profile.certifications?.length > 0 && (
-                      <Box>
-                        <Typography variant="caption" sx={{ color: '#A27B5C', display: 'block', mb: 1 }}>
-                          Certifications
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                          {profile.certifications.slice(0, 3).map((cert, index) => (
-                            <Chip
-                              key={index}
-                              label={cert}
-                              size="small"
-                              sx={{
-                                bgcolor: 'rgba(162, 123, 92, 0.1)',
-                                color: '#A27B5C',
-                                border: '1px solid rgba(162, 123, 92, 0.3)'
-                              }}
-                            />
-                          ))}
-                          {profile.certifications.length > 3 && (
-                            <Chip
-                              label={`+${profile.certifications.length - 3} more`}
-                              size="small"
-                              sx={{
-                                bgcolor: 'rgba(44, 54, 57, 0.3)',
-                                color: 'rgba(220, 215, 201, 0.7)'
-                              }}
-                            />
-                          )}
-                        </Box>
-                      </Box>
-                    )}
-                    
-                    {(!profile.skills?.length && !profile.languages?.length && !profile.certifications?.length) && (
-                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.7)', fontStyle: 'italic' }}>
-                        No skills or certifications added yet
-                      </Typography>
-                    )}
-                  </Stack>
-                </Paper>
-              </Fade>
+                  </div>
+                </div>
+              )}
 
-              {/* Ratings and Performance */}
-              <Fade in timeout={800} delay={700}>
-                <Paper
-                  sx={{
-                    bgcolor: '#3F4E4F',
-                    p: 4,
-                    borderRadius: 3,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)'
-                  }}
-                >
-                  <Typography variant="h6" sx={{ color: '#DCD7C9', mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <StarIcon /> Ratings & Performance
-                  </Typography>
-                  
-                  <Stack spacing={2}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.9)' }}>
-                        Average Rating
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
-                        {profile.rating || 'N/A'}
-                      </Typography>
-                    </Box>
-                    
-                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
-                    
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.9)' }}>
-                        Job Success Rate
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
-                        {profile.successRate || 'N/A'}%
-                      </Typography>
-                    </Box>
-                    
-                    <Divider sx={{ borderColor: 'rgba(162, 123, 92, 0.3)' }} />
-                    
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.9)' }}>
-                        Total Completed
-                      </Typography>
-                      <Typography variant="body1" sx={{ color: '#A27B5C', fontWeight: 'bold' }}>
-                        {completedJobs.length}
-                      </Typography>
-                    </Box>
-                  </Stack>
-                </Paper>
-              </Fade>
-            </Box>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+              {profile.languages?.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[#C08A5D] text-xs mb-2">Languages</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {profile.languages.map((lang, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full border border-[#C08A5D]/30 bg-[#C08A5D]/10 px-2.5 py-0.5 text-xs text-[#C08A5D]"
+                      >
+                        {lang}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {profile.certifications?.length > 0 && (
+                <div>
+                  <p className="text-[#C08A5D] text-xs mb-2">Certifications</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {profile.certifications.slice(0, 3).map((cert, i) => (
+                      <span
+                        key={i}
+                        className="rounded-full border border-[#C08A5D]/30 bg-[#C08A5D]/10 px-2.5 py-0.5 text-xs text-[#C08A5D]"
+                      >
+                        {cert}
+                      </span>
+                    ))}
+                    {profile.certifications.length > 3 && (
+                      <span className="rounded-full bg-white/5 px-2.5 py-0.5 text-xs text-white/40">
+                        +{profile.certifications.length - 3} more
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {!profile.skills?.length &&
+                !profile.languages?.length &&
+                !profile.certifications?.length && (
+                  <p className="text-white/40 text-sm italic">
+                    No skills or certifications added yet
+                  </p>
+                )}
+            </SectionCard>
+
+            {/* Ratings & Performance */}
+            <SectionCard>
+              <SectionTitle
+                icon={<Star size={18} />}
+                title="Ratings & Performance"
+              />
+              <div className="flex flex-col gap-0">
+                <div className="flex items-center justify-between py-3 border-b border-white/6">
+                  <span className="text-white/70 text-sm">Average Rating</span>
+                  <span className="text-[#C08A5D] font-bold text-sm">
+                    {profile.rating || "N/A"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-3 border-b border-white/6">
+                  <span className="text-white/70 text-sm">
+                    Job Success Rate
+                  </span>
+                  <span className="text-[#C08A5D] font-bold text-sm">
+                    {profile.successRate || "N/A"}%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-3">
+                  <span className="text-white/70 text-sm">Total Completed</span>
+                  <span className="text-[#C08A5D] font-bold text-sm">
+                    {completedJobs.length}
+                  </span>
+                </div>
+              </div>
+            </SectionCard>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
