@@ -24,7 +24,7 @@ const Navbar = () => {
   const menuItems = [
     { text: 'Home', to: '/' },
     { text: 'Browse', to: '/browse' },
-    { text: 'About', to: '/about' },
+    //{ text: 'About', to: '/about' },
     { text: 'Social', to: '/social' },
     { text: 'Forum', to: '/forum' },
   ];

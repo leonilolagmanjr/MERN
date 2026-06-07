@@ -156,34 +156,32 @@ const removeCandidate = async (req, res) => {
 const getCandidates = async (req, res) => {
   const jobId = req.params.jobId;
   try {
-    const job = await Job.findById(jobId).populate('candidates', 'name email');
-    if (!job) throw new Error('Job not found');
-    if (String(job.createdBy) !== String(req.user.id)) throw new Error('Not authorized to view candidates');
-    res.json(job.candidates);
+    const applications = await jobService.getApplicationsByJob(jobId, req.user.id);
+    res.json(applications);
   } catch (err) {
     res.status(400).json({ msg: err.message });
   }
 };
 
-// Accept Candidate
-const acceptCandidate = async (req, res) => {
-  const { candidateId } = req.body;
+// Update Application Status
+const updateApplicationStatus = async (req, res) => {
+  const { applicationId, status } = req.body;
   const jobId = req.params.jobId;
   try {
-    const job = await jobService.acceptCandidate(jobId, candidateId, req.user.id);
-    res.json({ msg: 'Candidate accepted successfully', job });
+    const application = await jobService.updateApplicationStatus(jobId, applicationId, status, req.user.id);
+    res.json({ msg: 'Application status updated successfully', application });
   } catch (err) {
     res.status(400).json({ msg: err.message });
   }
 };
 
-// Reject Candidate
-const rejectCandidate = async (req, res) => {
-  const { candidateId } = req.body;
-  const jobId = req.params.jobId;
+// Update Interview Data
+const updateInterviewData = async (req, res) => {
+  const { interviewDate, meetingLink } = req.body;
+  const applicationId = req.params.applicationId;
   try {
-    const job = await jobService.rejectCandidate(jobId, candidateId, req.user.id);
-    res.json({ msg: 'Candidate rejected successfully', job });
+    const application = await jobService.updateInterviewData(applicationId, interviewDate, meetingLink, req.user.id);
+    res.json({ msg: 'Interview data updated successfully', application });
   } catch (err) {
     res.status(400).json({ msg: err.message });
   }
@@ -203,6 +201,6 @@ module.exports = {
   addCandidate,
   removeCandidate,
   getCandidates,
-  acceptCandidate,
-  rejectCandidate
+  updateApplicationStatus,
+  updateInterviewData
 };

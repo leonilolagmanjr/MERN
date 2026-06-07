@@ -11,7 +11,7 @@ const chatSchema = new mongoose.Schema({
   // New field to distinguish the chat type
   type: {
     type: String,
-    enum: ['private', 'global'], // Only allow these two values
+    enum: ['private', 'global', 'application'], // Only allow these three values
     default: 'private',
     required: true,
   },

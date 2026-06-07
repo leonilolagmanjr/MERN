@@ -13,16 +13,31 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  Box
+  Box,
+  Select,
+  MenuItem,
+  FormControl,
+  TextField,
+  Collapse,
+  Paper
 } from '@mui/material';
-import { Delete as DeleteIcon, Check as AcceptIcon, Close as RejectIcon } from '@mui/icons-material';
-import { fetchCandidates, removeCandidate, acceptCandidate, rejectCandidate } from '../../services/api';
+import { Delete as DeleteIcon, Message as MessageIcon, ExpandMore as ExpandMoreIcon, ExpandLess as ExpandLessIcon } from '@mui/icons-material';
+import { fetchCandidates, removeCandidate, updateCandidateStatus, openApplicationChat, updateInterviewData } from '../../services/api';
 import UserLink from '../UserLink';
+import { useFriend } from '../../context/FriendContext';
+
+const STATUS_OPTIONS = ['applied', 'reviewing', 'shortlisted', 'interview', 'offered', 'hired', 'rejected'];
 
 const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [expandedCandidate, setExpandedCandidate] = useState(null);
+  const [interviewDate, setInterviewDate] = useState('');
+  const [meetingLink, setMeetingLink] = useState('');
+  const [savingInterview, setSavingInterview] = useState(false);
+
+  const { openChatWithUser } = useFriend();
 
   const loadCandidates = async () => {
     setLoading(true);
@@ -48,34 +63,69 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
     try {
       const token = localStorage.getItem('token');
       await removeCandidate(jobId, candidateId, token);
-      // Reload the candidates list after removal
       await loadCandidates();
     } catch (err) {
       setError(err.response?.data?.msg || 'Failed to remove candidate');
     }
   };
 
-  const handleAcceptCandidate = async (candidateId) => {
+  const handleStatusChange = async (applicationId, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await acceptCandidate(jobId, candidateId, token);
-      // Reload the candidates list after acceptance
+      await updateCandidateStatus(jobId, applicationId, newStatus, token);
       await loadCandidates();
-      // Close the modal since the job is now assigned
-      onClose();
+      if (newStatus === 'hired') {
+        onClose();
+      }
     } catch (err) {
-      setError(err.response?.data?.msg || 'Failed to accept candidate');
+      setError(err.response?.data?.msg || 'Failed to update candidate status');
     }
   };
 
-  const handleRejectCandidate = async (candidateId) => {
+  const handleMessageCandidate = async (applicationId, candidateUserId) => {
     try {
       const token = localStorage.getItem('token');
-      await rejectCandidate(jobId, candidateId, token);
-      // Reload the candidates list after rejection
+      const chat = await openApplicationChat(applicationId, token);
+      // Open the chat widget with this candidate
+      openChatWithUser(candidateUserId);
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Failed to open chat. Make sure you are connected with this candidate.');
+    }
+  };
+
+  const handleSaveInterview = async (applicationId) => {
+    setSavingInterview(true);
+    try {
+      const token = localStorage.getItem('token');
+      await updateInterviewData(applicationId, { interviewDate: interviewDate, meetingLink }, token);
+      setExpandedCandidate(null);
       await loadCandidates();
     } catch (err) {
-      setError(err.response?.data?.msg || 'Failed to reject candidate');
+      setError(err.response?.data?.msg || 'Failed to save interview data');
+    } finally {
+      setSavingInterview(false);
+    }
+  };
+
+  const toggleExpand = (applicationId, candidate) => {
+    if (expandedCandidate === applicationId) {
+      setExpandedCandidate(null);
+    } else {
+      setExpandedCandidate(applicationId);
+      setInterviewDate(candidate.interviewDate ? new Date(candidate.interviewDate).toISOString().slice(0, 16) : '');
+      setMeetingLink(candidate.meetingLink || '');
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'hired': return '#4caf50';
+      case 'offered': return '#8bc34a';
+      case 'interview': return '#ff9800';
+      case 'shortlisted': return '#03a9f4';
+      case 'reviewing': return '#9c27b0';
+      case 'rejected': return '#f44336';
+      default: return '#A27B5C';
     }
   };
 
@@ -94,8 +144,8 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
         },
       }}
     >
-      <DialogTitle sx={{ 
-        bgcolor: '#2C3639', 
+      <DialogTitle sx={{
+        bgcolor: '#2C3639',
         color: '#DCD7C9',
         borderBottom: '2px solid #A27B5C',
         fontSize: '1.25rem',
@@ -103,8 +153,8 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
       }}>
         Candidates for "{jobTitle}"
       </DialogTitle>
-      <DialogContent sx={{ 
-        bgcolor: '#3F4E4F', 
+      <DialogContent sx={{
+        bgcolor: '#3F4E4F',
         color: '#DCD7C9',
         padding: '16px 24px',
       }}>
@@ -113,7 +163,7 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
             <CircularProgress sx={{ color: '#A27B5C' }} />
           </Box>
         ) : error ? (
-          <Alert 
+          <Alert
             severity="error"
             sx={{
               bgcolor: 'rgba(220, 53, 69, 0.1)',
@@ -127,8 +177,8 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
             {error}
           </Alert>
         ) : candidates.length === 0 ? (
-          <Typography 
-            sx={{ 
+          <Typography
+            sx={{
               color: '#A27B5C',
               textAlign: 'center',
               padding: '20px',
@@ -140,81 +190,182 @@ const ViewCandidates = ({ open, onClose, jobId, jobTitle }) => {
         ) : (
           <List sx={{ padding: 0 }}>
             {candidates.map((candidate) => (
-              <ListItem 
-                key={candidate._id}
-                sx={{
-                  borderBottom: '1px solid rgba(162, 123, 92, 0.2)',
-                  padding: '12px 0',
-                  '&:last-child': {
-                    borderBottom: 'none',
-                  }
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <UserLink 
-                      userId={candidate._id} 
-                      name={candidate.name} 
-                      style={{ color: '#DCD7C9', fontWeight: 600 }}
-                    />
-                  }
-                  secondary={
-                    <Typography sx={{ 
-                      color: 'rgba(220, 215, 201, 0.8)',
-                      fontSize: '0.875rem'
-                    }}>
-                      {candidate.email}
+              <Box key={candidate._id}>
+                <ListItem
+                  sx={{
+                    borderBottom: '1px solid rgba(162, 123, 92, 0.2)',
+                    padding: '12px 0',
+                    '&:last-child': {
+                      borderBottom: 'none',
+                    }
+                  }}
+                >
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                        <UserLink
+                          userId={candidate.applicant._id}
+                          name={candidate.applicant.name}
+                          style={{ color: '#DCD7C9', fontWeight: 600 }}
+                        />
+                        <Typography
+                          component="span"
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: getStatusColor(candidate.status),
+                            fontWeight: 600,
+                            px: 1,
+                            py: 0.25,
+                            borderRadius: 1,
+                            bgcolor: `${getStatusColor(candidate.status)}20`,
+                            textTransform: 'uppercase'
+                          }}
+                        >
+                          {candidate.status}
+                        </Typography>
+                      </Box>
+                    }
+                    secondary={
+                      <Typography sx={{
+                        color: 'rgba(220, 215, 201, 0.8)',
+                        fontSize: '0.875rem'
+                      }}>
+                        {candidate.applicant.email}
+                      </Typography>
+                    }
+                  />
+                  <ListItemSecondaryAction>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <IconButton
+                        onClick={() => handleMessageCandidate(candidate._id, candidate.applicant._id)}
+                        sx={{
+                          color: '#03a9f4',
+                          '&:hover': {
+                            backgroundColor: 'rgba(3, 169, 244, 0.1)',
+                          }
+                        }}
+                        title="Message Candidate"
+                      >
+                        <MessageIcon />
+                      </IconButton>
+                      {candidate.status === 'interview' && (
+                        <IconButton
+                          onClick={() => toggleExpand(candidate._id, candidate)}
+                          sx={{
+                            color: '#ff9800',
+                            '&:hover': {
+                              backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                            }
+                          }}
+                          title="Interview Details"
+                        >
+                          {expandedCandidate === candidate._id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                      )}
+                      <FormControl size="small" sx={{ minWidth: 120 }}>
+                        <Select
+                          value={candidate.status}
+                          onChange={(e) => handleStatusChange(candidate._id, e.target.value)}
+                          sx={{
+                            color: '#DCD7C9',
+                            '.MuiOutlinedInput-notchedOutline': {
+                              borderColor: 'rgba(162, 123, 92, 0.5)',
+                            },
+                            '&:hover .MuiOutlinedInput-notchedOutline': {
+                              borderColor: '#A27B5C',
+                            },
+                            '.MuiSvgIcon-root': {
+                              color: '#A27B5C',
+                            },
+                          }}
+                        >
+                          {STATUS_OPTIONS.map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {status.charAt(0).toUpperCase() + status.slice(1)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <IconButton
+                        onClick={() => handleRemoveCandidate(candidate.applicant._id)}
+                        sx={{
+                          color: '#A27B5C',
+                          ml: 1,
+                          '&:hover': {
+                            backgroundColor: 'rgba(162, 123, 92, 0.1)',
+                          }
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <Collapse in={expandedCandidate === candidate._id}>
+                  <Paper sx={{ bgcolor: '#2C3639', p: 2, mb: 1, borderRadius: 1 }}>
+                    <Typography sx={{ color: '#A27B5C', mb: 2, fontWeight: 600 }}>
+                      Interview Details
                     </Typography>
-                  }
-                />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    onClick={() => handleAcceptCandidate(candidate._id)}
-                    sx={{ 
-                      color: '#28a745',
-                      '&:hover': {
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                      }
-                    }}
-                  >
-                    <AcceptIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleRejectCandidate(candidate._id)}
-                    sx={{ 
-                      color: '#dc3545',
-                      '&:hover': {
-                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                      }
-                    }}
-                  >
-                    <RejectIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleRemoveCandidate(candidate._id)}
-                    sx={{ 
-                      color: '#A27B5C',
-                      '&:hover': {
-                        backgroundColor: 'rgba(162, 123, 92, 0.1)',
-                      }
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <TextField
+                        type="datetime-local"
+                        label="Interview Date & Time"
+                        value={interviewDate}
+                        onChange={(e) => setInterviewDate(e.target.value)}
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{ sx: { color: '#DCD7C9' } }}
+                        sx={{
+                          '& .MuiInputLabel-root': { color: '#A27B5C' },
+                          '& .MuiOutlinedInput-root': {
+                            '& fieldset': { borderColor: 'rgba(162, 123, 92, 0.5)' },
+                            '&:hover fieldset': { borderColor: '#A27B5C' },
+                          },
+                        }}
+                      />
+                      <TextField
+                        type="url"
+                        label="Meeting Link"
+                        value={meetingLink}
+                        onChange={(e) => setMeetingLink(e.target.value)}
+                        placeholder="https://meet.google.com/..."
+                        InputProps={{ sx: { color: '#DCD7C9' } }}
+                        sx={{
+                          '& .MuiInputLabel-root': { color: '#A27B5C' },
+                          '& .MuiOutlinedInput-root': {
+                            '& fieldset': { borderColor: 'rgba(162, 123, 92, 0.5)' },
+                            '&:hover fieldset': { borderColor: '#A27B5C' },
+                          },
+                        }}
+                      />
+                      <Button
+                        variant="contained"
+                        onClick={() => handleSaveInterview(candidate._id)}
+                        disabled={savingInterview}
+                        sx={{
+                          bgcolor: '#A27B5C',
+                          color: '#2C3639',
+                          fontWeight: 600,
+                          '&:hover': { bgcolor: '#8a6a50' },
+                        }}
+                      >
+                        {savingInterview ? 'Saving...' : 'Save Interview'}
+                      </Button>
+                    </Box>
+                  </Paper>
+                </Collapse>
+              </Box>
             ))}
           </List>
         )}
       </DialogContent>
-      <DialogActions sx={{ 
+      <DialogActions sx={{
         bgcolor: '#3F4E4F',
         borderTop: '2px solid rgba(162, 123, 92, 0.3)',
         padding: '16px 24px',
       }}>
-        <Button 
-          onClick={onClose} 
-          sx={{ 
+        <Button
+          onClick={onClose}
+          sx={{
             color: '#DCD7C9',
             border: '2px solid #A27B5C',
             borderRadius: '8px',

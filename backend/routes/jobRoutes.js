@@ -43,10 +43,10 @@ router.put('/remove-candidate/:jobId', authenticate(), jobController.removeCandi
 // Route to Get Candidates for a Job
 router.get('/candidates/:jobId', authenticate(), jobController.getCandidates);
 
-// Route to Accept Candidate
-router.put('/accept-candidate/:jobId', authenticate(), jobController.acceptCandidate);
+// Route to Update Application Status
+router.patch('/application-status/:jobId', authenticate(), jobController.updateApplicationStatus);
 
-// Route to Reject Candidate
-router.put('/reject-candidate/:jobId', authenticate(), jobController.rejectCandidate);
+// Route to Update Interview Data
+router.patch('/interview-data/:applicationId', authenticate(), jobController.updateInterviewData);
 
 module.exports = router;

@@ -96,15 +96,8 @@ export const removeCandidate = async (jobId, candidateId, token) => {
   return response.data;
 };
 
-export const acceptCandidate = async (jobId, candidateId, token) => {
-  const response = await axios.put(`${API_URL}/job/accept-candidate/${jobId}`, { candidateId }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-};
-
-export const rejectCandidate = async (jobId, candidateId, token) => {
-  const response = await axios.put(`${API_URL}/job/reject-candidate/${jobId}`, { candidateId }, {
+export const updateCandidateStatus = async (jobId, applicationId, status, token) => {
+  const response = await axios.patch(`${API_URL}/job/application-status/${jobId}`, { applicationId, status }, {
     headers: { Authorization: `Bearer ${token}` },
   });
   return response.data;
@@ -388,5 +381,50 @@ export const uploadAvatar = async (formData, token) => {
 // Leaderboard API
 export const fetchLeaderboard = async () => {
   const response = await axios.get(`${API_URL}/user/leaderboard`);
+  return response.data;
+};
+
+// Notification APIs
+export const fetchNotifications = async (token) => {
+  const response = await axios.get(`${API_URL}/notifications`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const getUnreadNotificationCount = async (token) => {
+  const response = await axios.get(`${API_URL}/notifications/unread-count`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const markNotificationAsRead = async (notificationId, token) => {
+  const response = await axios.patch(`${API_URL}/notifications/${notificationId}/read`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const markAllNotificationsAsRead = async (token) => {
+  const response = await axios.patch(`${API_URL}/notifications/read-all`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+// Application Chat API
+export const openApplicationChat = async (applicationId, token) => {
+  const response = await axios.post(`${API_URL}/application-chat`, { applicationId }, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+// Interview Data API
+export const updateInterviewData = async (applicationId, data, token) => {
+  const response = await axios.patch(`${API_URL}/job/interview-data/${applicationId}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return response.data;
 };
