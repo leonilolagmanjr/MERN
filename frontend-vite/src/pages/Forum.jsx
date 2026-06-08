@@ -1,36 +1,247 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  Card, 
-  CardContent, 
-  Modal, 
-  Container,
-  TextField,
-  Avatar,
-  Chip,
-  CircularProgress,
-  IconButton
-} from '@mui/material';
-import { fetchForumGroups, createForumGroup } from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import ForumIcon from '@mui/icons-material/Forum';
-import AddIcon from '@mui/icons-material/Add';
-import GroupsIcon from '@mui/icons-material/Groups';
-import PersonIcon from '@mui/icons-material/Person';
-import CloseIcon from '@mui/icons-material/Close';
-import SearchIcon from '@mui/icons-material/Search';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { fetchForumGroups, createForumGroup } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import {
+  Plus,
+  X,
+  MessageSquare,
+  Users,
+  TrendingUp,
+  Loader2,
+  ChevronRight,
+  Briefcase,
+  User,
+  Hash,
+  MessageCircle,
+  Code2,
+  Palette,
+  Smartphone,
+  BarChart2,
+  Trophy,
+  Star,
+  Flame,
+  Rocket,
+  Activity,
+  Filter,
+} from "lucide-react";
+
+// ─── constants ────────────────────────────────────────────────────────────────
+
+const GROUP_COLORS = [
+  "bg-[rgba(83,74,183,0.25)]  text-[#a09be0]",
+  "bg-[rgba(13,110,204,0.2)]  text-[#6ba8e0]",
+  "bg-[rgba(15,110,86,0.2)]   text-[#5ec9a0]",
+  "bg-[rgba(200,136,74,0.15)] text-[#c8884a]",
+  "bg-[rgba(162,46,121,0.2)]  text-[#d07bbf]",
+  "bg-[rgba(120,120,140,0.2)] text-[#a0a0b8]",
+  "bg-[rgba(200,136,74,0.15)] text-[#c8884a]",
+  "bg-[rgba(162,46,121,0.2)]  text-[#d07bbf]",
+];
+
+const GROUP_ICONS = [
+  Code2,
+  Palette,
+  Smartphone,
+  Briefcase,
+  BarChart2,
+  MessageSquare,
+  Users,
+  TrendingUp,
+];
+
+const TRENDING_TOPICS = [
+  ["Web Development", "1.2K"],
+  ["React", "842"],
+  ["Remote Work", "632"],
+  ["Freelancing", "521"],
+  ["UI / UX Design", "412"],
+];
+
+const BADGE_CONFIG = [
+  { icon: Trophy, color: "bg-[rgba(200,136,74,0.2)]  text-[#c8884a]" },
+  { icon: Star, color: "bg-[rgba(83,74,183,0.25)]  text-[#a09be0]" },
+  { icon: Flame, color: "bg-[rgba(162,46,121,0.2)]  text-[#d07bbf]" },
+  { icon: Rocket, color: "bg-[rgba(13,110,204,0.2)]  text-[#6ba8e0]" },
+];
+
+const COMMUNITY_STATS = [
+  { icon: Users, color: "text-[#c8884a]", val: "1.2K", label: "Total Groups" },
+  { icon: MessageCircle, color: "text-[#a09be0]", val: "15.4K", label: "Total Posts" },
+  { icon: Users, color: "text-[#6ba8e0]", val: "84", label: "Active Members" },
+  { icon: Activity, color: "text-[#5ec9a0]", val: "320", label: "Active Today" },
+];
+
+const QUICK_LINKS = [
+  { text: "Social Feed", path: "/social", icon: MessageSquare },
+  { text: "Browse Jobs", path: "/jobs", icon: Briefcase },
+  { text: "Your Profile", path: `/profile/${useAuth?.user?.id || ""}`, icon: User },
+];
+
+// ─── design tokens ────────────────────────────────────────────────────────────
+// bg:      #0d1117        (page background)
+// surface: #1e1e26        (cards / panels)
+// input:   #141418        (inputs / deeper surface)
+// border:  rgba(200,136,74,0.2)
+// accent:  #c8884a        (primary CTA, icons, highlights)
+// text-hi: #f0e8d8        (headings)
+// text-lo: rgba(232,226,212,0.55)  (muted / secondary)
+
+// ─── shared primitives ───────────────────────────────────────────────────────
+
+const SideCard = ({ children, className = "" }) => (
+  <div
+    className={`bg-[#1e1e26] rounded-xl border border-[rgba(200,136,74,0.2)] overflow-hidden ${className}`}
+  >
+    {children}
+  </div>
+);
+
+const SideCardHeader = ({ children }) => (
+  <div className="flex items-center justify-between px-4 pt-4 pb-2">
+    {children}
+  </div>
+);
+
+const Divider = () => (
+  <div className="border-t border-[rgba(200,136,74,0.2)] my-2" />
+);
+
+// ─── modal ───────────────────────────────────────────────────────────────────
+
+const Modal = ({ open, onClose, title, children }) => {
+  if (!open) return null;
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[rgba(200,136,74,0.15)]">
+          <h2 className="text-base font-bold text-[#f0e8d8] flex items-center gap-2">
+            <Plus size={17} className="text-[#c8884a]" />
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            className="text-[rgba(232,226,212,0.55)] hover:text-[#e8e2d4] hover:bg-[rgba(200,136,74,0.1)] p-1.5 rounded-lg transition-colors"
+          >
+            <X size={17} />
+          </button>
+        </div>
+        <div className="px-6 py-5">{children}</div>
+      </div>
+    </div>
+  );
+};
+
+// ─── form field ──────────────────────────────────────────────────────────────
+
+const inputBase =
+  "w-full bg-[#141418] text-[#e8e2d4] border border-[rgba(200,136,74,0.2)] rounded-lg px-3 py-2.5 text-sm " +
+  "placeholder-[rgba(232,226,212,0.35)] outline-none transition-all " +
+  "focus:border-[#c8884a] focus:ring-1 focus:ring-[#c8884a]/30 " +
+  "hover:border-[rgba(200,136,74,0.4)]";
+
+const Field = ({
+  label,
+  value,
+  onChange,
+  multiline = false,
+  rows = 4,
+  required,
+}) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-[rgba(232,226,212,0.55)] text-xs font-semibold uppercase tracking-widest">
+      {label}
+    </label>
+    {multiline ? (
+      <textarea
+        value={value}
+        onChange={onChange}
+        rows={rows}
+        required={required}
+        className={`${inputBase} resize-none`}
+      />
+    ) : (
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        required={required}
+        className={inputBase}
+      />
+    )}
+  </div>
+);
+
+// ─── badge tile ──────────────────────────────────────────────────────────────
+
+const BadgeTile = ({ icon: Icon, color }) => (
+  <div
+    className={`w-10 h-10 ${color} rounded-xl flex items-center justify-center`}
+  >
+    <Icon size={17} />
+  </div>
+);
+
+// ─── group card ──────────────────────────────────────────────────────────────
+
+const GroupCard = ({ group, index }) => {
+  const Icon = GROUP_ICONS[index % GROUP_ICONS.length];
+  const color = GROUP_COLORS[index % GROUP_COLORS.length];
+  return (
+    <Link
+      to={`/forum/${group._id}`}
+      className="block bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-4 transition-all hover:border-[#c8884a] hover:shadow-[0_0_20px_rgba(200,136,74,0.15)] group"
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className={`w-12 h-12 ${color} rounded-xl flex items-center justify-center shrink-0`}
+        >
+          <Icon size={20} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-[#f0e8d8] mb-1 group-hover:text-[#c8884a] transition-colors">
+            {group.name}
+          </h3>
+          <p className="text-[rgba(232,226,212,0.55)] text-sm line-clamp-2 mb-3">
+            {group.description}
+          </p>
+          <div className="flex items-center justify-between">
+            <span className="text-[rgba(232,226,212,0.45)] text-xs flex items-center gap-1.5">
+              <Users size={12} className="text-[#c8884a]" />
+              {group.createdBy?.name || "Unknown"}
+            </span>
+            <span className="text-[#c8884a] text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+              View Group
+              <ChevronRight size={13} />
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const Forum = () => {
   const { user } = useAuth();
   const [groups, setGroups] = useState([]);
   const [openCreate, setOpenCreate] = useState(false);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const loadGroups = async () => {
@@ -38,7 +249,7 @@ const Forum = () => {
         const data = await fetchForumGroups();
         setGroups(data);
       } catch (err) {
-        console.error('Error fetching forum groups:', err);
+        console.error("Error fetching forum groups:", err);
       }
     };
     loadGroups();
@@ -50,458 +261,368 @@ const Forum = () => {
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await createForumGroup({ name, description }, token);
-      setName('');
-      setDescription('');
+      setName("");
+      setDescription("");
       setOpenCreate(false);
-      // Reload groups
       const data = await fetchForumGroups();
       setGroups(data);
     } catch (err) {
-      console.error('Error creating forum group:', err);
+      console.error("Error creating forum group:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredGroups = groups.filter(group =>
-    group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    group.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredGroups = groups.filter(
+    (group) =>
+      group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      group.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const btnPrimary =
+    "flex items-center gap-1.5 bg-[#c8884a] text-[#1a1008] font-semibold rounded-lg transition-colors " +
+    "hover:bg-[#b07a40] shadow-[0_0_14px_rgba(200,136,74,0.25)]";
+
+  const btnOutline =
+    "flex items-center gap-1.5 border border-[rgba(200,136,74,0.3)] text-[#e8e2d4] font-medium rounded-lg transition-colors " +
+    "hover:border-[#c8884a] hover:text-[#c8884a]";
+
+  const sidebarScroll =
+    "hidden lg:flex flex-col gap-4 sticky top-6 self-start " +
+    "h-[calc(100vh-3rem)] overflow-y-auto " +
+    "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden";
+
+  const userInitial = user?.name?.charAt(0)?.toUpperCase() ?? "U";
+
   return (
-    <Box sx={{ 
-      bgcolor: '#2C3639', 
-      color: '#DCD7C9', 
-      minHeight: '100vh',
-      py: 5,
-      position: 'relative',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: `
-          radial-gradient(circle at 20% 30%, rgba(162, 123, 92, 0.05) 0%, transparent 25%),
-          radial-gradient(circle at 80% 70%, rgba(63, 78, 79, 0.08) 0%, transparent 25%)
-        `,
-        zIndex: 0,
-      }
-    }}>
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography 
-            variant="h3" 
-            sx={{ 
-              color: '#DCD7C9',
-              fontWeight: 'bold',
-              mb: 2,
-              textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2
-            }}
-          >
-            <ForumIcon sx={{ fontSize: '2.5rem', color: '#A27B5C' }} />
-            Community Forum
-          </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              color: '#A27B5C',
-              mb: 4,
-              maxWidth: 600,
-              mx: 'auto',
-              lineHeight: 1.6
-            }}
-          >
-            Join discussions, share knowledge, and connect with other professionals
-          </Typography>
-        </Box>
+    <div className="min-h-screen bg-[#0d1117] text-[#e8e2d4]">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_280px] gap-5 items-start">
+          {/* ══════════ LEFT SIDEBAR ══════════ */}
+          <aside className={`${sidebarScroll} pr-1`}>
+            {/* Trending Topics */}
+            <SideCard>
+              <SideCardHeader>
+                <span className="flex items-center gap-2 text-[#f0e8d8] font-semibold text-sm">
+                  <TrendingUp size={14} className="text-[#c8884a]" />
+                  Trending Topics
+                </span>
+                <button className="text-[#c8884a] text-xs font-medium hover:underline">
+                  View all
+                </button>
+              </SideCardHeader>
+              <ul className="px-3 pb-4 space-y-0.5">
+                {TRENDING_TOPICS.map(([topic, count]) => (
+                  <li key={topic}>
+                    <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors">
+                      <span className="flex items-center gap-2 text-[#e8e2d4] text-sm">
+                        <Hash size={12} className="text-[#c8884a]" />
+                        {topic}
+                      </span>
+                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
+                        {count}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </SideCard>
 
-        {/* Search and Actions */}
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          mb: 5,
-          flexDirection: { xs: 'column', md: 'row' },
-          gap: 3
-        }}>
-          <TextField
-            placeholder="Search forum groups..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            sx={{
-              flex: 1,
-              '& .MuiOutlinedInput-root': {
-                backgroundColor: '#3F4E4F',
-                color: '#DCD7C9',
-                borderRadius: 2,
-                border: '2px solid rgba(162, 123, 92, 0.3)',
-                '&:hover': {
-                  borderColor: 'rgba(162, 123, 92, 0.5)',
-                },
-                '&.Mui-focused': {
-                  borderColor: '#A27B5C',
-                  boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
-                }
-              },
-              '& .MuiInputLabel-root': {
-                color: '#A27B5C',
-              },
-              '& .MuiOutlinedInput-input': {
-                color: '#DCD7C9',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none',
-              }
-            }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon sx={{ color: '#A27B5C', mr: 1 }} />
-              ),
-            }}
-          />
-          
-          {user && (
-            <Button 
-              variant="contained" 
-              startIcon={<AddIcon />}
-              onClick={() => setOpenCreate(true)}
-              sx={{ 
-                bgcolor: '#A27B5C', 
-                color: '#2C3639',
-                py: 1.5,
-                px: 4,
-                borderRadius: 2,
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                textTransform: 'none',
-                border: '2px solid #A27B5C',
-                minWidth: { xs: '100%', md: 'auto' },
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                '&:hover': {
-                  bgcolor: '#8a6a50',
-                  borderColor: '#8a6a50',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 8px 24px rgba(162, 123, 92, 0.4)',
-                },
-              }}
-            >
-              Create New Group
-            </Button>
-          )}
-        </Box>
-
-        {/* Groups Count */}
-        <Typography 
-          variant="h6" 
-          sx={{ 
-            color: '#DCD7C9',
-            mb: 3,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1
-          }}
-        >
-          <GroupsIcon sx={{ color: '#A27B5C' }} />
-          {filteredGroups.length} Group{filteredGroups.length !== 1 ? 's' : ''} Available
-        </Typography>
-
-        {/* Groups Grid */}
-        {filteredGroups.length > 0 ? (
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' }, gap: 3 }}>
-            {filteredGroups.map((group) => (
-              <Card 
-                key={group._id} 
-                sx={{ 
-                  bgcolor: '#3F4E4F', 
-                  color: '#DCD7C9',
-                  borderRadius: 3,
-                  border: '2px solid rgba(162, 123, 92, 0.3)',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: '0 16px 40px rgba(162, 123, 92, 0.3)',
-                    borderColor: '#A27B5C',
-                  },
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '4px',
-                    background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-                  }
-                }}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 2 }}>
-                    <Avatar 
-                      sx={{ 
-                        bgcolor: '#A27B5C', 
-                        width: 50, 
-                        height: 50,
-                        border: '2px solid rgba(162, 123, 92, 0.5)'
-                      }}
+            {/* Quick Links */}
+            <SideCard>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
+                  Quick Links
+                </p>
+                <ul className="space-y-0.5">
+                  <li>
+                    <Link
+                      to="/social"
+                      className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors group"
                     >
-                      {group.name.charAt(0).toUpperCase()}
-                    </Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Link 
-                        to={`/forum/${group._id}`} 
-                        style={{ 
-                          textDecoration: 'none',
-                          display: 'block'
-                        }}
-                      >
-                        <Typography 
-                          variant="h6" 
-                          sx={{ 
-                            color: '#DCD7C9',
-                            fontWeight: 'bold',
-                            mb: 0.5,
-                            '&:hover': {
-                              color: '#A27B5C',
-                            }
-                          }}
-                        >
-                          {group.name}
-                        </Typography>
-                      </Link>
-                      <Typography 
-                        sx={{ 
-                          color: 'rgba(220, 215, 201, 0.7)',
-                          fontSize: '0.9rem',
-                          mb: 2
-                        }}
-                      >
-                        {group.description}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mt: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <PersonIcon sx={{ fontSize: '1rem', color: '#A27B5C' }} />
-                      <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.7)' }}>
-                        Created by {group.createdBy?.name || 'Unknown'}
-                      </Typography>
-                    </Box>
-                    
-                    <Link to={`/forum/${group._id}`}>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        sx={{
-                          color: '#A27B5C',
-                          borderColor: '#A27B5C',
-                          borderRadius: 2,
-                          textTransform: 'none',
-                          fontWeight: 'bold',
-                          '&:hover': {
-                            bgcolor: 'rgba(162, 123, 92, 0.1)',
-                            borderColor: '#8a6a50',
-                          }
-                        }}
-                      >
-                        View Group
-                      </Button>
+                      <span className="flex items-center gap-2.5 text-sm text-[rgba(232,226,212,0.55)] group-hover:text-[#e8e2d4] transition-colors">
+                        <MessageSquare size={14} className="text-[#c8884a]" />
+                        Social Feed
+                      </span>
+                      <ChevronRight
+                        size={13}
+                        className="text-[rgba(232,226,212,0.25)] group-hover:text-[rgba(232,226,212,0.55)] transition-colors"
+                      />
                     </Link>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-        ) : (
-          <Box sx={{ 
-            textAlign: 'center', 
-            py: 10,
-            bgcolor: 'rgba(63, 78, 79, 0.3)',
-            borderRadius: 3,
-            border: '2px dashed #A27B5C'
-          }}>
-            <GroupsIcon sx={{ fontSize: '4rem', color: '#A27B5C', mb: 3, opacity: 0.5 }} />
-            <Typography variant="h5" sx={{ color: '#DCD7C9', mb: 2 }}>
-              No groups found
-            </Typography>
-            <Typography variant="body1" sx={{ color: 'rgba(220, 215, 201, 0.7)', maxWidth: 400, mx: 'auto' }}>
-              {searchTerm ? `No groups matching "${searchTerm}"` : 'No forum groups available yet'}
-            </Typography>
-            {user && (
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => setOpenCreate(true)}
-                sx={{ 
-                  mt: 3,
-                  bgcolor: '#A27B5C', 
-                  color: '#2C3639',
-                  '&:hover': {
-                    bgcolor: '#8a6a50',
-                  }
-                }}
-              >
-                Create First Group
-              </Button>
-            )}
-          </Box>
-        )}
+                  </li>
+                  {QUICK_LINKS.slice(1).map(({ text, path, icon: Icon }) => (
+                    <li key={text}>
+                      <Link
+                        to={path}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors group"
+                      >
+                        <span className="flex items-center gap-2.5 text-sm text-[rgba(232,226,212,0.55)] group-hover:text-[#e8e2d4] transition-colors">
+                          <Icon size={14} className="text-[#c8884a]" />
+                          {text}
+                        </span>
+                        <ChevronRight
+                          size={13}
+                          className="text-[rgba(232,226,212,0.25)] group-hover:text-[rgba(232,226,212,0.55)] transition-colors"
+                        />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </SideCard>
+          </aside>
 
-        {/* Create Group Modal */}
-        <Modal open={openCreate} onClose={() => !loading && setOpenCreate(false)}>
-          <Box sx={{ 
-            position: 'absolute', 
-            top: '50%', 
-            left: '50%', 
-            transform: 'translate(-50%, -50%)', 
-            bgcolor: '#3F4E4F', 
-            p: 5, 
-            borderRadius: 3, 
-            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
-            border: '3px solid #A27B5C',
-            minWidth: { xs: '90%', sm: 500 },
-            maxWidth: 600,
-            outline: 'none'
-          }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h5" sx={{ color: '#DCD7C9', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <AddIcon /> Create New Group
-              </Typography>
-              <IconButton 
-                onClick={() => setOpenCreate(false)} 
-                disabled={loading}
-                sx={{ 
-                  color: '#A27B5C',
-                  '&:hover': {
-                    bgcolor: 'rgba(162, 123, 92, 0.1)'
-                  }
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            
-            <form onSubmit={handleCreateGroup}>
-              <TextField
-                fullWidth
-                label="Group Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                sx={{
-                  mb: 3,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: '#2C3639',
-                    color: '#DCD7C9',
-                    borderRadius: 2,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    '&:hover': {
-                      borderColor: 'rgba(162, 123, 92, 0.5)',
-                    },
-                    '&.Mui-focused': {
-                      borderColor: '#A27B5C',
-                      boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
-                    }
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: '#A27B5C',
-                    '&.Mui-focused': {
-                      color: '#A27B5C',
-                    }
-                  }
-                }}
-                required
-              />
-              
-              <TextField
-                fullWidth
-                label="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                multiline
-                rows={4}
-                sx={{
-                  mb: 4,
-                  '& .MuiOutlinedInput-root': {
-                    backgroundColor: '#2C3639',
-                    color: '#DCD7C9',
-                    borderRadius: 2,
-                    border: '2px solid rgba(162, 123, 92, 0.3)',
-                    '&:hover': {
-                      borderColor: 'rgba(162, 123, 92, 0.5)',
-                    },
-                    '&.Mui-focused': {
-                      borderColor: '#A27B5C',
-                      boxShadow: '0 0 0 4px rgba(162, 123, 92, 0.1)',
-                    }
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: '#A27B5C',
-                    '&.Mui-focused': {
-                      color: '#A27B5C',
-                    }
-                  }
-                }}
-                required
-              />
-              
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                <Button 
-                  onClick={() => setOpenCreate(false)} 
-                  variant="outlined"
-                  disabled={loading}
-                  sx={{ 
-                    color: '#A27B5C',
-                    borderColor: '#A27B5C',
-                    px: 4,
-                    '&:hover': {
-                      bgcolor: 'rgba(162, 123, 92, 0.1)',
-                      borderColor: '#8a6a50',
-                    }
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  variant="contained"
-                  disabled={loading}
-                  sx={{ 
-                    bgcolor: '#A27B5C', 
-                    color: '#2C3639',
-                    px: 5,
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      bgcolor: '#8a6a50',
-                    },
-                    '&.Mui-disabled': {
-                      bgcolor: 'rgba(162, 123, 92, 0.3)',
-                      color: 'rgba(44, 54, 57, 0.5)',
-                    }
-                  }}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} sx={{ color: '#2C3639' }} />
-                  ) : (
-                    'Create Group'
-                  )}
-                </Button>
-              </Box>
-            </form>
-          </Box>
-        </Modal>
-      </Container>
-    </Box>
+          {/* ══════════ MAIN CONTENT ══════════ */}
+          <main className="min-w-0 flex flex-col gap-4">
+            {/* Page header */}
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[rgba(200,136,74,0.15)] rounded-xl flex items-center justify-center shrink-0">
+                  <MessageSquare size={19} className="text-[#c8884a]" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-[#f0e8d8] leading-tight">
+                    Community Forum
+                  </h1>
+                  <p className="text-[rgba(232,226,212,0.55)] text-xs mt-0.5">
+                    Join discussions, share knowledge, and connect with others
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                {user && (
+                  <button
+                    onClick={() => setOpenCreate(true)}
+                    className={`${btnPrimary} text-sm px-4 py-2`}
+                  >
+                    <Plus size={14} />
+                    Create Group
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-3">
+              <div className="flex items-center gap-3">
+                <Hash size={16} className="text-[#c8884a] shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search forum groups..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="flex-1 bg-transparent text-[#e8e2d4] text-sm placeholder-[rgba(232,226,212,0.35)] outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Groups count */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-[rgba(232,226,212,0.55)] flex items-center gap-2">
+                <Users size={14} className="text-[#c8884a]" />
+                {filteredGroups.length} Group{filteredGroups.length !== 1 ? "s" : ""} Available
+              </p>
+              <button className="flex items-center gap-1.5 text-[rgba(232,226,212,0.55)] text-xs border border-[rgba(200,136,74,0.2)] px-3 py-1.5 rounded-lg hover:border-[#c8884a] hover:text-[#e8e2d4] transition-colors shrink-0">
+                <Filter size={12} />
+                Filter
+              </button>
+            </div>
+
+            {/* Groups grid */}
+            {filteredGroups.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredGroups.map((group, i) => (
+                  <GroupCard key={group._id} group={group} index={i} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-12 text-center">
+                <div className="w-16 h-16 bg-[rgba(200,136,74,0.1)] rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Users size={28} className="text-[#c8884a]" />
+                </div>
+                <h3 className="text-lg font-bold text-[#f0e8d8] mb-2">
+                  {searchTerm ? "No groups found" : "No forum groups yet"}
+                </h3>
+                <p className="text-[rgba(232,226,212,0.55)] text-sm max-w-sm mx-auto mb-6">
+                  {searchTerm
+                    ? `No groups matching "${searchTerm}"`
+                    : "Be the first to create a forum group and start the conversation!"}
+                </p>
+                {user && (
+                  <button
+                    onClick={() => setOpenCreate(true)}
+                    className={`${btnPrimary} text-sm px-5 py-2.5`}
+                  >
+                    <Plus size={14} />
+                    Create First Group
+                  </button>
+                )}
+              </div>
+            )}
+          </main>
+
+          {/* ══════════ RIGHT SIDEBAR ══════════ */}
+          <aside className={`${sidebarScroll} pl-1`}>
+            {/* Your Profile */}
+            <SideCard>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
+                  Your Profile
+                </p>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-13 h-13 rounded-full bg-gradient-to-br from-[#c8884a] to-[#b07a40] flex items-center justify-center text-[#1a1008] text-xl font-bold shrink-0 ring-2 ring-[#c8884a]/25 select-none">
+                    {userInitial}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-[#f0e8d8] truncate">
+                      {user?.name ?? "Guest User"}
+                    </p>
+                    <p className="text-xs text-[#c8884a] font-medium mt-0.5">
+                      {user ? "Active member" : "Visitor"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* XP bar */}
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className="text-[#e8e2d4] font-semibold">Level 12</span>
+                  <span className="text-[rgba(232,226,212,0.45)]">
+                    2,350 XP
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-[#141418] rounded-full overflow-hidden mb-1">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#c8884a] to-[#d6a464] rounded-full transition-all duration-500"
+                    style={{ width: "78%" }}
+                  />
+                </div>
+                <p className="text-[rgba(232,226,212,0.4)] text-xs">
+                  2,350 / 3,000 XP
+                </p>
+
+                <Divider />
+
+                {/* Badges */}
+                <div className="flex items-center justify-between mb-2 mt-1">
+                  <span className="text-xs font-semibold text-[#e8e2d4]">
+                    Badges
+                  </span>
+                  <button className="text-[#c8884a] text-xs font-medium hover:underline">
+                    View all
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  {BADGE_CONFIG.map(({ icon, color }) => (
+                    <BadgeTile key={color} icon={icon} color={color} />
+                  ))}
+                </div>
+              </div>
+            </SideCard>
+
+            {/* Community Stats */}
+            <SideCard>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
+                  Community Stats
+                </p>
+                <ul className="space-y-3">
+                  {COMMUNITY_STATS.map(({ icon: Icon, color, val, label }) => (
+                    <li key={label} className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-[rgba(200,136,74,0.12)] rounded-lg flex items-center justify-center shrink-0">
+                        <Icon size={14} className={color} />
+                      </div>
+                      <span className="font-bold text-[#f0e8d8]">{val}</span>
+                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
+                        • {label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </SideCard>
+
+            {/* Active Groups */}
+            <SideCard>
+              <SideCardHeader>
+                <span className="flex items-center gap-2 text-[#f0e8d8] font-semibold text-sm">
+                  <Users size={14} className="text-[#c8884a]" />
+                  Active Groups
+                </span>
+              </SideCardHeader>
+              <div className="px-3 pb-3 space-y-0.5">
+                {groups.slice(0, 5).map((group, i) => (
+                  <Link
+                    key={group._id}
+                    to={`/forum/${group._id}`}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors group"
+                  >
+                    <div
+                      className={`w-7 h-7 ${
+                        GROUP_COLORS[i % GROUP_COLORS.length]
+                      } rounded-lg flex items-center justify-center shrink-0`}
+                    >
+                      <MessageSquare size={12} />
+                    </div>
+                    <span className="text-sm text-[rgba(232,226,212,0.55)] group-hover:text-[#e8e2d4] transition-colors truncate">
+                      {group.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </SideCard>
+          </aside>
+        </div>
+      </div>
+
+      {/* ══════════ CREATE GROUP MODAL ══════════ */}
+      <Modal
+        open={openCreate}
+        onClose={() => !loading && setOpenCreate(false)}
+        title="Create Forum Group"
+      >
+        <form onSubmit={handleCreateGroup} className="flex flex-col gap-4">
+          <Field
+            label="Group Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <Field
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            multiline
+            required
+          />
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setOpenCreate(false)}
+              disabled={loading}
+              className="px-4 py-2 rounded-lg border border-[rgba(200,136,74,0.2)] text-[rgba(232,226,212,0.55)] text-sm font-medium hover:border-[#c8884a] hover:text-[#e8e2d4] transition-colors disabled:opacity-40"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`${btnPrimary} text-sm px-5 py-2 disabled:opacity-40`}
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" /> Creating…
+                </>
+              ) : (
+                "Create Group"
+              )}
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </div>
   );
 };
 

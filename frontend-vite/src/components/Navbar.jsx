@@ -9,8 +9,13 @@ const Navbar = () => {
   const { isLoggedIn, user, logout } = useAuth();
   const location = useLocation();
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [logoutModalOpen, setLogoutModalOpen] = React.useState(false);
 
-  const handleLogout = () => logout();
+  const handleLogout = () => setLogoutModalOpen(true);
+  const confirmLogout = () => {
+    setLogoutModalOpen(false);
+    logout();
+  };
   const toggleDrawer = (open) => () => setDrawerOpen(open);
 
   const menuItems = [
@@ -93,7 +98,7 @@ const Navbar = () => {
                   <UserLink userId={user?.id} name={user?.name} />
 
                   <button
-                    onClick={handleLogout}
+                    onClick={() => setLogoutModalOpen(true)}
                     className="rounded-lg border border-[#C08A5D] px-5 py-2 text-[0.875rem] font-semibold text-[#C08A5D] transition-all duration-200 hover:bg-[#C08A5D] hover:text-[#0F172A]"
                   >
                     Logout
@@ -175,7 +180,7 @@ const Navbar = () => {
                 <li>
                   <button
                     onClick={() => {
-                      handleLogout();
+                      setLogoutModalOpen(true);
                       toggleDrawer(false)();
                     }}
                     className="w-full text-left px-5 py-4 text-sm font-medium text-[#ff6b6b] hover:bg-[rgba(255,107,107,0.08)] transition-all"
@@ -196,6 +201,47 @@ const Navbar = () => {
               </li>
             )}
           </ul>
+        </div>
+      </div>
+
+      {/* ================================
+          LOGOUT CONFIRMATION MODAL
+      ================================ */}
+      <div
+        className={`
+          fixed inset-0 z-[200] flex items-center justify-center transition-all duration-300
+          ${logoutModalOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"}
+        `}
+      >
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+          onClick={() => setLogoutModalOpen(false)}
+        />
+
+        {/* Modal */}
+        <div
+          className="relative z-10 w-80 rounded-xl border border-white/10 p-6 text-center"
+          style={{ background: "#1f2937" }}
+        >
+          <h3 className="mb-2 text-xl font-bold text-white">Logout</h3>
+          <p className="mb-6 text-sm text-white/70">
+            Are you sure you want to log out?
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => setLogoutModalOpen(false)}
+              className="rounded-lg border border-white/20 px-5 py-2 text-sm font-semibold text-white/80 transition-all hover:bg-white/10"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmLogout}
+              className="rounded-lg bg-[#C08A5D] px-5 py-2 text-sm font-semibold text-[#0F172A] transition-all hover:bg-[#b07a4e]"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </>
