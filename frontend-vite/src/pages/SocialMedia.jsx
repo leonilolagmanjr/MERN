@@ -347,7 +347,7 @@ const SocialMedia = () => {
   // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e8e2d4]">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-350 mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_280px] gap-5 items-start">
           {/* ══════════ LEFT SIDEBAR ══════════ */}
           <aside className={`${sidebarScroll} pr-1`}>
@@ -576,7 +576,7 @@ const SocialMedia = () => {
                   Your Profile
                 </p>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-13 h-13 rounded-full bg-gradient-to-br from-[#c8884a] to-[#b07a40] flex items-center justify-center text-[#1a1008] text-xl font-bold shrink-0 ring-2 ring-[#c8884a]/25 select-none">
+                  <div className="w-13 h-13 rounded-full bg-linear-to-br from-[#c8884a] to-[#b07a40] flex items-center justify-center text-[#1a1008] text-xl font-bold shrink-0 ring-2 ring-[#c8884a]/25 select-none">
                     {userInitial}
                   </div>
                   <div className="min-w-0">
@@ -598,7 +598,7 @@ const SocialMedia = () => {
                 </div>
                 <div className="w-full h-1.5 bg-[#141418] rounded-full overflow-hidden mb-1">
                   <div
-                    className="h-full bg-gradient-to-r from-[#c8884a] to-[#d6a464] rounded-full transition-all duration-500"
+                    className="h-full bg-linear-to-r from-[#c8884a] to-[#d6a464] rounded-full transition-all duration-500"
                     style={{ width: "78%" }}
                   />
                 </div>

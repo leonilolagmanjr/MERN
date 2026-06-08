@@ -29,24 +29,24 @@ import {
 
 const CATEGORY_TAG_STYLE = {
   Development:
-    "bg-[rgba(83,74,183,0.25)] text-[#a09be0] border border-[rgba(83,74,183,0.3)]",
+    "bg-[var(--browse-category-development-bg)] text-[var(--browse-category-development-text)] border border-[var(--browse-category-development-border)]",
   Design:
-    "bg-[rgba(13,110,204,0.2)] text-[#6ba8e0] border border-[rgba(13,110,204,0.3)]",
+    "bg-[var(--browse-category-design-bg)] text-[var(--browse-category-design-text)] border border-[var(--browse-category-design-border)]",
   Marketing:
-    "bg-[rgba(162,46,121,0.2)] text-[#d07bbf] border border-[rgba(162,46,121,0.3)]",
+    "bg-[var(--browse-category-marketing-bg)] text-[var(--browse-category-marketing-text)] border border-[var(--browse-category-marketing-border)]",
   Writing:
-    "bg-[rgba(15,110,86,0.2)] text-[#5ec9a0] border border-[rgba(15,110,86,0.3)]",
+    "bg-[var(--browse-category-writing-bg)] text-[var(--browse-category-writing-text)] border border-[var(--browse-category-writing-border)]",
   Other:
-    "bg-[rgba(120,120,140,0.2)] text-[#a0a0b8] border border-[rgba(120,120,140,0.25)]",
+    "bg-[var(--browse-category-other-bg)] text-[var(--browse-category-other-text)] border border-[var(--browse-category-other-border)]",
 };
 
 const TYPE_TAG_STYLE = {
   "Full Time":
-    "bg-[rgba(200,136,74,0.15)] text-[#c8884a] border border-[rgba(200,136,74,0.25)]",
+    "bg-[var(--browse-primary-muted)] text-[var(--browse-primary)] border border-[var(--browse-primary-border-strong)]",
   Contract:
-    "bg-[rgba(120,120,140,0.2)] text-[#a0a0b8] border border-[rgba(120,120,140,0.25)]",
+    "bg-[var(--browse-category-other-bg)] text-[var(--browse-category-other-text)] border border-[var(--browse-category-other-border)]",
   "Part Time":
-    "bg-[rgba(200,136,74,0.15)] text-[#c8884a] border border-[rgba(200,136,74,0.25)]",
+    "bg-[var(--browse-primary-muted)] text-[var(--browse-primary)] border border-[var(--browse-primary-border-strong)]",
 };
 
 const CATEGORY_ICON = {
@@ -58,11 +58,26 @@ const CATEGORY_ICON = {
 };
 
 const CATEGORY_LOGO_STYLE = {
-  Development: { bg: "bg-[rgba(83,74,183,0.25)]", text: "text-[#a09be0]" },
-  Design: { bg: "bg-[rgba(13,110,204,0.2)]", text: "text-[#6ba8e0]" },
-  Marketing: { bg: "bg-[rgba(162,46,121,0.2)]", text: "text-[#d07bbf]" },
-  Writing: { bg: "bg-[rgba(15,110,86,0.2)]", text: "text-[#5ec9a0]" },
-  Other: { bg: "bg-[rgba(120,120,140,0.2)]", text: "text-[#a0a0b8]" },
+  Development: {
+    bg: "bg-[var(--browse-category-development-bg)]",
+    text: "text-[var(--browse-category-development-text)]",
+  },
+  Design: {
+    bg: "bg-[var(--browse-category-design-bg)]",
+    text: "text-[var(--browse-category-design-text)]",
+  },
+  Marketing: {
+    bg: "bg-[var(--browse-category-marketing-bg)]",
+    text: "text-[var(--browse-category-marketing-text)]",
+  },
+  Writing: {
+    bg: "bg-[var(--browse-category-writing-bg)]",
+    text: "text-[var(--browse-category-writing-text)]",
+  },
+  Other: {
+    bg: "bg-[var(--browse-category-other-bg)]",
+    text: "text-[var(--browse-category-other-text)]",
+  },
 };
 
 const CATEGORIES = ["Development", "Design", "Marketing", "Writing", "Other"];
@@ -72,15 +87,15 @@ const JOB_TYPES = ["Remote", "On-site", "Hybrid"];
 
 function StatCard({ icon, value, label }) {
   return (
-    <div className="flex items-center gap-3 px-5 py-3 border-r  border-[rgba(200,136,74,0.2)] last:border-r-0">
-      <div className="bg-[rgba(200,136,74,0.15)] rounded-lg p-2 flex items-center justify-center">
-        <span className="text-[#c8884a]">{icon}</span>
+    <div className="flex items-center gap-3 px-5 py-3 border-r border-(--browse-primary-border) last:border-r-0">
+      <div className="bg-(--browse-primary-muted) rounded-lg p-2 flex items-center justify-center">
+        <span className="text-(--browse-primary)">{icon}</span>
       </div>
       <div>
-        <p className="text-xl font-bold text-[#c8884a] leading-none">{value}</p>
-        <p className="text-[11px] text-[rgba(232,226,212,0.55)] mt-1">
-          {label}
+        <p className="text-xl font-bold text-(--browse-primary) leading-none">
+          {value}
         </p>
+        <p className="text-[11px] text-(--browse-text-subtle) mt-1">{label}</p>
       </div>
     </div>
   );
@@ -96,8 +111,8 @@ function JobCard({ job }) {
     <Link to={`/job/${job._id}`} className="no-underline block">
       <div
         className="
-        bg-[#1e1e26]
-        border border-[rgba(200,136,74,0.2)]
+        bg-(--browse-surface)
+        border border-(--browse-primary-border)
         rounded-xl
         p-4
         cursor-pointer
@@ -117,17 +132,17 @@ function JobCard({ job }) {
               <span className={logo.text}>{icon}</span>
             </div>
             <div>
-              <p className="text-[13px] font-semibold text-[#f0e8d8] leading-snug">
+              <p className="text-[13px] font-semibold text-(--browse-text-strong) leading-snug">
                 {job.title}
               </p>
-              <div className="flex items-center gap-1 text-[11px] text-[rgba(232,226,212,0.55)] mt-0.5">
+              <div className="flex items-center gap-1 text-[11px] text-(--browse-text-subtle) mt-0.5">
                 {job.company || job.employer || "Unknown"}
-                <CheckCircle size={10} className="text-[#c8884a]" />
+                <CheckCircle size={10} className="text-(--browse-primary)" />
               </div>
             </div>
           </div>
           <button
-            className="text-[rgba(232,226,212,0.4)] hover:text-[#e05a7a] transition-colors"
+            className="text-(--browse-text-disabled) hover:text-(--browse-heart) transition-colors"
             aria-label="Save job"
             onClick={(e) => e.preventDefault()}
           >
@@ -136,8 +151,8 @@ function JobCard({ job }) {
         </div>
 
         {/* Meta */}
-        <div className="flex items-center gap-1.5 text-[11px] text-[rgba(232,226,212,0.55)] mb-3">
-          <MapPin size={10} className="text-[#c8884a]" />
+        <div className="flex items-center gap-1.5 text-[11px] text-(--browse-text-subtle) mb-3">
+          <MapPin size={10} className="text-(--browse-primary)" />
           <span>
             {job.location
               ? job.location.type === "physical"
@@ -145,12 +160,12 @@ function JobCard({ job }) {
                 : "Remote"
               : "Remote"}
           </span>
-          <span className="text-[rgba(232,226,212,0.3)]">•</span>
+          <span className="text-(--browse-text-divider)">•</span>
           <span>Posted {new Date(job.dateListed).toLocaleDateString()}</span>
         </div>
 
         {/* Description */}
-        <div className="text-[11px] text-[rgba(208,200,184,0.75)] leading-relaxed mb-3 grow">
+        <div className="text-[11px] text-(--browse-text-body) leading-relaxed mb-3 grow">
           <CollapsibleText text={job.description} limit={100} />
         </div>
 
@@ -174,9 +189,11 @@ function JobCard({ job }) {
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-auto">
-          <span className="text-sm font-bold text-[#c8884a]">{price}</span>
+          <span className="text-sm font-bold text-(--browse-primary)">
+            {price}
+          </span>
           <button
-            className="text-[11px] font-medium text-[#c8884a] border border-[#c8884a] rounded-md px-3 py-1 hover:bg-[#c8884a] hover:text-[#1a1008] transition-all duration-200"
+            className="text-[11px] font-medium text-(--browse-primary) border border-(--browse-primary) rounded-md px-3 py-1 hover:bg-(--browse-primary) hover:text-(--browse-primary-contrast) transition-all duration-200"
             onClick={(e) => e.preventDefault()}
           >
             View Details
@@ -194,8 +211,8 @@ function PaginationBtn({ children, active, onClick }) {
       className={`w-8 h-8 rounded-md text-xs font-medium flex items-center justify-center transition-all
         ${
           active
-            ? "bg-[#c8884a] border border-[#c8884a] text-[#1a1008] font-bold"
-            : "border border-[rgba(200,136,74,0.2)] text-[#d0c8b8] hover:border-[#c8884a] hover:text-[#c8884a]"
+            ? "bg-(--browse-primary) border border-(--browse-primary) text-(--browse-primary-contrast) font-bold"
+            : "border border-(--browse-primary-border) text-(--browse-text-muted) hover:border-(--browse-primary) hover:text-(--browse-primary)"
         }`}
     >
       {children}
@@ -325,26 +342,26 @@ const BrowseJobs = () => {
 
   // ─── render ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen py-8 bg-[#0d1117]">
+    <div className="min-h-screen py-8 bg-(--browse-bg)">
       <div className="mx-auto max-w-6xl">
         {/* ── Hero ─────────────────────────────────────────────────────────── */}
         <div
-          className="rounded-2xl p-8  relative overflow-hidden border border-white/6"
+          className="rounded-2xl p-8 relative overflow-hidden border border-(--browse-border-white-subtle)"
           style={{
-            background: "linear-gradient(145deg, #1a1f2e 0%, #151b27 100%)",
+            background: "var(--browse-panel-gradient)",
           }}
         >
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-[#c8884a]/20 bg-[#c8884a]/10">
-              <Briefcase size={28} className="text-[#c8884a]" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl border border-(--browse-primary-border) bg-(--browse-primary-soft)">
+              <Briefcase size={28} className="text-(--browse-primary)" />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-[#f0e8d8]">
+              <h1 className="text-3xl font-bold text-(--browse-text-strong)">
                 Browse Available Jobs
               </h1>
 
-              <p className="mt-1 text-sm text-[#c8884a]">
+              <p className="mt-1 text-sm text-(--browse-primary)">
                 Find your next opportunity from our curated list of jobs
               </p>
             </div>
@@ -356,7 +373,7 @@ const BrowseJobs = () => {
           <div className="relative flex-1">
             <Search
               size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c8884a]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-(--browse-primary)"
             />
             <input
               type="text"
@@ -364,19 +381,19 @@ const BrowseJobs = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="w-full pl-9 pr-4 py-3 bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-lg text-[#e8e2d4] text-sm placeholder-[rgba(232,226,212,0.35)] outline-none focus:border-[#c8884a] transition-colors"
+              className="w-full pl-9 pr-4 py-3 bg-(--browse-surface) border border-(--browse-primary-border) rounded-lg text-(--browse-text) text-sm placeholder-(--browse-placeholder) outline-none focus:border-(--browse-primary) transition-colors"
             />
           </div>
           <button
             onClick={handleSearch}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#c8884a] text-white rounded-lg font-semibold text-sm hover:bg-[#b07a40] transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-hover) transition-colors"
           >
             <Search size={15} />
             Search Jobs
           </button>
           <Link
             to="/jobmanager"
-            className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-[#c8884a] text-white rounded-lg font-semibold text-sm hover:bg-[rgba(200,136,74,0.1)] transition-colors no-underline"
+            className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-soft) transition-colors no-underline"
           >
             <Settings size={15} />
             Manage Your Jobs
@@ -385,9 +402,9 @@ const BrowseJobs = () => {
 
         {/* ── Stats Bar ────────────────────────────────────────────────────── */}
         <div
-          className="grid grid-cols-4 border rounded-xl border-[rgba(200,136,74,0.2)] "
+          className="grid grid-cols-4 border rounded-xl border-(--browse-primary-border)"
           style={{
-            background: "linear-gradient(145deg, #1a1f2e 0%, #151b27 100%)",
+            background: "var(--browse-panel-gradient)",
           }}
         >
           <StatCard
@@ -411,16 +428,19 @@ const BrowseJobs = () => {
         {/* ── Main ─────────────────────────────────────────────────────────── */}
         <div className="flex flex-1 overflow-hidden mt-4">
           {/* ── Sidebar ────────────────────────────────────────────────────── */}
-          <aside className="flex flex-col w-72 min-w-72 h-150 sticky bg-[#1e1e26] border-[rgba(200,136,74,0.2)] p-4 overflow-y-auto rounded-xl mr-4 justify-between">
-            <div className="flex items-center gap-2 font-semibold text-[#e8e2d4] mb-2  ">
-              <SlidersHorizontal size={15} className="text-[#c8884a] " />
+          <aside className="flex flex-col w-72 min-w-72 h-150 sticky bg-(--browse-surface) border-(--browse-primary-border) p-4 overflow-y-auto rounded-xl mr-4 justify-between">
+            <div className="flex items-center gap-2 font-semibold text-(--browse-text) mb-2">
+              <SlidersHorizontal
+                size={15}
+                className="text-(--browse-primary)"
+              />
               Filters
             </div>
 
             {/* Category */}
             <div className="mb-2 ">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-semibold text-[rgba(232,226,212,0.55)] uppercase tracking-wider">
+                <span className="text-[10px] font-semibold text-(--browse-text-subtle) uppercase tracking-wider">
                   Category
                 </span>
               </div>
@@ -432,9 +452,11 @@ const BrowseJobs = () => {
                     setSelectedCategories([]);
                     applyFilters(searchTerm, [], selectedTypes, sortOrder);
                   }}
-                  className="accent-[#c8884a] w-3.5 h-3.5"
+                  className="accent-(--browse-primary) w-3.5 h-3.5"
                 />
-                <span className="text-xs text-[#d0c8b8]">All Categories</span>
+                <span className="text-xs text-(--browse-text-muted)">
+                  All Categories
+                </span>
               </label>
               {CATEGORIES.map((cat) => (
                 <label
@@ -445,9 +467,11 @@ const BrowseJobs = () => {
                     type="checkbox"
                     checked={selectedCategories.includes(cat)}
                     onChange={() => toggleCategory(cat)}
-                    className="accent-[#c8884a] w-3.5 h-3.5"
+                    className="accent-(--browse-primary) w-3.5 h-3.5"
                   />
-                  <span className="text-xs text-[#d0c8b8]">{cat}</span>
+                  <span className="text-xs text-(--browse-text-muted)">
+                    {cat}
+                  </span>
                 </label>
               ))}
             </div>
@@ -455,12 +479,12 @@ const BrowseJobs = () => {
             {/* Budget Range */}
             <div className="mb-5">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-semibold text-[rgba(232,226,212,0.55)] uppercase tracking-wider">
+                <span className="text-[10px] font-semibold text-(--browse-text-subtle) uppercase tracking-wider">
                   Budget Range
                 </span>
               </div>
               <div className="relative mb-2">
-                <select className="w-full bg-[#141418] border border-[rgba(200,136,74,0.2)] rounded-md text-[#d0c8b8] text-xs py-1.5 px-2.5 outline-none appearance-none">
+                <select className="w-full bg-(--browse-surface-deep) border border-(--browse-primary-border) rounded-md text-(--browse-text-muted) text-xs py-1.5 px-2.5 outline-none appearance-none">
                   <option>Min. Budget</option>
                   <option>$100</option>
                   <option>$250</option>
@@ -468,11 +492,11 @@ const BrowseJobs = () => {
                 </select>
                 <ChevronDown
                   size={11}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[rgba(232,226,212,0.4)] pointer-events-none"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-(--browse-text-disabled) pointer-events-none"
                 />
               </div>
               <div className="relative">
-                <select className="w-full bg-[#141418] border border-[rgba(200,136,74,0.2)] rounded-md text-[#d0c8b8] text-xs py-1.5 px-2.5 outline-none appearance-none">
+                <select className="w-full bg-(--browse-surface-deep) border border-(--browse-primary-border) rounded-md text-(--browse-text-muted) text-xs py-1.5 px-2.5 outline-none appearance-none">
                   <option>Max. Budget</option>
                   <option>$500</option>
                   <option>$1000</option>
@@ -480,7 +504,7 @@ const BrowseJobs = () => {
                 </select>
                 <ChevronDown
                   size={11}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[rgba(232,226,212,0.4)] pointer-events-none"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-(--browse-text-disabled) pointer-events-none"
                 />
               </div>
             </div>
@@ -488,7 +512,7 @@ const BrowseJobs = () => {
             {/* Job Type */}
             <div className="mb-5">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] font-semibold text-[rgba(232,226,212,0.55)] uppercase tracking-wider">
+                <span className="text-[10px] font-semibold text-(--browse-text-subtle) uppercase tracking-wider">
                   Job Type
                 </span>
               </div>
@@ -500,9 +524,11 @@ const BrowseJobs = () => {
                     setSelectedTypes([]);
                     applyFilters(searchTerm, selectedCategories, [], sortOrder);
                   }}
-                  className="accent-[#c8884a] w-3.5 h-3.5"
+                  className="accent-(--browse-primary) w-3.5 h-3.5"
                 />
-                <span className="text-xs text-[#d0c8b8]">All Types</span>
+                <span className="text-xs text-(--browse-text-muted)">
+                  All Types
+                </span>
               </label>
               {JOB_TYPES.map((type) => (
                 <label
@@ -513,16 +539,18 @@ const BrowseJobs = () => {
                     type="checkbox"
                     checked={selectedTypes.includes(type)}
                     onChange={() => toggleType(type)}
-                    className="accent-[#c8884a] w-3.5 h-3.5"
+                    className="accent-(--browse-primary) w-3.5 h-3.5"
                   />
-                  <span className="text-xs text-[#d0c8b8]">{type}</span>
+                  <span className="text-xs text-(--browse-text-muted)">
+                    {type}
+                  </span>
                 </label>
               ))}
             </div>
 
             <button
               onClick={resetFilters}
-              className="w-full bg-transparent border border-[#c8884a] text-[#c8884a] rounded-md py-2 text-xs font-medium hover:bg-[rgba(200,136,74,0.1)] transition-colors"
+              className="w-full bg-transparent border border-(--browse-primary) text-(--browse-primary) rounded-md py-2 text-xs font-medium hover:bg-(--browse-primary-soft) transition-colors"
             >
               Reset Filters
             </button>
@@ -532,19 +560,19 @@ const BrowseJobs = () => {
           <div className="flex-1 overflow-y-auto p-1 flex flex-col">
             {/* Content header */}
             <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-[#d0c8b8]">
+              <p className="text-sm text-(--browse-text-muted)">
                 Found{" "}
-                <strong className="text-[#c8884a]">
+                <strong className="text-(--browse-primary)">
                   {filteredJobs.length}
                 </strong>{" "}
                 job{filteredJobs.length !== 1 ? "s" : ""}
               </p>
-              <div className="flex items-center gap-2 text-xs text-[rgba(232,226,212,0.55)]">
+              <div className="flex items-center gap-2 text-xs text-(--browse-text-subtle)">
                 Sort by:
                 <select
                   value={sortOrder}
                   onChange={(e) => handleSort(e.target.value)}
-                  className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-md text-[#d0c8b8] text-xs py-1 px-2 outline-none"
+                  className="bg-(--browse-surface) border border-(--browse-primary-border) rounded-md text-(--browse-text-muted) text-xs py-1 px-2 outline-none"
                 >
                   <option>Newest</option>
                   <option>Oldest</option>
@@ -562,13 +590,15 @@ const BrowseJobs = () => {
                 ))}
               </div>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center py-20 border-2 border-dashed border-[rgba(200,136,74,0.3)] rounded-xl bg-[rgba(30,30,38,0.4)]">
+              <div className="flex-1 flex flex-col items-center justify-center py-20 border-2 border-dashed border-(--browse-primary-border-dashed) rounded-xl bg-(--browse-surface-muted)">
                 <Briefcase
                   size={52}
-                  className="text-[#c8884a] opacity-40 mb-4"
+                  className="text-(--browse-primary) opacity-40 mb-4"
                 />
-                <p className="text-lg text-[#e8e2d4] mb-1">No jobs found</p>
-                <p className="text-sm text-[rgba(232,226,212,0.5)] max-w-xs text-center">
+                <p className="text-lg text-(--browse-text) mb-1">
+                  No jobs found
+                </p>
+                <p className="text-sm text-(--browse-text-faint) max-w-xs text-center">
                   {searchTerm
                     ? `No jobs matching "${searchTerm}"`
                     : "No jobs available at the moment"}
@@ -576,7 +606,7 @@ const BrowseJobs = () => {
                 {(searchTerm || selectedCategories.length > 0) && (
                   <button
                     onClick={resetFilters}
-                    className="mt-4 text-sm text-[#c8884a] hover:text-[#e8e2d4] transition-colors"
+                    className="mt-4 text-sm text-(--browse-primary) hover:text-(--browse-text) transition-colors"
                   >
                     Clear filters
                   </button>
@@ -588,11 +618,11 @@ const BrowseJobs = () => {
 
         {/* ── Pagination ───────────────────────────────fi────────────────────── */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-1.5 py-4 border-[rgba(200,136,74,0.2)]">
+          <div className="flex items-center justify-center gap-1.5 py-4 border-(--browse-primary-border)">
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="w-8 h-8 rounded-md border border-[rgba(200,136,74,0.2)] flex items-center justify-center text-[#c8884a] hover:border-[#c8884a] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="w-8 h-8 rounded-md border border-(--browse-primary-border) flex items-center justify-center text-(--browse-primary) hover:border-(--browse-primary) disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <ChevronLeft size={14} />
             </button>
@@ -611,7 +641,7 @@ const BrowseJobs = () => {
             ))}
 
             {totalPages > 5 && (
-              <span className="text-[rgba(232,226,212,0.4)] text-sm px-1">
+              <span className="text-(--browse-text-disabled) text-sm px-1">
                 ...
               </span>
             )}
@@ -628,7 +658,7 @@ const BrowseJobs = () => {
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="w-8 h-8 rounded-md border border-[rgba(200,136,74,0.2)] flex items-center justify-center text-[#c8884a] hover:border-[#c8884a] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="w-8 h-8 rounded-md border border-(--browse-primary-border) flex items-center justify-center text-(--browse-primary) hover:border-(--browse-primary) disabled:opacity-30 disabled:cursor-not-allowed transition-all"
             >
               <ChevronRight size={14} />
             </button>

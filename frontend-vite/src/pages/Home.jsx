@@ -1,25 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Container,
-  Chip,
-  IconButton,
-  alpha,
-  Fade,
-} from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import {
   TrendingUp,
-  Category,
-  Star,
-  ArrowForward,
   WorkOutline,
   Groups,
   Speed,
@@ -27,9 +9,18 @@ import {
   Verified,
   EmojiEvents,
   Add,
-} from '@mui/icons-material';
-import { fetchJobs } from '../services/api';
-import Leaderboard from '../components/gamify/Leaderboard';
+  Star,
+  Category,
+  ArrowForward,
+  Shield,
+  Facebook,
+  Twitter,
+  LinkedIn,
+  Instagram,
+} from "@mui/icons-material";
+import { fetchJobs } from "../services/api";
+import Leaderboard from "../components/gamify/Leaderboard";
+import briefcaseImg from "../assets/bfcase_bg_img.png";
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
@@ -37,24 +28,24 @@ const Home = () => {
   const [loaded, setLoaded] = useState(false);
   const [featuredJobs, setFeaturedJobs] = useState([]);
 
-  // Helper to get 4 random jobs
   const getRandomJobs = (jobsArr, count = 4) => {
     if (!Array.isArray(jobsArr) || jobsArr.length === 0) return [];
-    const shuffled = jobsArr.slice().sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+    return jobsArr
+      .slice()
+      .sort(() => 0.5 - Math.random())
+      .slice(0, count);
   };
 
   useEffect(() => {
     const getJobs = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const data = await fetchJobs(token);
         setJobs(data);
-        // Set featured jobs once when data is loaded
         setFeaturedJobs(getRandomJobs(data));
         setLoaded(true);
       } catch (err) {
-        console.error('Error fetching jobs:', err);
+        console.error("Error fetching jobs:", err);
         setLoaded(true);
       }
     };
@@ -62,638 +53,592 @@ const Home = () => {
   }, []);
 
   const categories = [
-    { name: 'Web Development', icon: '💻', count: '124 jobs', color: '#A27B5C' },
-    { name: 'Graphic Design', icon: '🎨', count: '89 jobs', color: '#3F4E4F' },
-    { name: 'Writing & Translation', icon: '✍️', count: '156 jobs', color: '#2C3639' },
-    { name: 'Digital Marketing', icon: '📈', count: '102 jobs', color: '#A27B5C' },
+    { name: "Web Development", icon: "💻", count: "124 jobs" },
+    { name: "Graphic Design", icon: "🎨", count: "89 jobs" },
+    { name: "Writing & Translation", icon: "✍️", count: "156 jobs" },
+    { name: "Digital Marketing", icon: "📈", count: "102 jobs" },
   ];
 
   const stats = [
-    { number: '10K+', label: 'Active Freelancers', icon: <Groups /> },
-    { number: '5K+', label: 'Completed Jobs', icon: <Verified /> },
-    { number: '98%', label: 'Success Rate', icon: <EmojiEvents /> },
-    { number: '4.9/5', label: 'Client Rating', icon: <Star /> },
+    { number: "10K+", label: "Active Freelancers", Icon: Groups },
+    { number: "5K+", label: "Completed Jobs", Icon: Verified },
+    { number: "98%", label: "Success Rate", Icon: EmojiEvents },
+    { number: "4.9/5", label: "Client Rating", Icon: Star },
+  ];
+
+  const insights = [
+    { label: "Avg. Response Time", value: "2.3 hours", Icon: Speed },
+    { label: "Project Success Rate", value: "97.8%", Icon: EmojiEvents },
+    { label: "Active Freelancers", value: "12,458", Icon: Groups },
   ];
 
   return (
-    <Box sx={{ 
-      bgcolor: '#2C3639', 
-      color: '#DCD7C9', 
-      minHeight: '100vh',
-      position: 'relative',
-      overflow: 'hidden',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: `
-          radial-gradient(circle at 20% 20%, rgba(162, 123, 92, 0.08) 0%, transparent 30%),
-          radial-gradient(circle at 80% 80%, rgba(63, 78, 79, 0.1) 0%, transparent 30%)
-        `,
-        zIndex: 0,
-      }
-    }}>
-      {/* Enhanced Hero Section */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #A27B5C 0%, #8a6a50 100%)',
-          py: { xs: 10, md: 15 },
-          textAlign: 'center',
-          position: 'relative',
-          overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 50%)',
-          }
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "#0d1117", color: "#e6e6ef" }}
+    >
+      {/* ══════════════════════════════════════
+          HERO
+      ══════════════════════════════════════ */}
+      <section
+        className="relative overflow-hidden flex items-center "
+        style={{
+          backgroundImage: `url(${briefcaseImg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center right",
+          backgroundRepeat: "no-repeat",
+          minHeight: "calc(100vh - 64px)",
         }}
       >
-        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
-          <Fade in timeout={1000}>
-            <Box>
-              <Chip 
-                icon={<Star sx={{ color: '#2C3639 !important' }} />} 
-                label="Trusted by 50,000+ Businesses" 
-                sx={{ 
-                  bgcolor: 'rgba(44, 54, 57, 0.9)', 
-                  color: '#DCD7C9', 
-                  mb: 4,
-                  px: 2,
-                  py: 1,
-                  fontSize: '0.95rem',
-                  fontWeight: 'bold',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(220, 215, 201, 0.2)'
-                }} 
-              />
-              
-              <Typography 
-                variant="h2" 
-                sx={{ 
-                  color: '#2C3639', 
-                  mb: 3,
-                  fontWeight: 'bold',
-                  fontSize: { xs: '2.8rem', md: '4rem' },
-                  lineHeight: 1.1,
-                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-                }}
-              >
-                Hire Top Talent for Any Job — Fast
-              </Typography>
-              
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  color: 'rgba(44, 54, 57, 0.95)', 
-                  mb: 5,
-                  fontWeight: 400,
-                  fontSize: { xs: '1.2rem', md: '1.5rem' },
-                  maxWidth: '700px',
-                  mx: 'auto',
-                  lineHeight: 1.6
-                }}
-              >
-                Connect with skilled freelancers and businesses in minutes. 
-                Quality work delivered on time, every time.
-              </Typography>
-              
-              <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <Button
-                  component={RouterLink}
-                  to="/jobs"
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowForward />}
-                  sx={{
-                    bgcolor: '#2C3639',
-                    color: '#DCD7C9',
-                    px: 5,
-                    py: 2,
-                    borderRadius: '50px',
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    border: '3px solid #2C3639',
-                    minWidth: '180px',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      bgcolor: '#3F4E4F',
-                      borderColor: '#3F4E4F',
-                      transform: 'translateY(-3px)',
-                      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
-                    }
-                  }}
-                >
-                  Find Talent
-                </Button>
-                
-                <Button
-                  component={RouterLink}
-                  to="/post-job"
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    borderColor: '#2C3639',
-                    borderWidth: 3,
-                    color: '#2C3639',
-                    px: 5,
-                    py: 1.8,
-                    borderRadius: '50px',
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    minWidth: '180px',
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                    '&:hover': {
-                      bgcolor: 'rgba(44, 54, 57, 0.1)',
-                      borderColor: '#3F4E4F',
-                      transform: 'translateY(-3px)',
-                      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)'
-                    }
-                  }}
-                >
-                  Post a Job
-                </Button>
-              </Box>
-            </Box>
-          </Fade>
-        </Container>
-      </Box>
+        {/* Dark overlay so left text stays readable, fades out toward the right */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, rgba(13,17,23,0.97) 0%, rgba(13,17,23,0.85) 35%, rgba(13,17,23,0.4) 60%, rgba(13,17,23,0.05) 100%)",
+          }}
+        />
 
-      {/* Stats Section */}
-      <Box sx={{ py: 8, bgcolor: '#3F4E4F', position: 'relative' }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={4} justifyContent="center">
-            {stats.map((stat, index) => (
-              <Grid item xs={6} sm={3} key={index}>
-                <Fade in timeout={800} delay={index * 200}>
-                  <Box sx={{ textAlign: 'center', position: 'relative' }}>
-                    <Box sx={{ 
-                      color: '#A27B5C', 
-                      mb: 2,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      '& svg': {
-                        fontSize: '2.5rem'
-                      }
-                    }}>
-                      {stat.icon}
-                    </Box>
-                    <Typography 
-                      variant="h3" 
-                      sx={{ 
-                        color: '#DCD7C9',
-                        fontWeight: 'bold',
-                        mb: 1,
-                        textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
-                      }}
-                    >
-                      {stat.number}
-                    </Typography>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        color: '#A27B5C',
-                        fontWeight: 600,
-                        fontSize: '1.1rem'
-                      }}
-                    >
-                      {stat.label}
-                    </Typography>
-                  </Box>
-                </Fade>
-              </Grid>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 py-16 md:py-20">
+          {/* Left – text (max half-width so it doesn't cover the briefcase) */}
+          <div className="max-w-lg">
+            {/* Badge */}
+            <span
+              className="inline-flex items-center gap-2 text-sm font-bold px-4 py-1.5 rounded-full mb-6 border"
+              style={{
+                backgroundColor: "rgba(249,115,22,0.12)",
+                color: "#f97316",
+                borderColor: "rgba(249,115,22,0.25)",
+              }}
+            >
+              <Shield style={{ fontSize: "1rem", color: "#f97316" }} />
+              Trusted by 50,000+ Businesses
+            </span>
+
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight text-white mb-4">
+              Hire Top Talent
+              <br />
+              for Any Job — <span style={{ color: "#f97316" }}>Fast</span>
+            </h1>
+
+            <p
+              className="text-base leading-relaxed mb-8 max-w-sm"
+              style={{ color: "#8b8fa8" }}
+            >
+              Connect with skilled freelancers and businesses in minutes.
+              Quality work delivered on time, every time.
+            </p>
+
+            <div className="flex flex-wrap gap-3">
+              <RouterLink
+                to="/jobs"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-lg transition-all duration-200 hover:-translate-y-0.5"
+                style={{
+                  backgroundColor: "#f97316",
+                  boxShadow: "0 4px 20px rgba(249,115,22,0.35)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#ea6c0a";
+                  e.currentTarget.style.boxShadow =
+                    "0 6px 28px rgba(249,115,22,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#f97316";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 20px rgba(249,115,22,0.35)";
+                }}
+              >
+                Find Talent <ArrowForward style={{ fontSize: "1rem" }} />
+              </RouterLink>
+
+              <RouterLink
+                to="/post-job"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 border"
+                style={{
+                  color: "#e6e6ef",
+                  borderColor: "rgba(220,220,220,0.3)",
+                  backgroundColor: "rgba(0,0,0,0.3)",
+                  backdropFilter: "blur(4px)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#f97316";
+                  e.currentTarget.style.borderColor = "#f97316";
+                  e.currentTarget.style.backgroundColor =
+                    "rgba(249,115,22,0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#e6e6ef";
+                  e.currentTarget.style.borderColor = "rgba(220,220,220,0.3)";
+                  e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.3)";
+                }}
+              >
+                Post a Job
+              </RouterLink>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════
+          STATS BAR
+      ══════════════════════════════════════ */}
+      <section
+        className="border-b py-4"
+        style={{
+          backgroundColor: "#1e1e26",
+          borderColor: "rgba(200,136,74,0.18)",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {stats.map(({ number, label, Icon }, i) => (
+              <div key={i} className="text-center">
+                <div
+                  className="flex justify-center mb-2"
+                  style={{ color: "#f97316" }}
+                >
+                  <Icon style={{ fontSize: "1.8rem" }} />
+                </div>
+                <p className="text-white font-extrabold text-2xl leading-none">
+                  {number}
+                </p>
+                <p
+                  className="text-xs font-medium mt-1"
+                  style={{ color: "#8b8fa8" }}
+                >
+                  {label}
+                </p>
+              </div>
             ))}
-          </Grid>
-        </Container>
-      </Box>
+          </div>
+        </div>
+      </section>
 
-      {/* Main Content */}
-      <Box sx={{ py: 10 }}>
-        <Container maxWidth="lg">
-          <Grid container spacing={6}>
-            {/* Main Content */}
-            <Grid item xs={12} lg={8}>
-              {/* Featured Jobs Section */}
-              <Box id="featured" sx={{ mb: 10 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 5 }}>
-                  <Typography
-                    variant="h3"
-                    sx={{ 
-                      color: '#DCD7C9',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 2
-                    }}
+      {/* ══════════════════════════════════════
+          MAIN CONTENT
+      ══════════════════════════════════════ */}
+      <main className="max-w-7xl mx-auto px-6 py-10">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* ── Left column ── */}
+          <div className="flex-1 min-w-0">
+            {/* Featured Jobs */}
+            <div className="mb-10">
+              {/* Section header */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center"
+                    style={{ backgroundColor: "rgba(249,115,22,0.12)" }}
                   >
-                    <WorkOutline sx={{ color: '#A27B5C', fontSize: '2.5rem' }} />
+                    <WorkOutline
+                      style={{ color: "#f97316", fontSize: "1.2rem" }}
+                    />
+                  </div>
+                  <span className="text-white font-bold text-lg">
                     Featured Jobs
-                  </Typography>
-                  <Button
-                    component={RouterLink}
-                    to="/jobs"
-                    endIcon={<ArrowForward />}
-                    sx={{ 
-                      color: '#A27B5C',
-                      fontSize: '1.1rem',
-                      fontWeight: 'bold',
-                      '&:hover': {
-                        color: '#DCD7C9'
-                      }
+                  </span>
+                </div>
+                <RouterLink
+                  to="/jobs"
+                  className="flex items-center gap-1 text-sm font-semibold transition-colors duration-150 hover:text-white"
+                  style={{ color: "#f97316" }}
+                >
+                  View all jobs <ArrowForward style={{ fontSize: "0.9rem" }} />
+                </RouterLink>
+              </div>
+
+              {loaded && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {featuredJobs.length > 0 ? (
+                    featuredJobs.map((job) => (
+                      <RouterLink
+                        key={job._id}
+                        to={`/job/${job._id}`}
+                        className="block h-full no-underline"
+                        onMouseEnter={() => setHoveredCard(job._id)}
+                        onMouseLeave={() => setHoveredCard(null)}
+                      >
+                        <div
+                          className="rounded-2xl h-full border transition-all duration-200 overflow-hidden"
+                          style={{
+                            backgroundColor: "#1e1e26",
+                            borderColor:
+                              hoveredCard === job._id
+                                ? "rgba(200,136,74,0.55)"
+                                : "rgba(200,136,74,0.18)",
+                            transform:
+                              hoveredCard === job._id
+                                ? "translateY(-6px)"
+                                : "none",
+                            boxShadow:
+                              hoveredCard === job._id
+                                ? "0 12px 32px rgba(249,115,22,0.15)"
+                                : "none",
+                          }}
+                        >
+                          <div className="p-5">
+                            {/* Title + badge */}
+                            <div className="flex items-start justify-between gap-2 mb-1">
+                              <span className="text-white font-bold text-sm leading-snug flex-1">
+                                {job.title}
+                              </span>
+                              <span
+                                className="text-xs font-bold px-2 py-0.5 rounded-md shrink-0"
+                                style={{
+                                  backgroundColor:
+                                    job.status === "open"
+                                      ? "#f97316"
+                                      : "rgba(249,115,22,0.12)",
+                                  color:
+                                    job.status === "open" ? "#fff" : "#f97316",
+                                }}
+                              >
+                                {job.status}
+                              </span>
+                            </div>
+
+                            {/* Meta */}
+                            <p
+                              className="text-xs mb-3"
+                              style={{ color: "#8b8fa8" }}
+                            >
+                              Remote • Full Time
+                            </p>
+
+                            {/* Price */}
+                            <p
+                              className="font-extrabold text-xl mb-3"
+                              style={{ color: "#f97316" }}
+                            >
+                              {(job.currency || "USD") === "USD" ? "$" : "₱"}
+                              {(job.price || 0).toFixed(2)}
+                            </p>
+
+                            {/* Date */}
+                            <div className="flex items-center gap-1.5 mb-4">
+                              <AccessTime
+                                style={{
+                                  fontSize: "0.85rem",
+                                  color: "#8b8fa8",
+                                }}
+                              />
+                              <span
+                                className="text-xs"
+                                style={{ color: "#8b8fa8" }}
+                              >
+                                Posted{" "}
+                                {new Date(job.dateListed).toLocaleDateString()}
+                              </span>
+                            </div>
+
+                            {/* Footer */}
+                            <div
+                              className="flex items-center justify-between pt-3 border-t"
+                              style={{ borderColor: "rgba(200,136,74,0.18)" }}
+                            >
+                              <span
+                                className="flex items-center gap-1 text-xs"
+                                style={{ color: "#8b8fa8" }}
+                              >
+                                <Star
+                                  style={{
+                                    fontSize: "0.85rem",
+                                    color: "#f97316",
+                                  }}
+                                />
+                                4.8 • 12 proposals
+                              </span>
+                              <span
+                                className="w-2 h-2 rounded-full"
+                                style={{
+                                  backgroundColor:
+                                    job.status === "open"
+                                      ? "#22c55e"
+                                      : "#8b8fa8",
+                                  boxShadow:
+                                    job.status === "open"
+                                      ? "0 0 6px #22c55e"
+                                      : "none",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </RouterLink>
+                    ))
+                  ) : (
+                    <div className="col-span-2">
+                      <div
+                        className="rounded-2xl text-center py-14 border-2 border-dashed"
+                        style={{
+                          backgroundColor: "#1e1e26",
+                          borderColor: "#f97316",
+                        }}
+                      >
+                        <WorkOutline
+                          style={{
+                            fontSize: 48,
+                            color: "#f97316",
+                            opacity: 0.6,
+                            marginBottom: 12,
+                          }}
+                        />
+                        <p className="text-white font-bold mb-2">
+                          No featured jobs available
+                        </p>
+                        <p
+                          className="text-sm mb-6 max-w-xs mx-auto"
+                          style={{ color: "#8b8fa8" }}
+                        >
+                          Check back later for new opportunities or be the first
+                          to post a job
+                        </p>
+                        <RouterLink
+                          to="/post-job"
+                          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-white text-sm transition-colors duration-150"
+                          style={{ backgroundColor: "#f97316" }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor = "#ea6c0a")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor = "#f97316")
+                          }
+                        >
+                          <Add style={{ fontSize: "1rem" }} />
+                          Post Your First Job
+                        </RouterLink>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Popular Categories */}
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center"
+                  style={{ backgroundColor: "rgba(249,115,22,0.12)" }}
+                >
+                  <Category style={{ color: "#f97316", fontSize: "1.2rem" }} />
+                </div>
+                <span className="text-white font-bold text-lg">
+                  Popular Categories
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {categories.map((cat, i) => (
+                  <div
+                    key={i}
+                    className="relative rounded-2xl border cursor-pointer transition-all duration-200 overflow-hidden group"
+                    style={{
+                      backgroundColor: "#1e1e26",
+                      borderColor: "rgba(200,136,74,0.18)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#f97316";
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.boxShadow =
+                        "0 10px 28px rgba(249,115,22,0.15)";
+                      e.currentTarget.style.backgroundColor = "#252530";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor =
+                        "rgba(200,136,74,0.18)";
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.backgroundColor = "#1e1e26";
                     }}
                   >
-                    View All Jobs
-                  </Button>
-                </Box>
-                
-                {loaded && (
-                  <Grid container spacing={4}>
-                    {featuredJobs.length > 0 ? (
-                      featuredJobs.map((job, index) => (
-                        <Grid item xs={12} sm={6} key={job._id}>
-                          <Fade in timeout={600} delay={index * 100}>
-                            <RouterLink to={`/job/${job._id}`} style={{ textDecoration: 'none' }}>
-                              <Card
-                                onMouseEnter={() => setHoveredCard(job._id)}
-                                onMouseLeave={() => setHoveredCard(null)}
-                                sx={{
-                                  bgcolor: '#3F4E4F',
-                                  color: '#DCD7C9',
-                                  cursor: 'pointer',
-                                  border: '2px solid rgba(162, 123, 92, 0.3)',
-                                  height: '100%',
-                                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                                  transform: hoveredCard === job._id ? 'translateY(-12px) scale(1.02)' : 'translateY(0) scale(1)',
-                                  position: 'relative',
-                                  overflow: 'hidden',
-                                  '&::before': {
-                                    content: '""',
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    height: '6px',
-                                    background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-                                    zIndex: 1,
-                                  }
-                                }}
-                              >
-                                <CardContent sx={{ p: 3.5 }}>
-                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2.5 }}>
-                                    <Typography 
-                                      variant="h5" 
-                                      sx={{ 
-                                        color: '#DCD7C9',
-                                        fontWeight: 700,
-                                        lineHeight: 1.3,
-                                        minHeight: '3.5rem'
-                                      }}
-                                    >
-                                      {job.title}
-                                    </Typography>
-                                    <Chip 
-                                      label={job.status} 
-                                      size="small"
-                                      sx={{ 
-                                        bgcolor: job.status === 'open' ? '#A27B5C' : 'rgba(162, 123, 92, 0.3)',
-                                        color: job.status === 'open' ? '#2C3639' : '#DCD7C9',
-                                        fontWeight: 'bold',
-                                        fontSize: '0.75rem',
-                                        height: '24px'
-                                      }}
-                                    />
-                                  </Box>
-                                  
-                                  <Typography 
-                                    variant="h4" 
-                                    sx={{ 
-                                      color: '#A27B5C',
-                                      fontWeight: 'bold',
-                                      mb: 2.5
-                                    }}
-                                  >
-                                    {(job.currency || 'USD') === 'USD' ? '$' : '₱'}{(job.price || 0).toFixed(2)}
-                                  </Typography>
-                                  
-                                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                                    <AccessTime sx={{ fontSize: '1rem', color: '#A27B5C' }} />
-                                    <Typography 
-                                      variant="body2" 
-                                      sx={{ 
-                                        color: 'rgba(220, 215, 201, 0.8)',
-                                      }}
-                                    >
-                                      Posted {new Date(job.dateListed).toLocaleDateString()}
-                                    </Typography>
-                                  </Box>
-                                  
-                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 3 }}>
-                                    <Typography 
-                                      variant="body2" 
-                                      sx={{ 
-                                        color: 'rgba(220, 215, 201, 0.8)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 0.5
-                                      }}
-                                    >
-                                      <Star sx={{ fontSize: '1rem', color: '#A27B5C' }} /> 4.8 • 12 proposals
-                                    </Typography>
-                                    <Box
-                                      sx={{
-                                        width: 10,
-                                        height: 10,
-                                        borderRadius: '50%',
-                                        bgcolor: job.status === 'open' ? '#A27B5C' : 'rgba(162, 123, 92, 0.5)',
-                                        animation: job.status === 'open' ? 'pulse 2s infinite' : 'none',
-                                        '@keyframes pulse': {
-                                          '0%': { opacity: 1 },
-                                          '50%': { opacity: 0.5 },
-                                          '100%': { opacity: 1 },
-                                        }
-                                      }}
-                                    />
-                                  </Box>
-                                </CardContent>
-                              </Card>
-                            </RouterLink>
-                          </Fade>
-                        </Grid>
-                      ))
-                    ) : (
-                      <Grid item xs={12}>
-                        <Fade in>
-                          <Card sx={{ 
-                            textAlign: 'center', 
-                            py: 8, 
-                            bgcolor: 'rgba(63, 78, 79, 0.5)',
-                            border: '2px dashed #A27B5C',
-                            borderRadius: 3
-                          }}>
-                            <CardContent>
-                              <WorkOutline sx={{ fontSize: 60, color: '#A27B5C', mb: 3, opacity: 0.7 }} />
-                              <Typography variant="h4" sx={{ color: '#DCD7C9', mb: 2, fontWeight: 'bold' }}>
-                                No featured jobs available
-                              </Typography>
-                              <Typography variant="body1" sx={{ color: 'rgba(220, 215, 201, 0.7)', mb: 4, maxWidth: 400, mx: 'auto' }}>
-                                Check back later for new opportunities or be the first to post a job
-                              </Typography>
-                              <Button 
-                                variant="contained" 
-                                component={RouterLink} 
-                                to="/post-job"
-                                startIcon={<Add />}
-                                sx={{
-                                  bgcolor: '#A27B5C',
-                                  color: '#2C3639',
-                                  px: 4,
-                                  py: 1.5,
-                                  fontWeight: 'bold',
-                                  fontSize: '1.1rem',
-                                  '&:hover': {
-                                    bgcolor: '#8a6a50',
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: '0 8px 24px rgba(162, 123, 92, 0.4)',
-                                  }
-                                }}
-                              >
-                                Post Your First Job
-                              </Button>
-                            </CardContent>
-                          </Card>
-                        </Fade>
-                      </Grid>
-                    )}
-                  </Grid>
-                )}
-              </Box>
+                    {/* Open badge */}
+                    <span
+                      className="absolute top-2.5 right-2.5 text-white font-bold text-xs px-1.5 py-0.5 rounded-md"
+                      style={{ backgroundColor: "#f97316", fontSize: "0.6rem" }}
+                    >
+                      Open
+                    </span>
+                    <div className="p-5 text-center">
+                      <span className="text-4xl block mb-3 transition-transform duration-200 group-hover:scale-110">
+                        {cat.icon}
+                      </span>
+                      <p className="text-white font-bold text-sm mb-1">
+                        {cat.name}
+                      </p>
+                      <p
+                        className="font-bold text-xs"
+                        style={{ color: "#f97316" }}
+                      >
+                        {cat.count}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
 
-              {/* Categories Section */}
-              <Box id="categories">
-                <Typography
-                  variant="h3"
-                  sx={{ 
-                    color: '#DCD7C9',
-                    textAlign: 'center',
-                    mb: 6,
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 2
-                  }}
+          {/* ── Right sidebar ── */}
+          <div className="w-full lg:w-80 xl:w-96 shrink-0">
+            <div className="sticky top-24 flex flex-col gap-4">
+              {/* Leaderboard card */}
+              <div
+                className="rounded-2xl border overflow-hidden"
+                style={{
+                  backgroundColor: "#1e1e26",
+                  borderColor: "rgba(200,136,74,0.18)",
+                }}
+              >
+                <div
+                  className="flex items-center gap-3 px-5 py-4 border-b"
+                  style={{ borderColor: "rgba(200,136,74,0.18)" }}
                 >
-                  <Category sx={{ color: '#A27B5C', fontSize: '2.5rem' }} />
-                  Popular Categories
-                </Typography>
-                <Grid container spacing={4}>
-                  {categories.map((category, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Fade in timeout={600} delay={index * 100}>
-                        <Card 
-                          sx={{ 
-                            bgcolor: '#3F4E4F',
-                            color: '#DCD7C9',
-                            cursor: 'pointer',
-                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                            border: '2px solid rgba(162, 123, 92, 0.3)',
-                            height: '100%',
-                            '&:hover': {
-                              transform: 'translateY(-8px)',
-                              borderColor: '#A27B5C',
-                              boxShadow: '0 16px 40px rgba(162, 123, 92, 0.3)',
-                              '& .category-icon': {
-                                transform: 'scale(1.1) rotate(5deg)',
-                              }
-                            }
-                          }}
-                        >
-                          <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                            <Typography 
-                              variant="h1" 
-                              className="category-icon"
-                              sx={{ 
-                                mb: 3,
-                                transition: 'transform 0.3s ease',
-                                fontSize: '4rem',
-                                lineHeight: 1
-                              }}
-                            >
-                              {category.icon}
-                            </Typography>
-                            <Typography 
-                              variant="h5" 
-                              sx={{ 
-                                color: '#DCD7C9',
-                                mb: 2,
-                                fontWeight: 700,
-                                minHeight: '3rem'
-                              }}
-                            >
-                              {category.name}
-                            </Typography>
-                            <Typography 
-                              variant="h6" 
-                              sx={{ 
-                                color: '#A27B5C',
-                                fontWeight: 'bold',
-                                fontSize: '1.2rem'
-                              }}
-                            >
-                              {category.count}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Fade>
-                    </Grid>
+                  <TrendingUp
+                    style={{ color: "#f97316", fontSize: "1.2rem" }}
+                  />
+                  <span className="text-white font-bold text-base">
+                    Top Users by XP
+                  </span>
+                </div>
+                <Leaderboard />
+              </div>
+
+              {/* Platform Insights card */}
+              <div
+                className="rounded-2xl border overflow-hidden"
+                style={{
+                  backgroundColor: "#1e1e26",
+                  borderColor: "rgba(200,136,74,0.18)",
+                }}
+              >
+                <div
+                  className="flex items-center gap-3 px-5 py-4 border-b"
+                  style={{ borderColor: "rgba(200,136,74,0.18)" }}
+                >
+                  <TrendingUp
+                    style={{ color: "#f97316", fontSize: "1.2rem" }}
+                  />
+                  <span className="text-white font-bold text-base">
+                    Platform Insights
+                  </span>
+                </div>
+                <div className="px-5 py-2">
+                  {insights.map(({ label, value, Icon }, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between py-3.5"
+                      style={{
+                        borderBottom:
+                          i < insights.length - 1
+                            ? "1px solid rgba(200,136,74,0.18)"
+                            : "none",
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon
+                          style={{ color: "#f97316", fontSize: "1.1rem" }}
+                        />
+                        <span className="text-sm" style={{ color: "#8b8fa8" }}>
+                          {label}
+                        </span>
+                      </div>
+                      <span className="text-white font-bold text-sm">
+                        {value}
+                      </span>
+                    </div>
                   ))}
-                </Grid>
-              </Box>
-            </Grid>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
 
-            {/* Sidebar */}
-            <Grid item xs={12} lg={4}>
-              <Box sx={{ position: 'sticky', top: 100 }}>
-                <Fade in timeout={800} delay={400}>
-                  <Box>
-                    <Leaderboard />
-                    
-                    {/* Quick Stats Card */}
-                    <Card sx={{ 
-                      bgcolor: '#3F4E4F', 
-                      mt: 4, 
-                      border: '2px solid #A27B5C',
-                      borderRadius: 3,
-                      position: 'relative',
-                      overflow: 'hidden',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: '4px',
-                        background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-                      }
-                    }}>
-                      <CardContent sx={{ p: 3.5 }}>
-                        <Typography 
-                          variant="h5" 
-                          sx={{ 
-                            color: '#DCD7C9',
-                            mb: 3,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1.5,
-                            fontWeight: 'bold'
-                          }}
-                        >
-                          <TrendingUp sx={{ color: '#A27B5C' }} />
-                          Platform Insights
-                        </Typography>
-                        <Box sx={{ space: 2 }}>
-                          {[
-                            { label: 'Avg. Response Time', value: '2.3 hours', icon: <Speed /> },
-                            { label: 'Project Success Rate', value: '97.8%', icon: <EmojiEvents /> },
-                            { label: 'Active Freelancers', value: '12,458', icon: <Groups /> },
-                          ].map((stat, index) => (
-                            <Box key={index} sx={{ 
-                              display: 'flex', 
-                              justifyContent: 'space-between', 
-                              alignItems: 'center',
-                              py: 1.5,
-                              borderBottom: index < 2 ? '1px solid rgba(162, 123, 92, 0.2)' : 'none'
-                            }}>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                <Box sx={{ color: '#A27B5C' }}>
-                                  {stat.icon}
-                                </Box>
-                                <Typography variant="body1" sx={{ color: 'rgba(220, 215, 201, 0.9)' }}>
-                                  {stat.label}
-                                </Typography>
-                              </Box>
-                              <Typography variant="body1" sx={{ color: '#DCD7C9', fontWeight: 'bold' }}>
-                                {stat.value}
-                              </Typography>
-                            </Box>
-                          ))}
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Box>
-                </Fade>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* Enhanced Footer */}
-      <Box
-        component="footer"
-        sx={{
-          textAlign: 'center',
-          py: 6,
-          bgcolor: '#2C3639',
-          color: '#DCD7C9',
-          borderTop: '2px solid #A27B5C',
-          position: 'relative',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '6px',
-            background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-          }
+      {/* ══════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════ */}
+      <footer
+        className="border-t text-center py-10"
+        style={{
+          backgroundColor: "#161b22",
+          borderColor: "rgba(200,136,74,0.18)",
         }}
       >
-        <Container maxWidth="lg">
-          <Typography variant="h4" sx={{ mb: 3, color: '#A27B5C', fontWeight: 'bold' }}>
-            PBuild
-          </Typography>
-          <Typography variant="h6" sx={{ mb: 3, color: '#DCD7C9', maxWidth: 600, mx: 'auto', lineHeight: 1.6 }}>
-            Building the future of freelance collaboration and professional connections
-          </Typography>
-          
-          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mb: 4, flexWrap: 'wrap' }}>
-            {['About', 'Privacy Policy', 'Terms of Service', 'Contact', 'Help Center'].map((item) => (
-              <Typography 
-                key={item} 
-                variant="body1" 
-                sx={{ 
-                  color: 'rgba(220, 215, 201, 0.8)',
-                  cursor: 'pointer',
-                  fontWeight: 500,
-                  transition: 'color 0.2s ease',
-                  '&:hover': { 
-                    color: '#A27B5C',
-                    textDecoration: 'underline' 
-                  }
-                }}
+        <div className="max-w-7xl mx-auto px-6">
+          {/* Brand */}
+          <p className="text-2xl font-black tracking-tight mb-3">
+            <span style={{ color: "#f97316" }}>P</span>
+            <span className="text-white">Build</span>
+          </p>
+
+          <p
+            className="text-sm leading-relaxed mb-6 max-w-md mx-auto"
+            style={{ color: "#8b8fa8" }}
+          >
+            Building the future of freelance collaboration and professional
+            connections.
+          </p>
+
+          {/* Nav links */}
+          <div className="flex flex-wrap justify-center gap-6 mb-6">
+            {[
+              "About",
+              "Privacy Policy",
+              "Terms of Service",
+              "Contact",
+              "Help Center",
+            ].map((item) => (
+              <span
+                key={item}
+                className="text-sm cursor-pointer transition-colors duration-150 hover:text-orange-400"
+                style={{ color: "#8b8fa8" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#f97316")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#8b8fa8")}
               >
                 {item}
-              </Typography>
+              </span>
             ))}
-          </Box>
-          
-          <Typography variant="body2" sx={{ 
-            color: 'rgba(220, 215, 201, 0.6)',
-            pt: 3,
-            borderTop: '1px solid rgba(162, 123, 92, 0.3)'
-          }}>
-            © {new Date().getFullYear()} PBuild. Connecting talent with opportunity. All rights reserved.
-          </Typography>
-        </Container>
-      </Box>
-    </Box>
+          </div>
+
+          {/* Social icons */}
+          <div className="flex justify-center gap-3 mb-8">
+            {[Facebook, Twitter, LinkedIn, Instagram].map((Icon, i) => (
+              <button
+                key={i}
+                className="w-9 h-9 rounded-lg border flex items-center justify-center transition-all duration-150"
+                style={{
+                  borderColor: "rgba(200,136,74,0.18)",
+                  color: "#8b8fa8",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#f97316";
+                  e.currentTarget.style.borderColor = "#f97316";
+                  e.currentTarget.style.backgroundColor =
+                    "rgba(249,115,22,0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "#8b8fa8";
+                  e.currentTarget.style.borderColor = "rgba(200,136,74,0.18)";
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
+              >
+                <Icon style={{ fontSize: "1rem" }} />
+              </button>
+            ))}
+          </div>
+
+          {/* Copyright */}
+          <p
+            className="text-xs pt-6 border-t"
+            style={{ color: "#8b8fa8", borderColor: "rgba(200,136,74,0.18)" }}
+          >
+            © {new Date().getFullYear()} PBuild. Connecting talent with
+            opportunity. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    </div>
   );
 };
 
