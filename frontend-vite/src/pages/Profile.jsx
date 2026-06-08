@@ -268,7 +268,7 @@ const Profile = () => {
 
           {/* Level Bar */}
           <div className="mt-2 rounded-xl p-4">
-            <LevelBar xp={profile.xp || 84} level={profile.level || 1} />
+            <LevelBar xp={profile.xp || 0} level={profile.level || 1} />
           </div>
 
           {/* Tabs */}

@@ -31,6 +31,7 @@ import {
   Palette,
   Smartphone,
   BarChart2,
+  ChevronDown,
 } from "lucide-react";
 
 // ─── constants (outside component — no re-creation on render) ────────────────
@@ -91,9 +92,21 @@ const QUICK_LINKS = [
 ];
 
 const COMPOSER_ACTIONS = [
-  { icon: Image, label: "Photo" },
-  { icon: Film, label: "Video" },
-  { icon: Bell, label: "Job Update" },
+  {
+    icon: Image,
+    label: "Photo",
+    color: "text-emerald-400",
+  },
+  {
+    icon: Film,
+    label: "Video",
+    color: "text-violet-400",
+  },
+  {
+    icon: Bell,
+    label: "Job Update",
+    color: "text-amber-400",
+  },
 ];
 
 const BADGE_CONFIG = [
@@ -338,19 +351,68 @@ const SocialMedia = () => {
     "flex items-center gap-1.5 border border-[rgba(200,136,74,0.3)] text-[#e8e2d4] font-medium rounded-lg transition-colors " +
     "hover:border-[#c8884a] hover:text-[#c8884a]";
 
-  // ── sidebar scroll style (hidden scrollbar) ───────────────────────────────
-  const sidebarScroll =
-    "hidden lg:flex flex-col gap-4 sticky top-6 self-start " +
-    "h-[calc(100vh-3rem)] overflow-y-auto " +
-    "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden";
-
-  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e8e2d4]">
-      <div className="max-w-350 mx-auto px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_280px] gap-5 items-start">
+      <div className="max-w-6xl mx-auto py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6">
           {/* ══════════ LEFT SIDEBAR ══════════ */}
-          <aside className={`${sidebarScroll} pr-1`}>
+          <aside className="hidden lg:flex flex-col gap-4 flex-1 sticky top-0">
+            {/* Your Profile */}
+            <SideCard>
+              <div className="p-7">
+                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
+                  Your Profile
+                </p>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-13 h-13 rounded-full bg-linear-to-br from-[#c8884a] to-[#b07a40] flex items-center justify-center text-[#1a1008] text-xl font-bold shrink-0 ring-2 ring-[#c8884a]/25 select-none">
+                    {userInitial}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-[#f0e8d8] truncate">
+                      {user?.name ?? "Guest User"}
+                    </p>
+                    <p className="text-xs text-[#c8884a] font-medium mt-0.5">
+                      {isLoggedIn ? "Active member" : "Visitor"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* XP bar */}
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className="text-[#e8e2d4] font-semibold">Level 12</span>
+                  <span className="text-[rgba(232,226,212,0.45)]">
+                    2,350 XP
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-[#141418] rounded-full overflow-hidden mb-1">
+                  <div
+                    className="h-full bg-linear-to-r from-[#c8884a] to-[#d6a464] rounded-full transition-all duration-500"
+                    style={{ width: "78%" }}
+                  />
+                </div>
+                <p className="text-[rgba(232,226,212,0.4)] text-xs">
+                  2,350 / 3,000 XP
+                </p>
+
+                <Divider />
+
+                {/* Badges */}
+                <div className="flex items-center justify-between mb-2 mt-1">
+                  <span className="text-xs font-semibold text-[#e8e2d4]">
+                    Badges
+                  </span>
+                  <button className="text-[#c8884a] text-xs font-medium hover:underline">
+                    View all
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  {BADGE_CONFIG.map(({ icon, color }) => (
+                    <BadgeTile key={color} icon={icon} color={color} />
+                  ))}
+                </div>
+              </div>
+            </SideCard>
+
             {/* Trending Topics */}
             <SideCard>
               <SideCardHeader>
@@ -449,181 +511,6 @@ const SocialMedia = () => {
                 </div>
               </div>
             </SideCard>
-          </aside>
-
-          {/* ══════════ MAIN FEED ══════════ */}
-          <main className="min-w-0 flex flex-col gap-4">
-            {/* Page header */}
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[rgba(200,136,74,0.15)] rounded-xl flex items-center justify-center shrink-0">
-                  {selectedGroup ? (
-                    <MessageSquare size={19} className="text-[#c8884a]" />
-                  ) : (
-                    <Rss size={19} className="text-[#c8884a]" />
-                  )}
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#f0e8d8] leading-tight">
-                    {selectedGroup
-                      ? (selectedGroupData?.name ?? "Forum")
-                      : "Social Media Feed"}
-                  </h1>
-                  <p className="text-[rgba(232,226,212,0.55)] text-xs mt-0.5">
-                    {selectedGroup
-                      ? (selectedGroupData?.description ?? "Group discussions")
-                      : "Share updates, connect with others, and join conversations"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 flex-wrap justify-end">
-                <Link
-                  to="/videos"
-                  className={`${btnOutline} text-sm px-4 py-2`}
-                >
-                  <Video size={14} />
-                  View Videos
-                </Link>
-                {isLoggedIn && (
-                  <button
-                    onClick={() => setOpenCreate(true)}
-                    className={`${btnPrimary} text-sm px-4 py-2`}
-                  >
-                    <Plus size={14} />
-                    {selectedGroup ? "Create Thread" : "Create Post"}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Post composer */}
-            <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-full bg-[#c8884a] flex items-center justify-center text-[#1a1008] font-bold text-sm shrink-0 select-none">
-                  {userInitial}
-                </div>
-                <button
-                  onClick={() => isLoggedIn && setOpenCreate(true)}
-                  className="flex-1 bg-[#141418] border border-[rgba(200,136,74,0.2)] rounded-xl px-4 py-2.5 text-[rgba(232,226,212,0.45)] text-sm text-left hover:border-[rgba(200,136,74,0.4)] transition-colors"
-                >
-                  What's on your mind?
-                </button>
-              </div>
-              <div className="flex items-center justify-between gap-3 pt-3 border-t border-[rgba(200,136,74,0.15)]">
-                <div className="flex flex-wrap gap-1">
-                  {COMPOSER_ACTIONS.map(({ icon: Icon, label }) => (
-                    <button
-                      key={label}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[rgba(232,226,212,0.55)] text-xs font-medium hover:bg-[rgba(200,136,74,0.1)] hover:text-[#e8e2d4] transition-colors"
-                    >
-                      <Icon size={13} className="text-[#c8884a]" />
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() => isLoggedIn && setOpenCreate(true)}
-                  className={`${btnPrimary} text-xs px-4 py-1.5`}
-                >
-                  Post
-                </button>
-              </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl px-4">
-              <div className="flex items-center justify-between gap-3 overflow-x-auto">
-                <nav className="flex min-w-max" aria-label="Feed tabs">
-                  {TABS.map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => setActiveTab(tab.key)}
-                      className={`px-4 py-3.5 text-sm font-medium border-b-2 transition-colors
-                        ${
-                          activeTab === tab.key
-                            ? "border-[#c8884a] text-[#c8884a]"
-                            : "border-transparent text-[rgba(232,226,212,0.55)] hover:text-[#e8e2d4]"
-                        }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </nav>
-                <button className="flex items-center gap-1.5 text-[rgba(232,226,212,0.55)] text-xs border border-[rgba(200,136,74,0.2)] px-3 py-1.5 rounded-lg hover:border-[#c8884a] hover:text-[#e8e2d4] transition-colors shrink-0">
-                  <Filter size={12} />
-                  Filter
-                </button>
-              </div>
-            </div>
-
-            {/* Posts */}
-            <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl overflow-hidden">
-              <Posts
-                refreshTrigger={refreshPosts}
-                type={selectedGroup ? "thread" : "post"}
-                groupId={selectedGroup}
-              />
-            </div>
-          </main>
-
-          {/* ══════════ RIGHT SIDEBAR ══════════ */}
-          <aside className={`${sidebarScroll} pl-1`}>
-            {/* Your Profile */}
-            <SideCard>
-              <div className="p-4">
-                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
-                  Your Profile
-                </p>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-13 h-13 rounded-full bg-linear-to-br from-[#c8884a] to-[#b07a40] flex items-center justify-center text-[#1a1008] text-xl font-bold shrink-0 ring-2 ring-[#c8884a]/25 select-none">
-                    {userInitial}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-[#f0e8d8] truncate">
-                      {user?.name ?? "Guest User"}
-                    </p>
-                    <p className="text-xs text-[#c8884a] font-medium mt-0.5">
-                      {isLoggedIn ? "Active member" : "Visitor"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* XP bar */}
-                <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="text-[#e8e2d4] font-semibold">Level 12</span>
-                  <span className="text-[rgba(232,226,212,0.45)]">
-                    2,350 XP
-                  </span>
-                </div>
-                <div className="w-full h-1.5 bg-[#141418] rounded-full overflow-hidden mb-1">
-                  <div
-                    className="h-full bg-linear-to-r from-[#c8884a] to-[#d6a464] rounded-full transition-all duration-500"
-                    style={{ width: "78%" }}
-                  />
-                </div>
-                <p className="text-[rgba(232,226,212,0.4)] text-xs">
-                  2,350 / 3,000 XP
-                </p>
-
-                <Divider />
-
-                {/* Badges */}
-                <div className="flex items-center justify-between mb-2 mt-1">
-                  <span className="text-xs font-semibold text-[#e8e2d4]">
-                    Badges
-                  </span>
-                  <button className="text-[#c8884a] text-xs font-medium hover:underline">
-                    View all
-                  </button>
-                </div>
-                <div className="flex gap-2">
-                  {BADGE_CONFIG.map(({ icon, color }) => (
-                    <BadgeTile key={color} icon={icon} color={color} />
-                  ))}
-                </div>
-              </div>
-            </SideCard>
 
             {/* Community Stats */}
             <SideCard>
@@ -691,6 +578,138 @@ const SocialMedia = () => {
               </div>
             </SideCard>
           </aside>
+
+          {/* ══════════ MAIN FEED ══════════ */}
+          <main className=" flex flex-col gap-4 ">
+            {/* Page header */}
+            <div
+              className="rounded-2xl p-4 relative overflow-hidden border border-(--browse-border-white-subtle)"
+              style={{
+                background: "var(--browse-panel-gradient)",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-[rgba(200,136,74,0.15)] rounded-xl flex items-center justify-center shrink-0">
+                  {selectedGroup ? (
+                    <MessageSquare size={19} className="text-[#c8884a]" />
+                  ) : (
+                    <Rss size={19} className="text-[#c8884a]" />
+                  )}
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-(--browse-text-strong)">
+                    {selectedGroup
+                      ? (selectedGroupData?.name ?? "Forum")
+                      : "Social Media Feed"}
+                  </h1>
+                  <p className=" text-xs text-(--browse-primary)">
+                    {selectedGroup
+                      ? (selectedGroupData?.description ?? "Group discussions")
+                      : "Share updates, connect with others, and join conversations"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <Link
+                  to="/videos"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-soft) transition-colors no-underline"
+                >
+                  <Video size={15} />
+                  View Videos
+                </Link>
+                {isLoggedIn && (
+                  <button
+                    onClick={() => setOpenCreate(true)}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-hover) transition-colors"
+                  >
+                    <Plus size={14} />
+                    {selectedGroup ? "Create Thread" : "Create Post"}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Post composer */}
+            <div
+              className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-4"
+              style={{
+                background: "var(--browse-panel-gradient)",
+              }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-full bg-[#c8884a] flex items-center justify-center text-[#1a1008] font-bold text-sm shrink-0 select-none">
+                  {userInitial}
+                </div>
+                <button
+                  onClick={() => isLoggedIn && setOpenCreate(true)}
+                  className="flex-1 bg-[#141418] border border-[rgba(200,136,74,0.2)] rounded-xl px-4 py-4 text-[rgba(232,226,212,0.45)] text-sm text-left hover:border-[rgba(200,136,74,0.4)] transition-colors"
+                >
+                  What's on your mind?
+                </button>
+              </div>
+              <div className="flex items-center justify-between gap-3 pl-12  border-[rgba(200,136,74,0.15)]">
+                <div className="flex flex-wrap gap-1">
+                  {COMPOSER_ACTIONS.map(({ icon: Icon, label, color }) => (
+                    <button
+                      key={label}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[rgba(232,226,212,0.55)] text-sm font-medium hover:bg-[rgba(200,136,74,0.1)] hover:text-[#e8e2d4] transition-colors"
+                    >
+                      <Icon size={20} className={color} />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => isLoggedIn && setOpenCreate(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-hover) transition-colors"
+                >
+                  Post
+                </button>
+              </div>
+            </div>
+
+            {/* Tabs */}
+            <div
+              className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl px-4"
+              style={{
+                background: "var(--browse-panel-gradient)",
+              }}
+            >
+              <div className="flex items-center justify-between gap-3 overflow-x-auto">
+                <nav className="flex min-w-max" aria-label="Feed tabs">
+                  {TABS.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`px-4 py-3.5 text-sm font-medium border-b-2 transition-colors
+                        ${
+                          activeTab === tab.key
+                            ? "border-[#c8884a] text-[#c8884a]"
+                            : "border-transparent text-[rgba(232,226,212,0.55)] hover:text-[#e8e2d4]"
+                        }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </nav>
+                <button className="flex items-center gap-1.5 text-[rgba(232,226,212,0.55)] text-xs border border-[rgba(200,136,74,0.2)] px-3 py-1.5 rounded-lg hover:border-[#c8884a] hover:text-[#e8e2d4] transition-colors shrink-0">
+                  <Filter size={12} />
+                  Filter
+                  <ChevronDown size={12} />
+                </button>
+              </div>
+            </div>
+
+            {/* Posts */}
+            <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl overflow-hidden p-2">
+              <Posts
+                refreshTrigger={refreshPosts}
+                type={selectedGroup ? "thread" : "post"}
+                groupId={selectedGroup}
+              />
+            </div>
+          </main>
         </div>
       </div>
 
