@@ -189,21 +189,21 @@ const Home = () => {
           borderColor: "rgba(200,136,74,0.18)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {stats.map(({ number, label, Icon }, i) => (
               <div key={i} className="text-center">
                 <div
-                  className="flex justify-center mb-2"
+                  className="flex justify-center mb-1"
                   style={{ color: "#f97316" }}
                 >
-                  <Icon style={{ fontSize: "1.8rem" }} />
+                  <Icon style={{ fontSize: "1.5rem" }} />
                 </div>
-                <p className="text-white font-extrabold text-2xl leading-none">
+                <p className="text-white font-extrabold text-1xl leading-none">
                   {number}
                 </p>
                 <p
-                  className="text-xs font-medium mt-1"
+                  className="text-sm font-medium mt-1"
                   style={{ color: "#8b8fa8" }}
                 >
                   {label}
