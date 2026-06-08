@@ -413,34 +413,6 @@ const SocialMedia = () => {
               </div>
             </SideCard>
 
-            {/* Trending Topics */}
-            <SideCard>
-              <SideCardHeader>
-                <span className="flex items-center gap-2 text-[#f0e8d8] font-semibold text-sm">
-                  <TrendingUp size={14} className="text-[#c8884a]" />
-                  Trending Topics
-                </span>
-                <button className="text-[#c8884a] text-xs font-medium hover:underline">
-                  View all
-                </button>
-              </SideCardHeader>
-              <ul className="px-3 pb-4 space-y-0.5">
-                {TRENDING_TOPICS.map(([topic, count]) => (
-                  <li key={topic}>
-                    <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors">
-                      <span className="flex items-center gap-2 text-[#e8e2d4] text-sm">
-                        <Hash size={12} className="text-[#c8884a]" />
-                        {topic}
-                      </span>
-                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
-                        {count}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </SideCard>
-
             {/* Forum Groups */}
             <SideCard>
               <SideCardHeader>
@@ -510,6 +482,34 @@ const SocialMedia = () => {
                   </Link>
                 </div>
               </div>
+            </SideCard>
+
+            {/* Trending Topics */}
+            <SideCard>
+              <SideCardHeader>
+                <span className="flex items-center gap-2 text-[#f0e8d8] font-semibold text-sm">
+                  <TrendingUp size={14} className="text-[#c8884a]" />
+                  Trending Topics
+                </span>
+                <button className="text-[#c8884a] text-xs font-medium hover:underline">
+                  View all
+                </button>
+              </SideCardHeader>
+              <ul className="px-3 pb-4 space-y-0.5">
+                {TRENDING_TOPICS.map(([topic, count]) => (
+                  <li key={topic}>
+                    <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors">
+                      <span className="flex items-center gap-2 text-[#e8e2d4] text-sm">
+                        <Hash size={12} className="text-[#c8884a]" />
+                        {topic}
+                      </span>
+                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
+                        {count}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </SideCard>
 
             {/* Community Stats */}

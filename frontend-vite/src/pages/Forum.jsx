@@ -24,6 +24,8 @@ import {
   Rocket,
   Activity,
   Filter,
+  Search,
+  ChevronDown,
 } from "lucide-react";
 
 // ─── constants ────────────────────────────────────────────────────────────────
@@ -67,15 +69,29 @@ const BADGE_CONFIG = [
 
 const COMMUNITY_STATS = [
   { icon: Users, color: "text-[#c8884a]", val: "1.2K", label: "Total Groups" },
-  { icon: MessageCircle, color: "text-[#a09be0]", val: "15.4K", label: "Total Posts" },
+  {
+    icon: MessageCircle,
+    color: "text-[#a09be0]",
+    val: "15.4K",
+    label: "Total Posts",
+  },
   { icon: Users, color: "text-[#6ba8e0]", val: "84", label: "Active Members" },
-  { icon: Activity, color: "text-[#5ec9a0]", val: "320", label: "Active Today" },
+  {
+    icon: Activity,
+    color: "text-[#5ec9a0]",
+    val: "320",
+    label: "Active Today",
+  },
 ];
 
 const QUICK_LINKS = [
   { text: "Social Feed", path: "/social", icon: MessageSquare },
   { text: "Browse Jobs", path: "/jobs", icon: Briefcase },
-  { text: "Your Profile", path: `/profile/${useAuth?.user?.id || ""}`, icon: User },
+  {
+    text: "Your Profile",
+    path: `/profile/${useAuth?.user?.id || ""}`,
+    icon: User,
+  },
 ];
 
 // ─── design tokens ────────────────────────────────────────────────────────────
@@ -275,200 +291,43 @@ const Forum = () => {
     }
   };
 
+  // ── search ───────────────────────────────────────────────────────────────
+  const handleSearch = () => {
+    const filtered = jobs.filter(
+      (job) =>
+        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.category.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+    setFilteredJobs(filtered);
+    setCurrentPage(1);
+  };
+
   const filteredGroups = groups.filter(
     (group) =>
       group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      group.description.toLowerCase().includes(searchTerm.toLowerCase())
+      group.description.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const btnPrimary =
-    "flex items-center gap-1.5 bg-[#c8884a] text-[#1a1008] font-semibold rounded-lg transition-colors " +
+    "flex items-center gap-1.5 bg-(--browse-primary) text-(--browse-white) font-semibold rounded-lg transition-colors " +
     "hover:bg-[#b07a40] shadow-[0_0_14px_rgba(200,136,74,0.25)]";
 
   const btnOutline =
     "flex items-center gap-1.5 border border-[rgba(200,136,74,0.3)] text-[#e8e2d4] font-medium rounded-lg transition-colors " +
     "hover:border-[#c8884a] hover:text-[#c8884a]";
 
-  const sidebarScroll =
-    "hidden lg:flex flex-col gap-4 sticky top-6 self-start " +
-    "h-[calc(100vh-3rem)] overflow-y-auto " +
-    "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden";
-
   const userInitial = user?.name?.charAt(0)?.toUpperCase() ?? "U";
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e8e2d4]">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)_280px] gap-5 items-start">
+      <div className="max-w-6xl mx-auto py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-6">
           {/* ══════════ LEFT SIDEBAR ══════════ */}
-          <aside className={`${sidebarScroll} pr-1`}>
-            {/* Trending Topics */}
-            <SideCard>
-              <SideCardHeader>
-                <span className="flex items-center gap-2 text-[#f0e8d8] font-semibold text-sm">
-                  <TrendingUp size={14} className="text-[#c8884a]" />
-                  Trending Topics
-                </span>
-                <button className="text-[#c8884a] text-xs font-medium hover:underline">
-                  View all
-                </button>
-              </SideCardHeader>
-              <ul className="px-3 pb-4 space-y-0.5">
-                {TRENDING_TOPICS.map(([topic, count]) => (
-                  <li key={topic}>
-                    <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors">
-                      <span className="flex items-center gap-2 text-[#e8e2d4] text-sm">
-                        <Hash size={12} className="text-[#c8884a]" />
-                        {topic}
-                      </span>
-                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
-                        {count}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </SideCard>
-
-            {/* Quick Links */}
-            <SideCard>
-              <div className="p-4">
-                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
-                  Quick Links
-                </p>
-                <ul className="space-y-0.5">
-                  <li>
-                    <Link
-                      to="/social"
-                      className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors group"
-                    >
-                      <span className="flex items-center gap-2.5 text-sm text-[rgba(232,226,212,0.55)] group-hover:text-[#e8e2d4] transition-colors">
-                        <MessageSquare size={14} className="text-[#c8884a]" />
-                        Social Feed
-                      </span>
-                      <ChevronRight
-                        size={13}
-                        className="text-[rgba(232,226,212,0.25)] group-hover:text-[rgba(232,226,212,0.55)] transition-colors"
-                      />
-                    </Link>
-                  </li>
-                  {QUICK_LINKS.slice(1).map(({ text, path, icon: Icon }) => (
-                    <li key={text}>
-                      <Link
-                        to={path}
-                        className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors group"
-                      >
-                        <span className="flex items-center gap-2.5 text-sm text-[rgba(232,226,212,0.55)] group-hover:text-[#e8e2d4] transition-colors">
-                          <Icon size={14} className="text-[#c8884a]" />
-                          {text}
-                        </span>
-                        <ChevronRight
-                          size={13}
-                          className="text-[rgba(232,226,212,0.25)] group-hover:text-[rgba(232,226,212,0.55)] transition-colors"
-                        />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </SideCard>
-          </aside>
-
-          {/* ══════════ MAIN CONTENT ══════════ */}
-          <main className="min-w-0 flex flex-col gap-4">
-            {/* Page header */}
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[rgba(200,136,74,0.15)] rounded-xl flex items-center justify-center shrink-0">
-                  <MessageSquare size={19} className="text-[#c8884a]" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#f0e8d8] leading-tight">
-                    Community Forum
-                  </h1>
-                  <p className="text-[rgba(232,226,212,0.55)] text-xs mt-0.5">
-                    Join discussions, share knowledge, and connect with others
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 flex-wrap justify-end">
-                {user && (
-                  <button
-                    onClick={() => setOpenCreate(true)}
-                    className={`${btnPrimary} text-sm px-4 py-2`}
-                  >
-                    <Plus size={14} />
-                    Create Group
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Search */}
-            <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-3">
-              <div className="flex items-center gap-3">
-                <Hash size={16} className="text-[#c8884a] shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Search forum groups..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-1 bg-transparent text-[#e8e2d4] text-sm placeholder-[rgba(232,226,212,0.35)] outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Groups count */}
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-[rgba(232,226,212,0.55)] flex items-center gap-2">
-                <Users size={14} className="text-[#c8884a]" />
-                {filteredGroups.length} Group{filteredGroups.length !== 1 ? "s" : ""} Available
-              </p>
-              <button className="flex items-center gap-1.5 text-[rgba(232,226,212,0.55)] text-xs border border-[rgba(200,136,74,0.2)] px-3 py-1.5 rounded-lg hover:border-[#c8884a] hover:text-[#e8e2d4] transition-colors shrink-0">
-                <Filter size={12} />
-                Filter
-              </button>
-            </div>
-
-            {/* Groups grid */}
-            {filteredGroups.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredGroups.map((group, i) => (
-                  <GroupCard key={group._id} group={group} index={i} />
-                ))}
-              </div>
-            ) : (
-              <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-12 text-center">
-                <div className="w-16 h-16 bg-[rgba(200,136,74,0.1)] rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Users size={28} className="text-[#c8884a]" />
-                </div>
-                <h3 className="text-lg font-bold text-[#f0e8d8] mb-2">
-                  {searchTerm ? "No groups found" : "No forum groups yet"}
-                </h3>
-                <p className="text-[rgba(232,226,212,0.55)] text-sm max-w-sm mx-auto mb-6">
-                  {searchTerm
-                    ? `No groups matching "${searchTerm}"`
-                    : "Be the first to create a forum group and start the conversation!"}
-                </p>
-                {user && (
-                  <button
-                    onClick={() => setOpenCreate(true)}
-                    className={`${btnPrimary} text-sm px-5 py-2.5`}
-                  >
-                    <Plus size={14} />
-                    Create First Group
-                  </button>
-                )}
-              </div>
-            )}
-          </main>
-
-          {/* ══════════ RIGHT SIDEBAR ══════════ */}
-          <aside className={`${sidebarScroll} pl-1`}>
+          <aside className="hidden lg:flex flex-col gap-4 flex-1 sticky top-0">
             {/* Your Profile */}
             <SideCard>
-              <div className="p-4">
+              <div className="p-7">
                 <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
                   Your Profile
                 </p>
@@ -522,28 +381,6 @@ const Forum = () => {
               </div>
             </SideCard>
 
-            {/* Community Stats */}
-            <SideCard>
-              <div className="p-4">
-                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
-                  Community Stats
-                </p>
-                <ul className="space-y-3">
-                  {COMMUNITY_STATS.map(({ icon: Icon, color, val, label }) => (
-                    <li key={label} className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-[rgba(200,136,74,0.12)] rounded-lg flex items-center justify-center shrink-0">
-                        <Icon size={14} className={color} />
-                      </div>
-                      <span className="font-bold text-[#f0e8d8]">{val}</span>
-                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
-                        • {label}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </SideCard>
-
             {/* Active Groups */}
             <SideCard>
               <SideCardHeader>
@@ -573,7 +410,214 @@ const Forum = () => {
                 ))}
               </div>
             </SideCard>
+
+            {/* Trending Topics */}
+            <SideCard>
+              <SideCardHeader>
+                <span className="flex items-center gap-2 text-[#f0e8d8] font-semibold text-sm">
+                  <TrendingUp size={14} className="text-[#c8884a]" />
+                  Trending Topics
+                </span>
+                <button className="text-[#c8884a] text-xs font-medium hover:underline">
+                  View all
+                </button>
+              </SideCardHeader>
+              <ul className="px-3 pb-4 space-y-0.5">
+                {TRENDING_TOPICS.map(([topic, count]) => (
+                  <li key={topic}>
+                    <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors">
+                      <span className="flex items-center gap-2 text-[#e8e2d4] text-sm">
+                        <Hash size={12} className="text-[#c8884a]" />
+                        {topic}
+                      </span>
+                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
+                        {count}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </SideCard>
+
+            {/* Community Stats */}
+            <SideCard>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
+                  Community Stats
+                </p>
+                <ul className="space-y-3">
+                  {COMMUNITY_STATS.map(({ icon: Icon, color, val, label }) => (
+                    <li key={label} className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-[rgba(200,136,74,0.12)] rounded-lg flex items-center justify-center shrink-0">
+                        <Icon size={14} className={color} />
+                      </div>
+                      <span className="font-bold text-[#f0e8d8]">{val}</span>
+                      <span className="text-[rgba(232,226,212,0.45)] text-xs">
+                        • {label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </SideCard>
+
+            {/* Quick Links */}
+            <SideCard>
+              <div className="p-4">
+                <p className="text-[10px] font-semibold text-[rgba(232,226,212,0.45)] uppercase tracking-widest mb-3">
+                  Quick Links
+                </p>
+                <ul className="space-y-0.5">
+                  <li>
+                    <Link
+                      to="/social"
+                      className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors group"
+                    >
+                      <span className="flex items-center gap-2.5 text-sm text-[rgba(232,226,212,0.55)] group-hover:text-[#e8e2d4] transition-colors">
+                        <MessageSquare size={14} className="text-[#c8884a]" />
+                        Social Feed
+                      </span>
+                      <ChevronRight
+                        size={13}
+                        className="text-[rgba(232,226,212,0.25)] group-hover:text-[rgba(232,226,212,0.55)] transition-colors"
+                      />
+                    </Link>
+                  </li>
+                  {QUICK_LINKS.slice(1).map(({ text, path, icon: Icon }) => (
+                    <li key={text}>
+                      <Link
+                        to={path}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[rgba(200,136,74,0.1)] transition-colors group"
+                      >
+                        <span className="flex items-center gap-2.5 text-sm text-[rgba(232,226,212,0.55)] group-hover:text-[#e8e2d4] transition-colors">
+                          <Icon size={14} className="text-[#c8884a]" />
+                          {text}
+                        </span>
+                        <ChevronRight
+                          size={13}
+                          className="text-[rgba(232,226,212,0.25)] group-hover:text-[rgba(232,226,212,0.55)] transition-colors"
+                        />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </SideCard>
           </aside>
+
+          {/* ══════════ MAIN CONTENT ══════════ */}
+          <main className=" flex flex-col gap-4 ">
+            {/* Page header */}
+            <div
+              className="rounded-2xl p-4 relative overflow-hidden border border-(--browse-border-white-subtle)"
+              style={{
+                background: "var(--browse-panel-gradient)",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 bg-[rgba(200,136,74,0.15)] rounded-xl flex items-center justify-center shrink-0">
+                  <MessageSquare size={19} className="text-[#c8884a]" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-(--browse-text-strong)">
+                    Community Forum
+                  </h1>
+                  <p className=" text-xs text-(--browse-primary)">
+                    Join discussions, share knowledge, and connect with others
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                {user && (
+                  <button
+                    onClick={() => setOpenCreate(true)}
+                    className={`${btnPrimary} text-sm px-4 py-2.5`}
+                  >
+                    <Plus size={14} />
+                    Create Group
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Search */}
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <Search
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-(--browse-primary)"
+                />
+                <input
+                  type="text"
+                  placeholder="Search forum groups..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-4 py-3 bg-(--browse-surface) border border-(--browse-primary-border) rounded-lg text-(--browse-text) text-sm placeholder-(--browse-placeholder) outline-none focus:border-(--browse-primary) transition-colors"
+                />
+              </div>
+              <button
+                onClick={handleSearch}
+                className="flex items-center gap-2 px-5 py-2.5 bg-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-hover) transition-colors"
+              >
+                <Search size={15} />
+                Search Forum
+              </button>
+            </div>
+
+            {/* Groups count */}
+            <div
+              className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl px-4"
+              style={{
+                background: "var(--browse-panel-gradient)",
+              }}
+            >
+              <div className="flex items-center justify-between gap-3 overflow-x-auto">
+                <p className="text-sm text-[rgba(232,226,212,0.55)] flex items-center gap-2 py-3.5">
+                  <Users size={19} className="text-[#c8884a]" />
+                  {filteredGroups.length} Group
+                  {filteredGroups.length !== 1 ? "s" : ""} Available
+                </p>
+                <button className="flex items-center gap-1.5 text-[rgba(232,226,212,0.55)] text-xs border border-[rgba(200,136,74,0.2)] px-4 py-1.5 rounded-lg hover:border-[#c8884a] hover:text-[#e8e2d4] transition-colors shrink-0">
+                  <Filter size={12} />
+                  Filter
+                  <ChevronDown size={12} />
+                </button>
+              </div>
+            </div>
+
+            {/* Groups grid */}
+            {filteredGroups.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredGroups.map((group, i) => (
+                  <GroupCard key={group._id} group={group} index={i} />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-[#1e1e26] border border-[rgba(200,136,74,0.2)] rounded-xl p-12 text-center">
+                <div className="w-16 h-16 bg-[rgba(200,136,74,0.1)] rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Users size={28} className="text-[#c8884a]" />
+                </div>
+                <h3 className="text-lg font-bold text-[#f0e8d8] mb-2">
+                  {searchTerm ? "No groups found" : "No forum groups yet"}
+                </h3>
+                <p className="text-[rgba(232,226,212,0.55)] text-sm max-w-sm mx-auto mb-6">
+                  {searchTerm
+                    ? `No groups matching "${searchTerm}"`
+                    : "Be the first to create a forum group and start the conversation!"}
+                </p>
+                {user && (
+                  <button
+                    onClick={() => setOpenCreate(true)}
+                    className={`${btnPrimary} text-sm px-5 py-2.5`}
+                  >
+                    <Plus size={14} />
+                    Create First Group
+                  </button>
+                )}
+              </div>
+            )}
+          </main>
         </div>
       </div>
 
