@@ -1,47 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  Button, 
-  Modal, 
-  Card, 
-  CardContent,
-  Container,
-  Avatar,
-  IconButton,
-  Breadcrumbs,
-  Chip,
-  CircularProgress
-} from '@mui/material';
-import CreatePost from '../components/posts/CreatePost';
-import Posts from '../components/posts/Posts';
-import { fetchForumGroups } from '../services/api';
-import { useAuth } from '../context/AuthContext';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import AddIcon from '@mui/icons-material/Add';
-import ForumIcon from '@mui/icons-material/Forum';
-import GroupsIcon from '@mui/icons-material/Groups';
-import CloseIcon from '@mui/icons-material/Close';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import CreatePost from "../components/posts/CreatePost";
+import Posts from "../components/posts/Posts";
+import { fetchForumGroups } from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import {
+  ArrowLeft,
+  Plus,
+  X,
+  Users,
+  MessageSquare,
+  ChevronRight,
+  Loader2,
+  Info,
+  Radio,
+  TrendingUp,
+  Hash,
+} from "lucide-react";
+
+// ── design tokens ─────────────────────────────────────────────────────────────
+// bg:      #0d1117
+// surface: #161b22
+// card:    #1e1e26
+// border:  rgba(200,136,74,0.2)
+// amber:   #c8884a
+// text-hi: #f0e8d8
+// text-lo: rgba(232,226,212,0.55)
+
+const THREAD_TABS = ["All Threads", "Popular", "Latest", "Unanswered"];
+
+const TRENDING_TOPICS = [
+  "AI",
+  "Cloud",
+  "CyberSecurity",
+  "Research",
+  "Programming",
+  "DataScience",
+  "WebDev",
+];
+
+const FALLBACK_CONTRIBUTORS = [
+  { rank: 1, name: "John Doe", level: 45, initial: "J" },
+  { rank: 2, name: "Mike Smith", level: 39, initial: "M" },
+  { rank: 3, name: "Sarah Johnson", level: 31, initial: "S" },
+  { rank: 4, name: "Charlie Brown", level: 28, initial: "C" },
+  { rank: 5, name: "Alex Kim", level: 22, initial: "A" },
+];
+
+// rank badge colors
+const rankColors = [
+  "#c8884a",
+  "#8b8fa8",
+  "#b07a40",
+  "rgba(200,136,74,0.4)",
+  "rgba(200,136,74,0.3)",
+];
 
 const ForumCategory = () => {
   const { groupId } = useParams();
   const { user } = useAuth();
+
   const [group, setGroup] = useState(null);
   const [refreshPosts, setRefreshPosts] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("All Threads");
 
   useEffect(() => {
     const loadGroup = async () => {
       try {
         setLoading(true);
         const groups = await fetchForumGroups();
-        const foundGroup = groups.find(g => g._id === groupId);
+        const foundGroup = groups.find((g) => g._id === groupId);
         setGroup(foundGroup);
       } catch (err) {
-        console.error('Error fetching forum group:', err);
+        console.error("Error fetching forum group:", err);
       } finally {
         setLoading(false);
       }
@@ -49,351 +82,554 @@ const ForumCategory = () => {
     loadGroup();
   }, [groupId]);
 
-  const triggerRefresh = () => {
-    setRefreshPosts(!refreshPosts);
-  };
+  const triggerRefresh = () => setRefreshPosts((p) => !p);
 
+  /* ── Loading ── */
   if (loading) {
     return (
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '100vh',
-        bgcolor: '#2C3639'
-      }}>
-        <CircularProgress sx={{ color: '#A27B5C' }} size={60} />
-      </Box>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: "#0d1117" }}
+      >
+        <Loader2
+          size={48}
+          className="animate-spin"
+          style={{ color: "#c8884a" }}
+        />
+      </div>
     );
   }
 
+  /* ── Not Found ── */
   if (!group) {
     return (
-      <Box sx={{ 
-        minHeight: '100vh',
-        bgcolor: '#2C3639',
-        color: '#DCD7C9',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        p: 3
-      }}>
-        <Container maxWidth="md">
-          <Box sx={{ textAlign: 'center', py: 10 }}>
-            <GroupsIcon sx={{ fontSize: '4rem', color: '#A27B5C', mb: 3, opacity: 0.5 }} />
-            <Typography variant="h4" sx={{ color: '#DCD7C9', mb: 2 }}>
-              Group Not Found
-            </Typography>
-            <Typography variant="body1" sx={{ color: 'rgba(220, 215, 201, 0.7)', mb: 4, maxWidth: 400, mx: 'auto' }}>
-              The forum group you're looking for doesn't exist or has been removed.
-            </Typography>
-            <Button
-              variant="contained"
-              component={Link}
-              to="/forum"
-              startIcon={<ArrowBackIcon />}
-              sx={{
-                bgcolor: '#A27B5C',
-                color: '#2C3639',
-                px: 4,
-                py: 1.5,
-                fontWeight: 'bold',
-                '&:hover': {
-                  bgcolor: '#8a6a50',
-                }
-              }}
-            >
-              Back to Forum
-            </Button>
-          </Box>
-        </Container>
-      </Box>
+      <div
+        className="min-h-screen flex items-center justify-center p-6"
+        style={{ backgroundColor: "#0d1117", color: "#e8e2d4" }}
+      >
+        <div className="text-center max-w-md">
+          <Users
+            size={64}
+            className="mx-auto mb-4 opacity-40"
+            style={{ color: "#c8884a" }}
+          />
+          <p className="text-2xl font-bold mb-2" style={{ color: "#f0e8d8" }}>
+            Group Not Found
+          </p>
+          <p
+            className="text-sm mb-6"
+            style={{ color: "rgba(232,226,212,0.55)" }}
+          >
+            The forum group you're looking for doesn't exist or has been
+            removed.
+          </p>
+          <Link
+            to="/forum"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm"
+            style={{ backgroundColor: "#c8884a", color: "#1a1008" }}
+          >
+            <ArrowLeft size={15} /> Back to Forum
+          </Link>
+        </div>
+      </div>
     );
   }
 
-  return (
-    <Box sx={{ 
-      bgcolor: '#2C3639', 
-      color: '#DCD7C9', 
-      minHeight: '100vh',
-      py: 5,
-      position: 'relative',
-      '&::before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: `
-          radial-gradient(circle at 15% 15%, rgba(162, 123, 92, 0.05) 0%, transparent 25%),
-          radial-gradient(circle at 85% 85%, rgba(63, 78, 79, 0.08) 0%, transparent 25%)
-        `,
-        zIndex: 0,
-      }
-    }}>
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-        {/* Breadcrumb Navigation */}
-        <Breadcrumbs 
-          separator={<NavigateNextIcon sx={{ color: '#A27B5C' }} />} 
-          sx={{ mb: 4, '& .MuiBreadcrumbs-li': { color: 'rgba(220, 215, 201, 0.7)' } }}
-        >
-          <Link to="/forum" style={{ textDecoration: 'none' }}>
-            <Typography sx={{ color: '#A27B5C', '&:hover': { color: '#DCD7C9' } }}>
-              Forum
-            </Typography>
-          </Link>
-          <Typography sx={{ color: '#DCD7C9', fontWeight: 'bold' }}>
-            {group.name}
-          </Typography>
-        </Breadcrumbs>
+  const groupInitial = group.name.charAt(0).toUpperCase();
+  const creatorInitial = group.createdBy?.name?.charAt(0)?.toUpperCase() ?? "U";
 
-        {/* Group Header */}
-        <Card sx={{ 
-          bgcolor: '#3F4E4F',
-          border: '2px solid #A27B5C',
-          borderRadius: 3,
-          boxShadow: '0 8px 32px rgba(162, 123, 92, 0.2)',
-          mb: 6,
-          overflow: 'hidden',
-          position: 'relative',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '6px',
-            background: 'linear-gradient(90deg, #A27B5C 0%, #8a6a50 100%)',
-          }
-        }}>
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 2 }}>
-              <Avatar 
-                sx={{ 
-                  bgcolor: '#A27B5C', 
-                  width: 70, 
-                  height: 70,
-                  border: '3px solid rgba(162, 123, 92, 0.5)',
-                  fontSize: '1.8rem',
-                  fontWeight: 'bold'
+  return (
+    <div
+      className="min-h-screen"
+      style={{ backgroundColor: "#0d1117", color: "#e8e2d4" }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {/* ── Breadcrumb ── */}
+        <nav className="flex items-center gap-2 text-sm mb-6">
+          <Link
+            to="/forum"
+            className="font-medium transition-opacity hover:opacity-70"
+            style={{ color: "#c8884a" }}
+          >
+            Forum
+          </Link>
+          <ChevronRight size={14} style={{ color: "#c8884a" }} />
+          <span className="font-semibold" style={{ color: "#f0e8d8" }}>
+            {group.name}
+          </span>
+        </nav>
+
+        {/* ── Two-column layout ── */}
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
+          {/* ════════════════════════════════
+              LEFT SIDEBAR
+          ════════════════════════════════ */}
+          <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-4 lg:sticky lg:top-24">
+            {/* Group identity card */}
+            <div
+              className="rounded-2xl border overflow-hidden"
+              style={{
+                backgroundColor: "#161b22",
+                borderColor: "rgba(200,136,74,0.2)",
+              }}
+            >
+              {/* Avatar area */}
+              <div
+                className="flex flex-col items-center py-8 px-4"
+                style={{
+                  background:
+                    "linear-gradient(160deg, #1e1e26 0%, #161b22 100%)",
                 }}
               >
-                {group.name.charAt(0).toUpperCase()}
-              </Avatar>
-              <Box>
-                <Typography variant="h3" sx={{ color: '#DCD7C9', fontWeight: 'bold', mb: 1 }}>
+                <div
+                  className="w-24 h-24 rounded-full flex items-center justify-center text-4xl font-black mb-4 ring-4"
+                  style={{
+                    backgroundColor: "#c8884a",
+                    color: "#1a1008",
+                    ringColor: "rgba(200,136,74,0.3)",
+                    boxShadow: "0 0 32px rgba(200,136,74,0.25)",
+                  }}
+                >
+                  {groupInitial}
+                </div>
+                <p
+                  className="font-extrabold text-lg text-center"
+                  style={{ color: "#f0e8d8" }}
+                >
                   {group.name}
-                </Typography>
-                <Typography variant="h6" sx={{ color: '#A27B5C', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <ForumIcon /> Discussion Group
-                </Typography>
-              </Box>
-            </Box>
-            
-            <Typography sx={{ 
-              color: 'rgba(220, 215, 201, 0.8)', 
-              fontSize: '1.1rem',
-              lineHeight: 1.7,
-              mb: 3,
-              pl: { xs: 0, sm: 9 }
-            }}>
-              {group.description}
-            </Typography>
-            
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 2,
-              pt: 2,
-              borderTop: '2px solid rgba(162, 123, 92, 0.3)'
-            }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Avatar 
-                  sx={{ 
-                    width: 32, 
-                    height: 32,
-                    bgcolor: '#2C3639',
-                    border: '1px solid #A27B5C'
+                </p>
+                <p
+                  className="text-xs mt-1"
+                  style={{ color: "rgba(232,226,212,0.55)" }}
+                >
+                  Discussion Group
+                </p>
+
+                {/* Tag badge */}
+                <span
+                  className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full text-xs font-semibold border"
+                  style={{
+                    backgroundColor: "rgba(200,136,74,0.12)",
+                    borderColor: "rgba(200,136,74,0.25)",
+                    color: "#c8884a",
                   }}
                 >
-                  {group.createdBy?.name?.charAt(0)?.toUpperCase() || 'U'}
-                </Avatar>
-                <Typography variant="body2" sx={{ color: 'rgba(220, 215, 201, 0.7)' }}>
-                  Created by {group.createdBy?.name || 'Unknown'}
-                </Typography>
-              </Box>
-              
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <Button
-                  variant="contained"
-                  component={Link}
-                  to="/forum"
-                  startIcon={<ArrowBackIcon />}
-                  sx={{
-                    bgcolor: 'transparent',
-                    color: '#A27B5C',
-                    border: '2px solid #A27B5C',
-                    px: 3,
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      bgcolor: 'rgba(162, 123, 92, 0.1)',
-                      borderColor: '#8a6a50',
+                  <Users size={11} />
+                  {group.createdBy?.name ?? "Group"}
+                </span>
+              </div>
+            </div>
+
+            {/* Top Contributors */}
+            <div
+              className="rounded-2xl border overflow-hidden"
+              style={{
+                backgroundColor: "#161b22",
+                borderColor: "rgba(200,136,74,0.2)",
+              }}
+            >
+              <div
+                className="flex items-center justify-between px-4 py-3 border-b"
+                style={{ borderColor: "rgba(200,136,74,0.15)" }}
+              >
+                <span
+                  className="font-bold text-sm"
+                  style={{ color: "#f0e8d8" }}
+                >
+                  Top Contributors
+                </span>
+              </div>
+              <ul className="px-3 py-2 flex flex-col gap-0.5">
+                {FALLBACK_CONTRIBUTORS.map(({ rank, name, level, initial }) => (
+                  <li
+                    key={rank}
+                    className="flex items-center gap-3 px-2 py-2 rounded-xl transition-colors cursor-pointer"
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor =
+                        "rgba(200,136,74,0.08)")
                     }
-                  }}
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "transparent")
+                    }
+                  >
+                    {/* rank number */}
+                    <span
+                      className="w-5 text-center text-xs font-black shrink-0"
+                      style={{ color: rankColors[rank - 1] }}
+                    >
+                      {rank}
+                    </span>
+                    {/* avatar */}
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                      style={{
+                        backgroundColor: "rgba(200,136,74,0.2)",
+                        color: "#c8884a",
+                      }}
+                    >
+                      {initial}
+                    </div>
+                    {/* name */}
+                    <span
+                      className="flex-1 text-sm font-medium truncate"
+                      style={{ color: "#e8e2d4" }}
+                    >
+                      {name}
+                    </span>
+                    {/* level badge */}
+                    <span
+                      className="text-xs font-bold px-2 py-0.5 rounded-full shrink-0"
+                      style={{
+                        backgroundColor: "rgba(200,136,74,0.12)",
+                        color: "#c8884a",
+                      }}
+                    >
+                      Level {level}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Trending Topics */}
+            <div
+              className="rounded-2xl border overflow-hidden"
+              style={{
+                backgroundColor: "#161b22",
+                borderColor: "rgba(200,136,74,0.2)",
+              }}
+            >
+              <div
+                className="flex items-center gap-2 px-4 py-3 border-b"
+                style={{ borderColor: "rgba(200,136,74,0.15)" }}
+              >
+                <TrendingUp size={14} style={{ color: "#c8884a" }} />
+                <span
+                  className="font-bold text-sm"
+                  style={{ color: "#f0e8d8" }}
                 >
-                  Back to Forum
-                </Button>
-                
-                {user && (
-                  <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => setOpenCreate(true)}
-                    sx={{
-                      bgcolor: '#A27B5C',
-                      color: '#2C3639',
-                      px: 4,
-                      fontWeight: 'bold',
-                      border: '2px solid #A27B5C',
-                      '&:hover': {
-                        bgcolor: '#8a6a50',
-                        borderColor: '#8a6a50',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 24px rgba(162, 123, 92, 0.4)',
-                      }
+                  Trending Topics
+                </span>
+              </div>
+              <div className="px-4 py-3 flex flex-wrap gap-2">
+                {TRENDING_TOPICS.map((topic) => (
+                  <span
+                    key={topic}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer border transition-colors"
+                    style={{
+                      backgroundColor: "rgba(200,136,74,0.08)",
+                      borderColor: "rgba(200,136,74,0.18)",
+                      color: "rgba(232,226,212,0.7)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "#c8884a";
+                      e.currentTarget.style.color = "#c8884a";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor =
+                        "rgba(200,136,74,0.18)";
+                      e.currentTarget.style.color = "rgba(232,226,212,0.7)";
                     }}
                   >
-                    Create Thread
-                  </Button>
-                )}
-              </Box>
-            </Box>
-          </CardContent>
-        </Card>
+                    <Hash size={10} />
+                    {topic}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </aside>
 
-        {/* Threads Section */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{ 
-            color: '#DCD7C9', 
-            mb: 3,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2
-          }}>
-            <ForumIcon sx={{ color: '#A27B5C' }} />
-            Discussion Threads
-            <Chip 
-              label="Active" 
-              sx={{ 
-                bgcolor: 'rgba(162, 123, 92, 0.2)', 
-                color: '#DCD7C9',
-                fontWeight: 'bold'
-              }} 
-            />
-          </Typography>
-        </Box>
-
-        {/* Posts Component */}
-        <Box sx={{ 
-          bgcolor: '#3F4E4F',
-          border: '2px solid rgba(162, 123, 92, 0.3)',
-          borderRadius: 3,
-          overflow: 'hidden'
-        }}>
-          <Posts refreshTrigger={refreshPosts} type="thread" groupId={groupId} />
-        </Box>
-
-        {/* Create Thread Modal */}
-        <Modal open={openCreate} onClose={() => !loading && setOpenCreate(false)}>
-          <Box sx={{ 
-            position: 'absolute', 
-            top: '50%', 
-            left: '50%', 
-            transform: 'translate(-50%, -50%)', 
-            bgcolor: '#3F4E4F', 
-            p: 5, 
-            borderRadius: 3, 
-            boxShadow: '0 24px 80px rgba(0, 0, 0, 0.5)',
-            border: '3px solid #A27B5C',
-            minWidth: { xs: '90%', sm: 600 },
-            maxWidth: 800,
-            maxHeight: '90vh',
-            overflow: 'auto',
-            outline: 'none'
-          }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-              <Typography variant="h4" sx={{ color: '#DCD7C9', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 2 }}>
-                <AddIcon /> Create New Thread
-              </Typography>
-              <IconButton 
-                onClick={() => setOpenCreate(false)} 
-                sx={{ 
-                  color: '#A27B5C',
-                  '&:hover': {
-                    bgcolor: 'rgba(162, 123, 92, 0.1)'
-                  }
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            
-            <CreatePost
-              onPostCreated={() => { 
-                setOpenCreate(false); 
-                triggerRefresh(); 
+          {/* ════════════════════════════════
+              MAIN CONTENT
+          ════════════════════════════════ */}
+          <main className="flex-1 min-w-0 flex flex-col gap-4">
+            {/* Group header banner */}
+            <div
+              className="rounded-2xl border overflow-hidden relative"
+              style={{
+                backgroundColor: "#161b22",
+                borderColor: "rgba(200,136,74,0.2)",
+                backgroundImage:
+                  "radial-gradient(ellipse 60% 80% at 80% 50%, rgba(200,136,74,0.07) 0%, transparent 70%)",
               }}
-              type="thread"
-              groupId={groupId}
-            />
-            
-            <Box sx={{ mt: 4, pt: 3, borderTop: '2px solid rgba(162, 123, 92, 0.3)' }}>
-              <Button 
-                onClick={() => setOpenCreate(false)} 
-                variant="outlined"
-                fullWidth
-                sx={{ 
-                  color: '#A27B5C',
-                  borderColor: '#A27B5C',
-                  py: 1.5,
-                  fontWeight: 'bold',
-                  '&:hover': {
-                    bgcolor: 'rgba(162, 123, 92, 0.1)',
-                    borderColor: '#8a6a50',
-                  }
+            >
+              <div className="p-6 sm:p-8 flex flex-col sm:flex-row gap-6">
+                {/* Text block */}
+                <div className="flex-1 min-w-0">
+                  <h1
+                    className="text-3xl font-extrabold mb-1"
+                    style={{ color: "#f0e8d8" }}
+                  >
+                    {group.name}
+                  </h1>
+
+                  <p
+                    className="text-sm font-medium leading-relaxed mb-5 max-w-lg"
+                    style={{ color: "#c8884a" }}
+                  >
+                    {group.description}
+                  </p>
+
+                  {/* inline stats */}
+                  <div className="flex items-center gap-6 flex-wrap">
+                    {[
+                      { Icon: Users, val: "245", label: "Members" },
+                      { Icon: MessageSquare, val: "132", label: "Threads" },
+                    ].map(({ Icon, val, label }) => (
+                      <div key={label} className="flex items-center gap-2">
+                        <Icon size={15} style={{ color: "#c8884a" }} />
+                        <span
+                          className="font-bold"
+                          style={{ color: "#f0e8d8" }}
+                        >
+                          {val}
+                        </span>
+                        <span
+                          className="text-xs"
+                          style={{ color: "rgba(232,226,212,0.45)" }}
+                        >
+                          {label}
+                        </span>
+                      </div>
+                    ))}
+                    {/* online */}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0"
+                        style={{ boxShadow: "0 0 6px #22c55e" }}
+                      />
+                      <span className="font-bold" style={{ color: "#f0e8d8" }}>
+                        18
+                      </span>
+                      <span
+                        className="text-xs"
+                        style={{ color: "rgba(232,226,212,0.45)" }}
+                      >
+                        Online
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA buttons */}
+                {user && (
+                  <div className="flex flex-col gap-2 shrink-0 sm:w-44">
+                    <button
+                      onClick={() => setOpenCreate(true)}
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm transition-colors"
+                      style={{
+                        backgroundColor: "#c8884a",
+                        color: "#1a1008",
+                        boxShadow: "0 0 16px rgba(200,136,74,0.25)",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#b07a40")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.backgroundColor = "#c8884a")
+                      }
+                    >
+                      <Plus size={15} /> Create Thread
+                    </button>
+                    <button
+                      className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm border transition-colors"
+                      style={{
+                        borderColor: "rgba(200,136,74,0.3)",
+                        color: "rgba(232,226,212,0.7)",
+                        backgroundColor: "transparent",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#c8884a";
+                        e.currentTarget.style.color = "#c8884a";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor =
+                          "rgba(200,136,74,0.3)";
+                        e.currentTarget.style.color = "rgba(232,226,212,0.7)";
+                      }}
+                    >
+                      <Info size={14} /> About Group
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Tabs + filter row */}
+            <div
+              className="rounded-2xl border overflow-hidden"
+              style={{
+                backgroundColor: "#161b22",
+                borderColor: "rgba(200,136,74,0.2)",
+              }}
+            >
+              <div className="flex items-center justify-between px-4 overflow-x-auto">
+                <nav className="flex min-w-max">
+                  {THREAD_TABS.map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className="px-4 py-3.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap"
+                      style={{
+                        borderColor:
+                          activeTab === tab ? "#c8884a" : "transparent",
+                        color:
+                          activeTab === tab
+                            ? "#c8884a"
+                            : "rgba(232,226,212,0.55)",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (activeTab !== tab)
+                          e.currentTarget.style.color = "#e8e2d4";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (activeTab !== tab)
+                          e.currentTarget.style.color =
+                            "rgba(232,226,212,0.55)";
+                      }}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </nav>
+                {/* sort button */}
+                <button
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium shrink-0 ml-3 transition-colors"
+                  style={{
+                    borderColor: "rgba(200,136,74,0.2)",
+                    color: "rgba(232,226,212,0.55)",
+                    backgroundColor: "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "#c8884a";
+                    e.currentTarget.style.color = "#c8884a";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(200,136,74,0.2)";
+                    e.currentTarget.style.color = "rgba(232,226,212,0.55)";
+                  }}
+                >
+                  Latest Activity ▾
+                </button>
+              </div>
+            </div>
+
+            {/* Posts feed */}
+            <div
+              className="rounded-2xl border overflow-hidden"
+              style={{
+                backgroundColor: "#161b22",
+                borderColor: "rgba(200,136,74,0.2)",
+              }}
+            >
+              <Posts
+                refreshTrigger={refreshPosts}
+                type="thread"
+                groupId={groupId}
+              />
+            </div>
+
+            {/* Bottom nav */}
+            <div className="text-center pt-2">
+              <Link
+                to="/forum"
+                className="inline-flex items-center gap-2 text-sm font-medium transition-colors"
+                style={{ color: "#c8884a" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#f0e8d8")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#c8884a")}
+              >
+                <ArrowLeft size={14} /> Return to Forum Overview
+              </Link>
+            </div>
+          </main>
+        </div>
+      </div>
+
+      {/* ════════════════════════════════
+          CREATE THREAD MODAL
+      ════════════════════════════════ */}
+      {openCreate && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          style={{
+            backgroundColor: "rgba(0,0,0,0.75)",
+            backdropFilter: "blur(4px)",
+          }}
+          onClick={() => setOpenCreate(false)}
+        >
+          <div
+            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border shadow-2xl"
+            style={{
+              backgroundColor: "#1e1e26",
+              borderColor: "rgba(200,136,74,0.3)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="flex items-center justify-between px-6 pt-5 pb-4 border-b"
+              style={{ borderColor: "rgba(200,136,74,0.15)" }}
+            >
+              <h2
+                className="flex items-center gap-2 text-base font-bold"
+                style={{ color: "#f0e8d8" }}
+              >
+                <Plus size={17} style={{ color: "#c8884a" }} />
+                Create New Thread
+              </h2>
+              <button
+                onClick={() => setOpenCreate(false)}
+                className="p-1.5 rounded-lg transition-colors"
+                style={{ color: "rgba(232,226,212,0.55)" }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "#e8e2d4";
+                  e.currentTarget.style.backgroundColor =
+                    "rgba(200,136,74,0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "rgba(232,226,212,0.55)";
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                Cancel
-              </Button>
-            </Box>
-          </Box>
-        </Modal>
-
-        {/* Bottom Navigation */}
-        <Box sx={{ mt: 6, textAlign: 'center' }}>
-          <Button
-            variant="text"
-            component={Link}
-            to="/forum"
-            startIcon={<ArrowBackIcon />}
-            sx={{
-              color: '#A27B5C',
-              fontSize: '1rem',
-              textTransform: 'none',
-              '&:hover': {
-                color: '#DCD7C9',
-                bgcolor: 'transparent',
-              }
-            }}
-          >
-            Return to Forum Overview
-          </Button>
-        </Box>
-      </Container>
-    </Box>
+                <X size={17} />
+              </button>
+            </div>
+            <div className="px-6 py-5">
+              <CreatePost
+                onPostCreated={() => {
+                  setOpenCreate(false);
+                  triggerRefresh();
+                }}
+                type="thread"
+                groupId={groupId}
+              />
+              <div
+                className="mt-5 pt-4 border-t"
+                style={{ borderColor: "rgba(200,136,74,0.15)" }}
+              >
+                <button
+                  onClick={() => setOpenCreate(false)}
+                  className="w-full py-2.5 rounded-xl border text-sm font-semibold transition-colors"
+                  style={{
+                    borderColor: "rgba(200,136,74,0.3)",
+                    color: "#c8884a",
+                    backgroundColor: "transparent",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor =
+                      "rgba(200,136,74,0.08)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = "transparent")
+                  }
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

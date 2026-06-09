@@ -309,10 +309,6 @@ const Forum = () => {
       group.description.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const btnPrimary =
-    "flex items-center gap-1.5 bg-(--browse-primary) text-(--browse-white) font-semibold rounded-lg transition-colors " +
-    "hover:bg-[#b07a40] shadow-[0_0_14px_rgba(200,136,74,0.25)]";
-
   const btnOutline =
     "flex items-center gap-1.5 border border-[rgba(200,136,74,0.3)] text-[#e8e2d4] font-medium rounded-lg transition-colors " +
     "hover:border-[#c8884a] hover:text-[#c8884a]";
@@ -332,7 +328,7 @@ const Forum = () => {
                   Your Profile
                 </p>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-13 h-13 rounded-full bg-gradient-to-br from-[#c8884a] to-[#b07a40] flex items-center justify-center text-[#1a1008] text-xl font-bold shrink-0 ring-2 ring-[#c8884a]/25 select-none">
+                  <div className="w-13 h-13 rounded-full bg-linear-to-br from-[#c8884a] to-[#b07a40] flex items-center justify-center text-[#1a1008] text-xl font-bold shrink-0 ring-2 ring-[#c8884a]/25 select-none">
                     {userInitial}
                   </div>
                   <div className="min-w-0">
@@ -354,7 +350,7 @@ const Forum = () => {
                 </div>
                 <div className="w-full h-1.5 bg-[#141418] rounded-full overflow-hidden mb-1">
                   <div
-                    className="h-full bg-gradient-to-r from-[#c8884a] to-[#d6a464] rounded-full transition-all duration-500"
+                    className="h-full bg-linear-to-r from-[#c8884a] to-[#d6a464] rounded-full transition-all duration-500"
                     style={{ width: "78%" }}
                   />
                 </div>
@@ -527,22 +523,10 @@ const Forum = () => {
                   </p>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 flex-wrap justify-end">
-                {user && (
-                  <button
-                    onClick={() => setOpenCreate(true)}
-                    className={`${btnPrimary} text-sm px-4 py-2.5`}
-                  >
-                    <Plus size={14} />
-                    Create Group
-                  </button>
-                )}
-              </div>
             </div>
 
             {/* Search */}
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search
                   size={16}
@@ -563,6 +547,16 @@ const Forum = () => {
                 <Search size={15} />
                 Search Forum
               </button>
+
+              {user && (
+                <button
+                  onClick={() => setOpenCreate(true)}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-transparent border border-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-soft) transition-colors no-underline"
+                >
+                  <Plus size={14} />
+                  Create Group
+                </button>
+              )}
             </div>
 
             {/* Groups count */}
@@ -609,7 +603,7 @@ const Forum = () => {
                 {user && (
                   <button
                     onClick={() => setOpenCreate(true)}
-                    className={`${btnPrimary} text-sm px-5 py-2.5`}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-hover) transition-colors"
                   >
                     <Plus size={14} />
                     Create First Group
@@ -653,7 +647,7 @@ const Forum = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`${btnPrimary} text-sm px-5 py-2 disabled:opacity-40`}
+              className="flex items-center gap-2 px-5 py-2.5 bg-(--browse-primary) text-(--browse-white) rounded-lg font-semibold text-sm hover:bg-(--browse-primary-hover) transition-colors"
             >
               {loading ? (
                 <>
