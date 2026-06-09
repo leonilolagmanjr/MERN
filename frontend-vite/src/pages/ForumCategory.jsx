@@ -145,19 +145,18 @@ const ForumCategory = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {/* ── Breadcrumb ── */}
-        <nav className="flex items-center gap-2 text-sm mb-6">
+        {/* Bottom nav */}
+        <div className="flex items-center gap-2 text-sm mb-4">
           <Link
             to="/forum"
-            className="font-medium transition-opacity hover:opacity-70"
+            className="inline-flex items-center gap-2 text-sm font-medium transition-colors"
             style={{ color: "#c8884a" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#f0e8d8")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#c8884a")}
           >
-            Forum
+            <ArrowLeft size={20} /> Return to Forum Overview
           </Link>
-          <ChevronRight size={14} style={{ color: "#c8884a" }} />
-          <span className="font-semibold" style={{ color: "#f0e8d8" }}>
-            {group.name}
-          </span>
-        </nav>
+        </div>
 
         {/* ── Two-column layout ── */}
         <div className="flex flex-col lg:flex-row gap-5 items-start">
@@ -515,32 +514,12 @@ const ForumCategory = () => {
             </div>
 
             {/* Posts feed */}
-            <div
-              className="rounded-2xl border overflow-hidden"
-              style={{
-                backgroundColor: "#161b22",
-                borderColor: "rgba(200,136,74,0.2)",
-              }}
-            >
-              <Posts
-                refreshTrigger={refreshPosts}
-                type="thread"
-                groupId={groupId}
-              />
-            </div>
 
-            {/* Bottom nav */}
-            <div className="text-center pt-2">
-              <Link
-                to="/forum"
-                className="inline-flex items-center gap-2 text-sm font-medium transition-colors"
-                style={{ color: "#c8884a" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#f0e8d8")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#c8884a")}
-              >
-                <ArrowLeft size={14} /> Return to Forum Overview
-              </Link>
-            </div>
+            <Posts
+              refreshTrigger={refreshPosts}
+              type="thread"
+              groupId={groupId}
+            />
           </main>
         </div>
       </div>
